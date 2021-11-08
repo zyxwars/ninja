@@ -1,4 +1,5 @@
 import pygame as pg
+import os
 
 from .projectile_indicator import ProjectileIndicator
 
@@ -6,24 +7,8 @@ from .projectile_indicator import ProjectileIndicator
 class Player(pg.sprite.Sprite):
     def __init__(self, pos, size, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.idle_animation = []
-        self.idle_animation_index = 0
-        self.idle_animation_length = 2
-        self.idle_animation_speed = 0.07
-        self.load_images('player_idle', self.idle_animation_length,
-                         self.idle_animation, size)
-        self.jump_animation = pg.transform.scale(
-            pg.image.load('./player/player_jump.png'), size)
-        self.fall_animation = pg.transform.scale(
-            pg.image.load('./player/player_falling.png'), size)
-        self.attack_animation = []
-        self.attack_animation_index = 0
-        self.attack_animation_length = 4
-        self.attack_animation_speed = 0.3
-        self.is_attacking = False
-        self.load_images(
-            'player_attack', self.attack_animation_length, self.attack_animation, size)
-        self.image = self.idle_animation[0]
+        self.image = pg.Surface((32, 64))
+        self.image.fill('red')
         self.rect = self.image.get_rect(topleft=pos)
         self.dir = pg.math.Vector2(0, 0)
         self.speed = 8
@@ -36,6 +21,8 @@ class Player(pg.sprite.Sprite):
         self.is_touching_right_wall = False
         self.projectile_indicator = pg.sprite.GroupSingle()
         self.projectile_indicator.add(ProjectileIndicator())
+
+        print(__file__)
 
     def load_images(self, image_name, number_of_images, animation_list, size):
         for i in range(number_of_images):
@@ -118,20 +105,4 @@ class Player(pg.sprite.Sprite):
         self.rect.y += self.dir.y
 
     def animate(self):
-        if self.is_attacking:
-            if self.attack_animation_index >= self.attack_animation_length:
-                self.attack_animation_index = 0
-                self.is_attacking = False
-                return
-            self.image = self.attack_animation[int(
-                self.attack_animation_index)]
-            self.attack_animation_index += self.attack_animation_speed
-        elif self.dir.y < 0 and not self.is_grounded:
-            self.image = self.jump_animation
-        elif self.dir.y > self.gravity * 10 and not self.is_grounded:
-            self.image = self.fall_animation
-        else:
-            if self.idle_animation_index >= self.idle_animation_length:
-                self.idle_animation_index = 0
-            self.image = self.idle_animation[int(self.idle_animation_index)]
-            self.idle_animation_index += self.idle_animation_speed
+        pass

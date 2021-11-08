@@ -4,7 +4,8 @@ import pygame as pg
 class Projectile(pg.sprite.Sprite):
     def __init__(self, player_pos, mouse_pos, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.image = pg.image.load('./player/shuriken.png').convert_alpha()
+        self.image = pg.image.load(
+            './player/assets/shuriken.png').convert_alpha()
         self.image = pg.transform.scale(self.image, (16, 16))
         self.rect = self.image.get_rect(topleft=player_pos)
         self.dir = (pg.math.Vector2(
