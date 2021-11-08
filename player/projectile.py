@@ -1,5 +1,7 @@
 import pygame as pg
 
+import config
+
 
 class Projectile(pg.sprite.Sprite):
     def __init__(self, player_pos, mouse_pos, *args, **kwargs):
@@ -10,8 +12,11 @@ class Projectile(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=player_pos)
         self.dir = (pg.math.Vector2(
             mouse_pos) - pg.math.Vector2(player_pos)).normalize()
-        self.speed = 16
+        self.speed = config.PROJECTILE_SPEED
 
     def update(self):
+        self.move()
+
+    def move(self):
         self.rect.x += self.dir.x * self.speed
         self.rect.y += self.dir.y * self.speed

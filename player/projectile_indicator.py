@@ -2,6 +2,7 @@ import pygame as pg
 import math
 
 from .projectile import Projectile
+import config
 
 
 class ProjectileIndicator(pg.sprite.Sprite):
@@ -13,10 +14,21 @@ class ProjectileIndicator(pg.sprite.Sprite):
         self.image_original = self.image
         self.rect = self.image.get_rect()
         self.projectiles = pg.sprite.Group()
-        self.max_projectile_cooldown = 15
-        self.projectile_cooldown = 0
+        self.projectile_cooldown = config.PROJECTILE_COOLDOWN
 
-    def update(self, player_pos, surface):
+    def update(self, player_pos, tiles, surface):
+        self.animate(player_pos)
+
+        if pg.mouse.get_pressed()[0] and self.projectile_cooldown < 0:
+            self.shoot_projectile(player_pos)
+
+        self.projectile_cooldown -= 1
+
+        self.collide_projectiles(tiles)
+        self.projectiles.update()
+        self.projectiles.draw(surface)
+
+    def animate(self, player_pos):
         distance_vector = pg.math.Vector2(
             pg.mouse.get_pos()) - pg.math.Vector2(player_pos)
         angle = math.degrees(
@@ -26,12 +38,11 @@ class ProjectileIndicator(pg.sprite.Sprite):
         self.rect = self.image.get_rect(
             center=player_pos)
 
-        if pg.mouse.get_pressed()[0] and self.projectile_cooldown < 0:
-            self.projectiles.add(Projectile(
-                player_pos, pg.mouse.get_pos()))
-            self.projectile_cooldown = self.max_projectile_cooldown
+    def shoot_projectile(self, player_pos):
+        self.projectiles.add(Projectile(
+            player_pos, pg.mouse.get_pos()))
+        self.projectile_cooldown = config.PROJECTILE_COOLDOWN
 
-        self.projectile_cooldown -= 1
-
-        self.projectiles.update()
-        self.projectiles.draw(surface)
+    def collide_projectiles(self, tiles):
+        colliding_projectiles = pg.sprite.groupcollide(
+            tiles, self.projectiles, False, True)

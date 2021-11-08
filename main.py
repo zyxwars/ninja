@@ -1,15 +1,18 @@
 import pygame as pg
 
 from level.level import Level
-
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 960
+from debug import debug
+import config
+import pygame_data
 
 pg.init()
-screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pg.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+# Load display surface after it is created
+debug.init()
 clock = pg.time.Clock()
 
 level = Level(screen)
+
 
 while True:
     for e in pg.event.get():
@@ -19,5 +22,6 @@ while True:
     screen.fill('gray')
     level.update()
 
+    debug.update()
     pg.display.update()
-    clock.tick(60)
+    pygame_data.delta_time = clock.tick(60)
