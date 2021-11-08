@@ -3,6 +3,7 @@ import math
 
 from .projectile import Projectile
 import config
+import pygame_data
 
 
 class ProjectileIndicator(pg.sprite.Sprite):
@@ -22,7 +23,7 @@ class ProjectileIndicator(pg.sprite.Sprite):
         if pg.mouse.get_pressed()[0] and self.projectile_cooldown < 0:
             self.shoot_projectile(player_pos)
 
-        self.projectile_cooldown -= 1
+        self.projectile_cooldown -= 1 * pygame_data.delta_time
 
         self.collide_projectiles(tiles)
         self.projectiles.update()

@@ -15,7 +15,7 @@ class Player(pg.sprite.Sprite):
         self.dir = pg.math.Vector2(0, 0)
         self.speed = config.PLAYER_SPEED
         self.gravity = config.PLAYER_GRAVITY
-        self.jump_speed = config.PLAYER_JUMP_SPEED
+        self.jump_speed = config.PLAYER_JUMP_HEIGHT
         self.jump_buffer = config.PLAYER_JUMP_BUFFER
         self.is_grounded = False
         self.jumped_from_wall = False
@@ -62,7 +62,7 @@ class Player(pg.sprite.Sprite):
             self.jump()
 
     def move_horizontal(self, tiles):
-        self.rect.x += self.dir.x * self.speed
+        self.rect.x += self.dir.x * self.speed * pygame_data.delta_time
         self.is_touching_wall = False
         self.is_touching_right_wall = False
 
@@ -78,7 +78,7 @@ class Player(pg.sprite.Sprite):
     def move_vertical(self, tiles):
         self.apply_gravity()
         self.is_grounded = False
-        self.jump_buffer -= 1
+        self.jump_buffer -= 1 * pygame_data.delta_time
 
         for tile in tiles:
             if tile.rect.colliderect(self.rect):
@@ -92,8 +92,8 @@ class Player(pg.sprite.Sprite):
                     self.dir.y = 0
 
     def apply_gravity(self):
-        self.dir.y += self.gravity
-        self.rect.y += self.dir.y
+        self.dir.y += self.gravity * pygame_data.delta_time
+        self.rect.y += self.dir.y * pygame_data.delta_time
 
     def jump(self):
         if self.is_grounded or self.jump_buffer > 0:

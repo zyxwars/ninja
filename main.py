@@ -22,6 +22,8 @@ while True:
     screen.fill('gray')
     level.update()
 
+    debug.debug('delta_time', pygame_data.delta_time)
+    debug.debug('fps', clock.get_fps())
     debug.update()
     pg.display.update()
-    pygame_data.delta_time = clock.tick(60)
+    pygame_data.delta_time = clock.tick(144)

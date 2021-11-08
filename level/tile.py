@@ -1,5 +1,6 @@
 import pygame as pg
 
+import pygame_data
 
 
 class Tile(pg.sprite.Sprite):
@@ -9,4 +10,4 @@ class Tile(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
     def update(self, shift):
-        self.rect.x += shift
+        self.rect.x += shift * pygame_data.delta_time

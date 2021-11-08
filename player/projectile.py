@@ -1,6 +1,7 @@
 import pygame as pg
 
 import config
+import pygame_data
 
 
 class Projectile(pg.sprite.Sprite):
@@ -18,5 +19,5 @@ class Projectile(pg.sprite.Sprite):
         self.move()
 
     def move(self):
-        self.rect.x += self.dir.x * self.speed
-        self.rect.y += self.dir.y * self.speed
+        self.rect.x += self.dir.x * self.speed * pygame_data.delta_time
+        self.rect.y += self.dir.y * self.speed * pygame_data.delta_time

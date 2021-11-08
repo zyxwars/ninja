@@ -36,12 +36,12 @@ class Level:
     def move_camera(self):
         if self.player.sprite.rect.x > config.SCREEN_WIDTH * 0.8 and self.player.sprite.dir.x > 0:
             self.player.sprite.speed = 0
-            world_shift = -8
+            world_shift = -1 * config.X_WORLD_SHIFT_SPEED
         elif self.player.sprite.rect.x < config.SCREEN_WIDTH * 0.2 and self.player.sprite.dir.x < 0:
             self.player.sprite.speed = 0
-            world_shift = 8
+            world_shift = config.X_WORLD_SHIFT_SPEED
         else:
-            self.player.sprite.speed = 8
+            self.player.sprite.speed = config.PLAYER_SPEED
             world_shift = 0
 
         return world_shift
