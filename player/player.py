@@ -80,23 +80,28 @@ class Player(pg.sprite.Sprite):
         self.is_grounded = False
         self.jump_buffer -= 1 * pygame_data.delta_time
 
+        # Check collision 1 pixel below the actual position
+        # This prevents collision not being detected when apply_gravity() moves less than 1 pixel every frame
+        temp_rect = self.rect.copy()
+        temp_rect.y += 1
+
         for tile in tiles:
-            if tile.rect.colliderect(self.rect):
+            if tile.rect.colliderect(temp_rect):
                 if self.dir.y > 0:
                     self.rect.bottom = tile.rect.top
-                    self.dir.y = 0
                     self.is_grounded = True
                     self.jump_buffer = config.PLAYER_JUMP_BUFFER
                 if self.dir.y < 0:
                     self.rect.top = tile.rect.bottom
-                    self.dir.y = 0
+
+                self.dir.y = 0
 
     def apply_gravity(self):
         self.dir.y += self.gravity * pygame_data.delta_time
         self.rect.y += self.dir.y * pygame_data.delta_time
 
     def jump(self):
-        if self.is_grounded or self.jump_buffer > 0:
+        if self.jump_buffer > 0:
             self.dir.y = self.jump_speed
             self.jumped_from_right_wall = False
             self.jumped_from_wall = False
