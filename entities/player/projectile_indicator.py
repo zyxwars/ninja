@@ -3,14 +3,15 @@ import math
 
 from .projectile import Projectile
 import config
-import pygame_data
+import shared_data
+import utils
 
 
 class ProjectileIndicator(pg.sprite.Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.image = pg.image.load(
-            './player/assets/projectile_indicator.png').convert_alpha()
+        self.image = pg.image.load(utils.get_path(
+            __file__, './assets/projectile_indicator.png')).convert_alpha()
         self.image = pg.transform.flip(self.image, False, True)
         self.image_original = self.image
         self.rect = self.image.get_rect()
@@ -23,9 +24,9 @@ class ProjectileIndicator(pg.sprite.Sprite):
         if pg.mouse.get_pressed()[0] and self.projectile_cooldown < 0:
             self.shoot_projectile(player_pos)
 
-        self.projectile_cooldown -= 1 * pygame_data.delta_time
+        self.projectile_cooldown -= 1 * shared_data.delta_time
 
-        self.collide_projectiles(tiles)
+        self.collide_ground(tiles)
         self.projectiles.update()
         self.projectiles.draw(surface)
 
@@ -44,6 +45,5 @@ class ProjectileIndicator(pg.sprite.Sprite):
             player_pos, pg.mouse.get_pos()))
         self.projectile_cooldown = config.PROJECTILE_COOLDOWN
 
-    def collide_projectiles(self, tiles):
-        colliding_projectiles = pg.sprite.groupcollide(
-            tiles, self.projectiles, False, True)
+    def collide_ground(self, tiles):
+        pg.sprite.groupcollide(tiles, self.projectiles, False, True)

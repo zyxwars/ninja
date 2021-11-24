@@ -15,7 +15,7 @@ class Debug():
     def debug(self, key, value):
         self.tracked_dict[key] = value
 
-    def update(self):
+    def draw(self):
         for i, tracked_item in enumerate(self.tracked_dict.items()):
             debug_text = self.font.render(
                 f'{tracked_item[0]}: {tracked_item[1]}', True, 'black', 'white')

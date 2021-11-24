@@ -1,16 +1,15 @@
 import pygame as pg
 
 from level.level import Level
-from debug import debug
+from utils import debug
 import config
-import pygame_data
+import shared_data
 
 pg.init()
 screen = pg.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 # Load display surface after it is created
 debug.init()
 clock = pg.time.Clock()
-
 level = Level(screen)
 
 
@@ -22,8 +21,9 @@ while True:
     screen.fill('gray')
     level.update()
 
-    debug.debug('delta_time', pygame_data.delta_time)
+    debug.debug('delta_time', shared_data.delta_time)
     debug.debug('fps', clock.get_fps())
-    debug.update()
+    debug.draw()
+
     pg.display.update()
-    pygame_data.delta_time = clock.tick(144)
+    shared_data.delta_time = clock.tick(300)
