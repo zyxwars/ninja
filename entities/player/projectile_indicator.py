@@ -11,7 +11,7 @@ class ProjectileIndicator(pg.sprite.Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.image = pg.image.load(utils.get_path(
-            __file__, './assets/projectile_indicator.png')).convert_alpha()
+            __file__, 'assets/projectile_indicator.png')).convert_alpha()
         self.image = pg.transform.flip(self.image, False, True)
         self.image_original = self.image
         self.rect = self.image.get_rect()
