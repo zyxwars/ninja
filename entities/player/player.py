@@ -1,7 +1,7 @@
 import pygame as pg
 import math
 
-from .projectile_indicator import ProjectileIndicator
+from .crosshair import Crosshair
 import config
 from utils import debug
 import utils
@@ -25,8 +25,8 @@ class Player(PhysicsEntity):
         self.animation_index = 0
 
         self.jumped_from_wall = False
-        self.projectile_indicator = pg.sprite.GroupSingle()
-        self.projectile_indicator.add(ProjectileIndicator())
+        self.crosshair = pg.sprite.GroupSingle()
+        self.crosshair.add(Crosshair())
 
     def debug(self):
         debug.debug('jumped_from_wall', self.jumped_from_wall)
@@ -41,8 +41,8 @@ class Player(PhysicsEntity):
         self.move(tiles)
         self.animate()
 
-        self.projectile_indicator.update(self.rect.center, tiles, surface)
-        self.projectile_indicator.draw(surface)
+        self.crosshair.update(self.rect.center, tiles, surface)
+        self.crosshair.draw(surface)
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -58,11 +58,8 @@ class Player(PhysicsEntity):
             self.jump()
 
     def jump(self):
-        # Is on ground
-        if self.is_grounded:
-            self.jumped_from_wall = False
-        # Is in the air
-        elif self.touching_wall == 'right':
+        # If player is touching wall when jumping from ground count it as wall jumping
+        if self.touching_wall == 'right':
             if self.jumped_from_wall == 'right':
                 return
             self.jumped_from_wall = 'right'
@@ -71,6 +68,8 @@ class Player(PhysicsEntity):
             if self.jumped_from_wall == 'left':
                 return
             self.jumped_from_wall = 'left'
+        elif self.is_grounded:
+            self.jumped_from_wall = False
         else:
             return
 

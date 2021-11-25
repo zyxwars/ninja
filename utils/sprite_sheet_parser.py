@@ -9,7 +9,6 @@ class SpriteSheetParser:
 
     # Pos comprises of (column, row)
     def load_image(self, pos, scale=None, size=(32, 32)):
-        print(pos, scale, size)
         image = pg.Surface(size, pg.SRCALPHA).convert_alpha()
         image.blit(self.sheet, (0, 0),
                    (pos[0] * size[0], pos[1] * size[1], pos[0] * size[0] + size[0], pos[1] * size[1] + size[1]))

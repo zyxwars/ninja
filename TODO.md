@@ -1,14 +1,5 @@
-<<<<<<< HEAD
-- [ ] Fix player going faster to the left
-- [ ] Fix player launching of walls when jumping
-=======
-- [z] Fix the utils namespace
-- [x] Fix importing images using utils, try get_path() with '../path'
-- [ ] Vertical scroll
-- [x] Config file for all customizable values
-- [ ] Fix tiles deforming after scrolling
-- [ ] Fix player going faster to the left
->>>>>>> bce53c79de7629c0312064bfeef44418bccfd7be
+- [ ] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
+- [ ] Custom collisions for entity and tiles
 
 # Back burner:
 
