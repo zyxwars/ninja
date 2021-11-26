@@ -17,16 +17,17 @@ class Player(PhysicsEntity):
 
         super().__init__(self.image.get_rect(topleft=pos))
 
-        self.idle_animation = sheet_parser.load_row((0, 0), 3, (64, 64))
-        self.attack_animation = sheet_parser.load_row((0, 1), 4, (64, 64))
-        self.jump_animation = sheet_parser.load_row((0, 2), 1, (64, 64))
-        self.fall_animation = sheet_parser.load_row((0, 3), 1, (64, 64))
+        self.idle_animation = sheet_parser.load_row((0, 0), 3, size)
+        self.attack_animation = sheet_parser.load_row((0, 1), 4, size)
+        self.attacking = 0
+        self.jump_animation = sheet_parser.load_row((0, 2), 1, size)
+        self.fall_animation = sheet_parser.load_row((0, 3), 1, size)
+        self.run_animation = sheet_parser.load_row((0, 4), 3, size)
         self.animation = []
         self.animation_index = 0
 
         self.jumped_from_wall = False
-        self.crosshair = pg.sprite.GroupSingle()
-        self.crosshair.add(Crosshair())
+        self.crosshair = pg.sprite.GroupSingle(Crosshair())
 
     def debug(self):
         debug.debug('jumped_from_wall', self.jumped_from_wall)
@@ -57,6 +58,12 @@ class Player(PhysicsEntity):
         if keys[pg.K_SPACE]:
             self.jump()
 
+        mouse = pg.mouse.get_pressed()
+
+        if mouse[0]:
+            if self.crosshair.sprite.shoot(self.rect.center):
+                self.attacking = True
+
     def jump(self):
         # If player is touching wall when jumping from ground count it as wall jumping
         if self.touching_wall == 'right':
@@ -76,11 +83,14 @@ class Player(PhysicsEntity):
         super().jump()
 
     def animate(self):
+        # Attacking
+        if self.attacking:
+            self.animation = self.attack_animation
         # Running
-        if self.is_grounded and self.dir.x != 0:
-            pass
+        elif self.is_grounded and self.dir.x != 0:
+            self.animation = self.run_animation
         # Jumping
-        if self.dir.y < 0:
+        elif self.dir.y < 0:
             self.animation = self.jump_animation
         # Touching wall
         elif self.touching_wall:
@@ -97,5 +107,12 @@ class Player(PhysicsEntity):
 
         if self.animation_index >= len(self.animation):
             self.animation_index = 0
-        self.image = self.animation[math.floor(self.animation_index)]
+            # End attack animation after it played once
+            if self.attacking:
+                self.attacking = False
+
+        # flip_x = !facing_right, flip image only when not facing right
+        self.image = pg.transform.flip(
+            self.animation[math.floor(self.animation_index)], not self.facing_right, False)
+
         self.animation_index += config.PLAYER_ANIMATION_SPEED * shared_data.delta_time

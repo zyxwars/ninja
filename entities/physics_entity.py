@@ -16,6 +16,7 @@ class PhysicsEntity(pg.sprite.Sprite):
         self.gravity = config.GRAVITY
         self.is_grounded = False
         self.touching_wall = False
+        self.facing_right = True
 
     # https://www.py4u.net/discuss/247960
     # Add movement precision
@@ -44,6 +45,12 @@ class PhysicsEntity(pg.sprite.Sprite):
         # 32(tile height) - 1 (added in collision check)
         self.set_y(self.pos.y + y_speed if y_speed <= 31 else 31)
         self.collide_vertical(tiles)
+
+        # If dir.x = 0 keep the last direction
+        if self.dir.x > 0:
+            self.facing_right = True
+        elif self.dir.x < 0:
+            self.facing_right = False
 
     def collide_horizontal(self, tiles):
         self.touching_wall = False
@@ -85,5 +92,5 @@ class PhysicsEntity(pg.sprite.Sprite):
         self.dir.y += self.gravity * shared_data.delta_time
 
     def jump(self):
-        # Jump force is a positive number, so we need to subtract is from self.dir.y
+        # Jump force is a positive number, so subtract it from self.dir.y
         self.dir.y = -self.jump_force
