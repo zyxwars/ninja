@@ -43,7 +43,7 @@ class PhysicsEntity(pg.sprite.Sprite):
         # FIXME: If delta time is large enough it is possible for y to be bigger than the tile height
         # making the player phase through it
         # 32(tile height) - 1 (added in collision check)
-        self.set_y(self.pos.y + y_speed if y_speed <= 31 else 31)
+        self.set_y(self.pos.y + y_speed if y_speed <= 31 else self.pos.y + 31)
         self.collide_vertical(tiles)
 
         # If dir.x = 0 keep the last direction
