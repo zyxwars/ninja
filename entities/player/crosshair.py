@@ -16,12 +16,9 @@ class Crosshair(pg.sprite.Sprite):
         self.image_original = self.image
         self.rect = self.image.get_rect()
         self.projectiles = pg.sprite.Group()
-        self.projectile_cooldown = config.PROJECTILE_COOLDOWN
 
     def update(self, player_pos, tiles, surface):
         self.animate(player_pos)
-
-        self.projectile_cooldown -= 1 * shared_data.delta_time
 
         self.collide_ground(tiles)
         self.projectiles.update()
@@ -38,13 +35,8 @@ class Crosshair(pg.sprite.Sprite):
             center=player_pos)
 
     def shoot(self, player_pos):
-        if self.projectile_cooldown < 0:
-            self.projectiles.add(Projectile(
-                player_pos, pg.mouse.get_pos()))
-            self.projectile_cooldown = config.PROJECTILE_COOLDOWN
-
-            # return whether shot was successful
-            return True
+        self.projectiles.add(Projectile(
+            player_pos, pg.mouse.get_pos()))
 
     def collide_ground(self, tiles):
         pg.sprite.groupcollide(tiles, self.projectiles, False, True)
