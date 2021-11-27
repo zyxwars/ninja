@@ -80,8 +80,9 @@ class Player(PhysicsEntity):
                     self.facing_right = False
 
     def jump(self):
-        # If player is touching wall when jumping from ground count it as wall jumping
-        if self.touching_wall == 'right':
+        if self.is_grounded:
+            self.jumped_from_wall = False
+        elif self.touching_wall == 'right':
             if self.jumped_from_wall == 'right':
                 return
             self.jumped_from_wall = 'right'
@@ -90,8 +91,6 @@ class Player(PhysicsEntity):
             if self.jumped_from_wall == 'left':
                 return
             self.jumped_from_wall = 'left'
-        elif self.is_grounded:
-            self.jumped_from_wall = False
         else:
             return
 

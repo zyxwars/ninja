@@ -2,7 +2,7 @@
 - [ ] Make base class with animations
 - [ ] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
 - [ ] Custom collisions for entity and tiles
-- [ ] Can't jump after touching wall for a few seconds
+- [x] Can't jump after touching wall for a few seconds
 
 # Back burner:
 
