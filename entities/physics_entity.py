@@ -2,7 +2,6 @@ import pygame as pg
 
 import config
 import shared_data
-from utils import debug
 
 
 class PhysicsEntity(pg.sprite.Sprite):
@@ -30,9 +29,6 @@ class PhysicsEntity(pg.sprite.Sprite):
         self.rect.y = round(self.pos.y)
 
     def move(self, tiles):
-        debug.debug('rect', self.rect)
-        debug.debug('pos', self.pos)
-
         self.set_x(self.pos.x + self.dir.x *
                    self.speed * shared_data.delta_time)
         self.collide_horizontal(tiles)

@@ -24,6 +24,8 @@ class Player(PhysicsEntity):
         self.jump_animation = sheet_parser.load_row((0, 2), 1, size)
         self.fall_animation = sheet_parser.load_row((0, 3), 1, size)
         self.run_animation = sheet_parser.load_row((0, 4), 3, size)
+        self.push_animation = sheet_parser.load_row((0, 5), 3, size)
+        self.wall_jump_animation = sheet_parser.load_row((0, 6), 1, size)
         self.animation = []
         self.animation_index = 0
         self.animation_speed = config.PLAYER_ANIMATION_SPEED
@@ -32,6 +34,8 @@ class Player(PhysicsEntity):
         self.crosshair = pg.sprite.GroupSingle(Crosshair())
 
     def debug(self):
+        debug.debug('rect', self.rect)
+        debug.debug('pos', self.pos)
         debug.debug('jumped_from_wall', self.jumped_from_wall)
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
@@ -47,6 +51,8 @@ class Player(PhysicsEntity):
 
         self.crosshair.update(self.rect.center, tiles, surface)
         self.crosshair.draw(surface)
+
+        return self.rect.center
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -100,18 +106,20 @@ class Player(PhysicsEntity):
         if self.is_attacking:
             self.animation = self.attack_animation
             self.animation_speed = config.PLAYER_ATTACK_SPEED
+        # Touching wall
+        elif self.touching_wall:
+            # Running against wall
+            if self.is_grounded:
+                self.animation = self.push_animation
+            # Wall jumping
+            else:
+                self.animation = self.wall_jump_animation
         # Running
         elif self.is_grounded and self.dir.x != 0:
             self.animation = self.run_animation
         # Jumping
         elif self.dir.y < 0:
             self.animation = self.jump_animation
-        # Touching wall
-        elif self.touching_wall:
-            if self.is_grounded:
-                pass
-            else:
-                pass
         # Falling
         elif self.dir.y >= 0.5 and not self.is_grounded:
             self.animation = self.fall_animation
