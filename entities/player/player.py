@@ -6,31 +6,25 @@ import config
 from utils import debug
 import utils
 import shared_data
-from ..physics_entity import PhysicsEntity
+from ..animated_humanoid import AnimatedHumanoid
 
 
-class Player(PhysicsEntity):
+class Player(AnimatedHumanoid):
     def __init__(self, pos, size):
         sheet_parser = utils.SpriteSheetParser(
             __file__, 'assets/player_sheet.png')
         self.image = pg.Surface(size).convert_alpha()
 
-        super().__init__(self.image.get_rect(topleft=pos))
+        self.animations = {'idle': sheet_parser.load_row((0, 0), 3, size),
+                           'attack': sheet_parser.load_row((0, 1), 4, size),
+                           'jump': sheet_parser.load_row((0, 2), 1, size),
+                           'fall': sheet_parser.load_row((0, 3), 1, size),
+                           'run': sheet_parser.load_row((0, 4), 3, size),
+                           'push': sheet_parser.load_row((0, 5), 3, size),
+                           'wall_slide': sheet_parser.load_row((0, 6), 1, size)}
 
-        self.idle_animation = sheet_parser.load_row((0, 0), 3, size)
-        self.attack_animation = sheet_parser.load_row((0, 1), 4, size)
-        # Attack speed is directly tied to the attack animation speed
-        self.is_attacking = False
-        self.jump_animation = sheet_parser.load_row((0, 2), 1, size)
-        self.fall_animation = sheet_parser.load_row((0, 3), 1, size)
-        self.run_animation = sheet_parser.load_row((0, 4), 3, size)
-        self.push_animation = sheet_parser.load_row((0, 5), 3, size)
-        self.wall_jump_animation = sheet_parser.load_row((0, 6), 1, size)
-        self.animation = []
-        self.animation_index = 0
-        self.animation_speed = config.PLAYER_ANIMATION_SPEED
+        super().__init__(self.image.get_rect(topleft=pos), self.animations)
 
-        self.jumped_from_wall = False
         self.crosshair = pg.sprite.GroupSingle(Crosshair())
 
     def debug(self):
@@ -95,51 +89,3 @@ class Player(PhysicsEntity):
             return
 
         super().jump()
-
-    def animate(self):
-        self.animation_speed = config.PLAYER_ANIMATION_SPEED
-
-        last_frame_animation = self.animation
-
-        # Attacking
-        if self.is_attacking:
-            self.animation = self.attack_animation
-            self.animation_speed = config.PLAYER_ATTACK_SPEED
-        # Touching wall
-        elif self.touching_wall:
-            # Running against wall
-            if self.is_grounded:
-                self.animation = self.push_animation
-            # Wall jumping
-            else:
-                self.animation = self.wall_jump_animation
-        # Running
-        elif self.is_grounded and self.dir.x != 0:
-            self.animation = self.run_animation
-        # Jumping
-        elif self.dir.y < 0:
-            self.animation = self.jump_animation
-        # Falling
-        elif self.dir.y >= 0.5 and not self.is_grounded:
-            self.animation = self.fall_animation
-        # Idle
-        else:
-            self.animation = self.idle_animation
-
-        # Restart animation  when animation state changes
-        # This is required since attack speed is tied to the animation,
-        # animation starting on index > 0 caused the attack cooldown to reset early
-        if last_frame_animation != self.animation:
-            self.animation_index = 0
-
-        if self.animation_index >= len(self.animation):
-            self.animation_index = 0
-            # End attack animation after it played once
-            if self.is_attacking:
-                self.is_attacking = False
-
-        # flip_x = !facing_right, flip image only when not facing right
-        self.image = pg.transform.flip(
-            self.animation[math.floor(self.animation_index)], not self.facing_right, False)
-
-        self.animation_index += self.animation_speed * shared_data.delta_time

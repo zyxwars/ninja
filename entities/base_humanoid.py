@@ -4,9 +4,9 @@ import config
 import shared_data
 
 
-class PhysicsEntity(pg.sprite.Sprite):
-    def __init__(self, rect, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class BaseHumanoid(pg.sprite.Sprite):
+    def __init__(self, rect):
+        super().__init__()
         self.pos = pg.math.Vector2(rect.x, rect.y)
         self.rect = rect
         self.dir = pg.math.Vector2(0, 0)
@@ -33,13 +33,14 @@ class PhysicsEntity(pg.sprite.Sprite):
                    self.speed * shared_data.delta_time)
         self.collide_horizontal(tiles)
 
-        self.apply_gravity()
         # Jump force and gravity are directly added to the y dir
-        y_speed = self.dir.y * shared_data.delta_time
+        self.apply_gravity()
+
         # FIXME: If delta time is large enough it is possible for y to be bigger than the tile height
         # making the player phase through it
         # 32(tile height) - 1 (added in collision check)
-        self.set_y(self.pos.y + y_speed if y_speed <= 31 else self.pos.y + 31)
+        self.set_y(min(self.pos.y + self.dir.y *
+                   shared_data.delta_time, self.pos.y + 31))
         self.collide_vertical(tiles)
 
         # If dir.x = 0 keep the last direction

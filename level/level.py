@@ -25,7 +25,7 @@ class Level:
                         self.player.add(
                             Player((col_index * 32, row_index*32), (64, 64)))
 
-        # self.enemies.add(BaseEnemy((50, 0)))
+        self.enemies.add(BaseEnemy((50, 0), (64, 64)))
 
     def update(self):
         self.tiles.draw(self.surface)
