@@ -29,18 +29,26 @@ class BaseHumanoid(pg.sprite.Sprite):
         self.rect.y = round(self.pos.y)
 
     def move(self, tiles):
-        self.set_x(self.pos.x + self.dir.x *
-                   self.speed * shared_data.delta_time)
+        # If delta time is large enough it is possible for y to be bigger than the tile height
+        # making the player phase through it
+        # 32(tile height) - 1 (added in collision check)
+        if self.dir.x > 0:
+            self.set_x(min(self.pos.x + self.dir.x *
+                           self.speed * shared_data.delta_time, self.pos.x + 31))
+        else:
+            self.set_x(max(self.pos.x + self.dir.x *
+                           self.speed * shared_data.delta_time, self.pos.x - 31))
         self.collide_horizontal(tiles)
 
         # Jump force and gravity are directly added to the y dir
         self.apply_gravity()
 
-        # FIXME: If delta time is large enough it is possible for y to be bigger than the tile height
-        # making the player phase through it
-        # 32(tile height) - 1 (added in collision check)
-        self.set_y(min(self.pos.y + self.dir.y *
-                   shared_data.delta_time, self.pos.y + 31))
+        if self.dir.y > 0:
+            self.set_y(min(self.pos.y + self.dir.y *
+                           shared_data.delta_time, self.pos.y + 31))
+        else:
+            self.set_y(max(self.pos.y + self.dir.y *
+                           shared_data.delta_time, self.pos.y - 31))
         self.collide_vertical(tiles)
 
         # If dir.x = 0 keep the last direction
