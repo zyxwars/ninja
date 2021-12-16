@@ -2,7 +2,7 @@ import pygame as pg
 
 from entities.player.player import Player
 from .tile import Tile
-from entities.enemies.base_enemy import BaseEnemy
+import config
 
 
 class Level:
@@ -10,7 +10,8 @@ class Level:
         self.surface = surface
         self.player = pg.sprite.GroupSingle()
         self.tiles = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+
+        self.shift = pg.math.Vector2(0, 0)
 
         self.setup()
 
@@ -20,12 +21,10 @@ class Level:
                 for col_index, tile in enumerate(row):
                     if tile == '1':
                         self.tiles.add(
-                            Tile((col_index * 32, row_index*32)))
+                            Tile((col_index * config.TILE_SIZE, row_index, config.TILE_SIZE)))
                     if tile == '2':
                         self.player.add(
-                            Player((col_index * 32, row_index*32), (64, 64)))
-
-        self.enemies.add(BaseEnemy((50, 0), (64, 64)))
+                            Player((col_index * config.TILE_SIZE, row_index, config.TILE_SIZE), (64, 64)))
 
     def update(self):
         self.tiles.draw(self.surface)
@@ -33,6 +32,3 @@ class Level:
         player_pos = self.player.sprite.update(
             self.tiles.sprites(), self.surface)
         self.player.draw(self.surface)
-
-        self.enemies.update(self.tiles.sprites(), player_pos)
-        self.enemies.draw(self.surface)
