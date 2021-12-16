@@ -1,7 +1,6 @@
 import pygame as pg
 import math
 
-from .crosshair import Crosshair
 import config
 from utils import debug
 import utils
@@ -25,11 +24,8 @@ class Player(AnimatedHumanoid):
 
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
 
-        self.crosshair = pg.sprite.GroupSingle(Crosshair())
-
     def debug(self):
         debug.debug('rect', self.rect)
-        debug.debug('pos', self.pos)
         debug.debug('jumped_from_wall', self.jumped_from_wall)
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
@@ -37,16 +33,13 @@ class Player(AnimatedHumanoid):
         debug.debug('delta_time', shared_data.delta_time)
         debug.debug('attacking', self.is_attacking)
 
-    def update(self, tiles, surface):
+    def update(self, tiles):
         self.debug()
         self.get_input()
         self.move(tiles)
         self.animate()
 
-        self.crosshair.update(self.rect.center, tiles, surface)
-        self.crosshair.draw(surface)
-
-        return self.rect.center
+        return self.rect.center, self.speed, self.dir.y
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -60,18 +53,6 @@ class Player(AnimatedHumanoid):
 
         if keys[pg.K_SPACE]:
             self.jump()
-
-        mouse = pg.mouse.get_pressed()
-
-        if mouse[0]:
-            if not self.is_attacking:
-                self.is_attacking = True
-                self.crosshair.sprite.shoot(self.rect.center)
-
-                if pg.mouse.get_pos()[0] > self.rect.centerx:
-                    self.facing_right = True
-                else:
-                    self.facing_right = False
 
     def jump(self):
         if self.is_grounded:
