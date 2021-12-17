@@ -1,23 +1,25 @@
-# Todo:
+# Current:
 
-- [ ] Fix crosshair accuracy
-- [x] Add enemy animation
-- [x] Make base class with animations
-- [x] Can't jump after touching wall for a few seconds
-
-# Bugs:
-
-- [ ] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
+- [x] Decrease gravity, set max value
 
 # Back burner:
 
+- [ ] Rounding error when value is less than a pixel due to delta_time
+- [ ] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
+- [ ] Fix crosshair accuracy
 - [ ] Custom collisions for entity and tiles
 - [ ] Enemy follow, jump ai
-- [ ] Camera scroll
 - [ ] Level editor
 - [ ] Fix projectile indicator offset
 
-# Ideas:
+# Roadmap:
+
+- [x] Camera scroll
+- [ ] Textures
+  - [ ] Decode pixel map to level data
+  - [ ] Fall impact smoke
+- [ ] Boost orbs
+- [ ] Enemies
 
 - [ ] VS mode
   - tag mode

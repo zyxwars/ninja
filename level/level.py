@@ -2,7 +2,9 @@ import pygame as pg
 
 from entities.player.player import Player
 from .tile import Tile
-from entities.enemies.base_enemy import BaseEnemy
+import config
+import shared_data
+from utils import debug
 
 
 class Level:
@@ -10,7 +12,9 @@ class Level:
         self.surface = surface
         self.player = pg.sprite.GroupSingle()
         self.tiles = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.sprites = pg.sprite.Group()
+
+        self.shift = pg.math.Vector2(0, 0)
 
         self.setup()
 
@@ -20,19 +24,54 @@ class Level:
                 for col_index, tile in enumerate(row):
                     if tile == '1':
                         self.tiles.add(
-                            Tile((col_index * 32, row_index*32)))
+                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE)))
                     if tile == '2':
                         self.player.add(
-                            Player((col_index * 32, row_index*32), (64, 64)))
+                            Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
 
-        self.enemies.add(BaseEnemy((50, 0), (64, 64)))
+        for tile in self.tiles:
+            self.sprites.add(tile)
+        self.sprites.add(self.player.sprite)
 
     def update(self):
         self.tiles.draw(self.surface)
 
-        player_pos = self.player.sprite.update(
-            self.tiles.sprites(), self.surface)
+        # .sprite is needed because the function returns player_pos
+        player_pos, player_speed_x, player_speed_y = self.player.sprite.update(
+            self.tiles.sprites())
         self.player.draw(self.surface)
 
-        self.enemies.update(self.tiles.sprites(), player_pos)
-        self.enemies.draw(self.surface)
+        if player_pos[0] > config.SCREEN_CENTER[0]:
+            if player_pos[0] - config.SCREEN_CENTER[0] / 2 > config.SCREEN_CENTER[0]:
+                # Don't allow the player to go out of frame
+                # Make the camera catch up
+                self.shift.x = -player_speed_x
+            else:
+                self.shift.x = -0.2
+        elif player_pos[0] < config.SCREEN_CENTER[0]:
+            if player_pos[0] + config.SCREEN_CENTER[0] / 2 < config.SCREEN_CENTER[0]:
+                self.shift.x = player_speed_x
+            else:
+                self.shift.x = 0.2
+        else:
+            self.shift.x = 0
+
+        # Center the player in the lower part of the screen
+        offset_y = player_pos[1] - config.SCREEN_CENTER[1] / 4
+        if offset_y > config.SCREEN_CENTER[1]:
+            if offset_y - config.SCREEN_CENTER[1] / 2 > config.SCREEN_CENTER[1]:
+                self.shift.y = -abs(player_speed_y) or -0.5
+            else:
+                self.shift.y = -0.2
+        # Only move the camera if the jump is high enough
+        elif offset_y + config.SCREEN_CENTER[1] / 4 < config.SCREEN_CENTER[1]:
+            if offset_y + config.SCREEN_CENTER[1] < config.SCREEN_CENTER[1]:
+                self.shift.y = abs(player_speed_y) or 0.5
+            else:
+                self.shift.y = 0.2
+        else:
+            self.shift.y = 0
+
+        for sprite in self.sprites:
+            sprite.rect.x += round(self.shift.x * shared_data.delta_time)
+            sprite.rect.y += round(self.shift.y * shared_data.delta_time)

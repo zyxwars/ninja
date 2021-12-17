@@ -7,7 +7,6 @@ import shared_data
 class BaseHumanoid(pg.sprite.Sprite):
     def __init__(self, rect):
         super().__init__()
-        self.pos = pg.math.Vector2(rect.x, rect.y)
         self.rect = rect
         self.dir = pg.math.Vector2(0, 0)
         self.speed = config.SPEED
@@ -17,38 +16,27 @@ class BaseHumanoid(pg.sprite.Sprite):
         self.touching_wall = False
         self.facing_right = True
 
-    # https://www.py4u.net/discuss/247960
-    # Add movement precision
-    # Rounding rect values caused movement to the left and up to be faster
-    def set_x(self, x):
-        self.pos.x = x
-        self.rect.x = round(self.pos.x)
-
-    def set_y(self, y):
-        self.pos.y = y
-        self.rect.y = round(self.pos.y)
-
     def move(self, tiles):
         # If delta time is large enough it is possible for y to be bigger than the tile height
         # making the player phase through it
         # 32(tile height) - 1 (added in collision check)
         if self.dir.x > 0:
-            self.set_x(min(self.pos.x + self.dir.x *
-                           self.speed * shared_data.delta_time, self.pos.x + 31))
+            self.rect.x = round(min(self.rect.x + self.dir.x *
+                                    self.speed * shared_data.delta_time, self.rect.x + 31))
         else:
-            self.set_x(max(self.pos.x + self.dir.x *
-                           self.speed * shared_data.delta_time, self.pos.x - 31))
+            self.rect.x = round(max(self.rect.x + self.dir.x *
+                                    self.speed * shared_data.delta_time, self.rect.x - 31))
         self.collide_horizontal(tiles)
 
         # Jump force and gravity are directly added to the y dir
         self.apply_gravity()
 
         if self.dir.y > 0:
-            self.set_y(min(self.pos.y + self.dir.y *
-                           shared_data.delta_time, self.pos.y + 31))
+            self.rect.y = round(min(self.rect.y + self.dir.y *
+                                    shared_data.delta_time, self.rect.y + config.TILE_SIZE - 1))
         else:
-            self.set_y(max(self.pos.y + self.dir.y *
-                           shared_data.delta_time, self.pos.y - 31))
+            self.rect.y = round(max(self.rect.y + self.dir.y *
+                                    shared_data.delta_time, self.rect.y - config.TILE_SIZE - 1))
         self.collide_vertical(tiles)
 
         # If dir.x = 0 keep the last direction
@@ -70,8 +58,6 @@ class BaseHumanoid(pg.sprite.Sprite):
                     self.rect.left = tile.rect.right
                     self.touching_wall = 'left'
 
-                self.set_x(self.rect.x)
-
     def collide_vertical(self, tiles):
         self.is_grounded = False
 
@@ -90,11 +76,12 @@ class BaseHumanoid(pg.sprite.Sprite):
                 if self.dir.y < 0:
                     self.rect.top = tile.rect.bottom
 
-                self.set_y(self.rect.y)
                 self.dir.y = 0
 
     def apply_gravity(self):
-        self.dir.y += self.gravity * shared_data.delta_time
+        # Limit max gravity momentum
+        if self.dir.y < 2:
+            self.dir.y += self.gravity * shared_data.delta_time
 
     def jump(self):
         # Jump force is a positive number, so subtract it from self.dir.y
