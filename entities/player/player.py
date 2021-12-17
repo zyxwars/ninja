@@ -6,6 +6,7 @@ from utils import debug
 import utils
 import shared_data
 from ..animated_humanoid import AnimatedHumanoid
+import utils
 
 
 class Player(AnimatedHumanoid):
@@ -22,6 +23,17 @@ class Player(AnimatedHumanoid):
                            'push': sheet_parser.load_row((0, 5), 3, size),
                            'wall_slide': sheet_parser.load_row((0, 6), 1, size)}
 
+        self.jump_sound = pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/jump.wav'))
+        self.jump_sound.set_volume(0.5)
+        self.last_jumped = 1000
+
+        self.land_sound = pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/land.wav'))
+        self.land_sound.set_volume(0.1)
+        self.last_grounded = False
+        self.last_gravity = 0
+
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
 
     def debug(self):
@@ -32,12 +44,21 @@ class Player(AnimatedHumanoid):
         debug.debug('dir', self.dir)
         debug.debug('delta_time', shared_data.delta_time)
         debug.debug('attacking', self.is_attacking)
+        debug.debug('last_jumped', self.last_jumped)
 
     def update(self, tiles):
         self.debug()
         self.get_input()
         self.move(tiles)
         self.animate()
+
+        self.last_jumped += shared_data.delta_time
+
+        if self.is_grounded != self.last_grounded:
+            if self.is_grounded and self.last_gravity > 1:
+                self.land_sound.play()
+        self.last_grounded = self.is_grounded
+        self.last_gravity = self.dir.y
 
         return self.rect.center, self.speed, self.dir.y
 
@@ -68,5 +89,9 @@ class Player(AnimatedHumanoid):
             self.jumped_from_wall = 'left'
         else:
             return
+
+        if self.last_jumped > 300:
+            self.jump_sound.play()
+            self.last_jumped = 0
 
         super().jump()

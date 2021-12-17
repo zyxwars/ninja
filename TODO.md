@@ -18,7 +18,8 @@
 - [ ] Textures
   - [ ] Decode pixel map to level data
   - [ ] Fall impact smoke
-- [ ] Sound effects
+- [x] Sound effects
+  - [ ] Add variation
 - [ ] Boost orbs
 - [ ] Enemies
 

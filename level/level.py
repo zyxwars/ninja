@@ -5,6 +5,7 @@ from .tile import Tile
 import config
 import shared_data
 from utils import debug
+import utils
 
 
 class Level:
@@ -16,9 +17,14 @@ class Level:
 
         self.shift = pg.math.Vector2(0, 0)
 
+        self.start_sound = pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/wind1.wav'))
+
         self.setup()
 
     def setup(self):
+        self.start_sound.play(maxtime=3000, fade_ms=1000)
+
         with open('./level/level.txt', encoding='utf-8') as f:
             for row_index, row in enumerate(f):
                 for col_index, tile in enumerate(row):
@@ -29,7 +35,6 @@ class Level:
                         self.player.add(
                             Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
                     else:
-                        print(ord(tile))
                         self.tiles.add(
                             Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile))
 
