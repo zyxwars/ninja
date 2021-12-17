@@ -18,7 +18,7 @@ while True:
         if e.type == pg.QUIT:
             pg.quit()
 
-    screen.fill('gray')
+    screen.fill('black')
     level.update()
 
     debug.debug('delta_time', shared_data.delta_time)

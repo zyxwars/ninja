@@ -9,7 +9,7 @@
 - [ ] Fix crosshair accuracy
 - [ ] Custom collisions for entity and tiles
 - [ ] Enemy follow, jump ai
-- [ ] Level editor
+- [x] Level editor
 - [ ] Fix projectile indicator offset
 
 # Roadmap:
