@@ -16,7 +16,7 @@ editor = pg.Surface((config.SCREEN_WIDTH - 200, config.SCREEN_HEIGHT))
 tiles = pg.sprite.Group()
 drag_start = (0, 0)
 is_dragging = False
-level = pg.Surface((0, 0))
+level = pg.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 zoom = 1
 
 
@@ -48,7 +48,7 @@ while True:
             if e.button == 1:
                 is_dragging = False
 
-    editor.fill('yellow')
+    editor.fill('gray')
     level.fill('gray')
     tiles.draw(level)
 
