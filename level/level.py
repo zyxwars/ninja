@@ -12,7 +12,7 @@ class Level:
         self.surface = surface
         self.player = pg.sprite.GroupSingle()
         self.tiles = pg.sprite.Group()
-        self.sprites = pg.sprite.Group()
+        self.sprites = []
 
         self.shift = pg.math.Vector2(0, 0)
 
@@ -22,16 +22,20 @@ class Level:
         with open('./level/level.txt', encoding='utf-8') as f:
             for row_index, row in enumerate(f):
                 for col_index, tile in enumerate(row):
-                    if tile == '1':
-                        self.tiles.add(
-                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE)))
-                    if tile == '2':
+                    if tile in [' ', '', '\n']:
+                        continue
+
+                    if tile == 'P':
                         self.player.add(
                             Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
+                    else:
+                        print(ord(tile))
+                        self.tiles.add(
+                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile))
 
         for tile in self.tiles:
-            self.sprites.add(tile)
-        self.sprites.add(self.player.sprite)
+            self.sprites.append(tile)
+        self.sprites.append(self.player.sprite)
 
     def update(self):
         self.tiles.draw(self.surface)

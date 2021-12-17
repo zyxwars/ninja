@@ -18,8 +18,11 @@
 - [ ] Textures
   - [ ] Decode pixel map to level data
   - [ ] Fall impact smoke
+- [ ] Sound effects
 - [ ] Boost orbs
 - [ ] Enemies
+
+- [ ] Resolution scaling
 
 - [ ] VS mode
   - tag mode
