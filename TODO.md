@@ -1,6 +1,11 @@
 # Current:
 
+- [ ] Make tile textures a tile set
+- [ ] Load textures in level, then pass the image obj to tile obj
 - [x] Decrease gravity, set max value
+- [x] Fix palette generation changing y in same row
+- [ ] Change crosshair to the currently selected tile
+- [ ] Add forgeground and background layers in the editor
 
 # Back burner:
 
@@ -9,7 +14,7 @@
 - [ ] Fix crosshair accuracy
 - [ ] Custom collisions for entity and tiles
 - [ ] Enemy follow, jump ai
-- [ ] Level editor
+- [x] Level editor
 - [ ] Fix projectile indicator offset
 
 # Roadmap:
