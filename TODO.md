@@ -6,6 +6,7 @@
 - [x] Fix palette generation changing y in same row
 - [x] Change crosshair to the currently selected tile
 - [ ] Add forgeground and background layers in the editor
+- [x] Fix ghosting effect on palette, caused by transparency
 
 # Back burner:
 

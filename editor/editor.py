@@ -79,6 +79,8 @@ while True:
 
     # Level is in focus
     if mouse_pos[0] < PALETTE_POS:
+        palette.set_alpha(50)
+
         for e in events:
             # Zoom
             if e.type == pg.MOUSEWHEEL:
@@ -127,27 +129,32 @@ while True:
                     tiles.remove(tile)
                     break
 
-        level.fill('gray')
-        tiles.draw(level)
-
-        level_size = level.get_size()
-        scaled_level = pg.transform.scale(
-            level, (level_size[0] * zoom, level_size[1] * zoom))
-        screen.blit(scaled_level, (0, 0))
     # Palette is in focus
     else:
+        palette.set_alpha(255)
+
         if mouse[0]:
             for i, tile in enumerate(palette_tiles):
                 if tile.rect.collidepoint(mouse_pos[0] - PALETTE_POS, mouse_pos[1]):
                     palette_selected_tile = tile
                     break
 
-    # Palette gui should render even when not in focus
-    palette.set_alpha(50)
+    # region render Level
+    level.fill('gray')
+    tiles.draw(level)
+    level_size = level.get_size()
+    scaled_level = pg.transform.scale(
+        level, (level_size[0] * zoom, level_size[1] * zoom))
+    screen.blit(scaled_level, (0, 0))
+    # endregion
+
+    # region render Palette
     palette.fill('white')
     palette_tiles.draw(palette)
+    screen.blit(palette, (PALETTE_POS, 0))
+    # endregion
 
-    # Draw cursor
+    # region render Cursor
     # Non-scalable cursors, center in the top left corner
     if current_cursor == 'normal' and not palette_selected_tile or current_cursor in ['grab']:
         screen.blit(
@@ -163,8 +170,7 @@ while True:
             cursor, (config.TILE_SIZE * zoom, config.TILE_SIZE * zoom))
         screen.blit(
             cursor, (mouse_pos[0] - cursor.get_width() / 2, mouse_pos[1] - cursor.get_height() / 2))
-
-    screen.blit(palette, (PALETTE_POS, 0))
+    # endregion
 
     debug.draw(screen)
 
