@@ -11,6 +11,9 @@ import utils
 class Level:
     def __init__(self, surface):
         self.screen_surface = surface
+        self.ghost_surface = pg.Surface(
+            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+
         self.player = pg.sprite.GroupSingle()
         self.tiles = pg.sprite.Group()
         self.sprites = []
@@ -43,14 +46,17 @@ class Level:
         self.sprites.append(self.player.sprite)
 
     def update(self):
-        self.screen_surface.fill('black')
-
-        self.tiles.draw(self.screen_surface)
+        self.ghost_surface.fill('blue')
+        self.ghost_surface.set_alpha(10)
 
         # sprite is needed because the function returns player_pos
         player_pos, player_speed_x, player_speed_y = self.player.sprite.update(
             self.tiles.sprites())
         self.player.draw(self.screen_surface)
+
+        self.screen_surface.blit(self.ghost_surface, (0, 0))
+
+        self.tiles.draw(self.screen_surface)
 
         if player_pos[0] > config.SCREEN_CENTER[0]:
             if player_pos[0] - config.SCREEN_CENTER[0] / 2 > config.SCREEN_CENTER[0]:
