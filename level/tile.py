@@ -7,6 +7,7 @@ import config
 class Tile(pg.sprite.Sprite):
     def __init__(self, pos, tile_type, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.tile_type = tile_type
         try:
             self.image = pg.image.load(
                 get_path(__file__, f'assets/tile{tile_type}.png')).convert_alpha()

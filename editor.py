@@ -18,12 +18,12 @@ zoom = 1
 
 with open('./level/level.txt', encoding='utf-8') as f:
     for row_index, row in enumerate(f):
-        for col_index, tile in enumerate(row):
-            if tile in [' ', '', '\n']:
+        for col_index, tile_type in enumerate(row):
+            if tile_type in [' ', '', '\n']:
                 continue
             else:
                 tiles.add(Tile((col_index * config.TILE_SIZE,
-                          row_index * config.TILE_SIZE), tile))
+                          row_index * config.TILE_SIZE), tile_type))
 
 
 PALETTE_SIZE = 8 * (config.TILE_SIZE + 4) + 4
@@ -78,6 +78,18 @@ while True:
                 tile.rect.y += mouse_pos[1] - drag_start_pos[1]
 
             drag_start_pos = mouse_pos
+        elif mouse[0] and palette_selected_tile:
+            # Update existing tile texture
+            for tile in tiles:
+                if tile.rect.collidepoint(mouse_pos[0] * zoom ** -1, mouse_pos[1] * zoom ** -1):
+                    tile.image = palette_selected_tile.image
+                    tile.tile_type = palette_selected_tile.tile_type
+                    break
+            # Create new tile
+            else:
+                tile = Tile((mouse_pos[0] * zoom ** -1 // 32 * 32,
+                            mouse_pos[1] * zoom ** -1 // 32 * 32), palette_selected_tile.tile_type)
+                tiles.add(tile)
 
         # Delete tile
         if mouse[2]:
@@ -103,7 +115,7 @@ while True:
 
     # Palette gui should render even when not in focus
     palette.set_alpha(50)
-    palette.fill('yellow')
+    palette.fill('white')
     palette_tiles.draw(palette)
 
     if palette_selected_tile:
