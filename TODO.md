@@ -5,6 +5,7 @@
 - [x] Decrease gravity, set max value
 - [x] Fix palette generation changing y in same row
 - [ ] Change crosshair to the currently selected tile
+- [ ] Add forgeground and background layers in the editor
 
 # Back burner:
 

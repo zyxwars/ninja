@@ -8,8 +8,6 @@ import config
 
 pg.init()
 screen = pg.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-# Load display surface after it is created
-debug.init()
 clock = pg.time.Clock()
 
 level = pg.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
@@ -29,9 +27,10 @@ with open('./level/level.txt', encoding='utf-8') as f:
 
 
 PALETTE_SIZE = 8 * (config.TILE_SIZE + 4) + 4
+PALETTE_POS = config.SCREEN_WIDTH - PALETTE_SIZE
 palette = pg.Surface((PALETTE_SIZE, config.SCREEN_HEIGHT))
-tile_palette = pg.sprite.Group()
-selected_tile_type = 0
+palette_tiles = pg.sprite.Group()
+palette_selected_tile = None
 
 x = 0
 for i, tile_type in enumerate(['0', '1', '2', "3", "4", "5", "6", "7", "8", "9", 'P']):
@@ -40,11 +39,12 @@ for i, tile_type in enumerate(['0', '1', '2', "3", "4", "5", "6", "7", "8", "9",
     x += 4
     row = i // 8
     y = row * config.TILE_SIZE + 4 * (row + 1)
-    tile_palette.add(
+    palette_tiles.add(
         Tile((x, y), tile_type))
 
     x += config.TILE_SIZE
 
+# pg.mouse.set_visible(False)
 
 while True:
     events = pg.event.get()
@@ -57,7 +57,7 @@ while True:
             pg.quit()
 
     # Level is in focus
-    if mouse_pos[0] < config.SCREEN_WIDTH - PALETTE_SIZE:
+    if mouse_pos[0] < PALETTE_POS:
         for e in events:
             # Zoom
             if e.type == pg.MOUSEWHEEL:
@@ -82,9 +82,9 @@ while True:
         # Delete tile
         if mouse[2]:
             for tile in tiles:
-                mouse_pos = pg.mouse.get_pos()
                 if tile.rect.collidepoint(mouse_pos[0] * zoom ** -1, mouse_pos[1] * zoom ** -1):
                     tiles.remove(tile)
+                    break
 
         level.fill('gray')
         tiles.draw(level)
@@ -95,14 +95,23 @@ while True:
         screen.blit(scaled_level, (0, 0))
     # Palette is in focus
     else:
-        pass
+        if mouse[0]:
+            for i, tile in enumerate(palette_tiles):
+                if tile.rect.collidepoint(mouse_pos[0] - PALETTE_POS, mouse_pos[1]):
+                    palette_selected_tile = tile
+                    break
 
     # Palette gui should render even when not in focus
     palette.set_alpha(50)
     palette.fill('yellow')
-    tile_palette.draw(palette)
+    palette_tiles.draw(palette)
 
-    screen.blit(palette, (config.SCREEN_WIDTH - PALETTE_SIZE, 0))
+    if palette_selected_tile:
+        scaled_image = pg.transform.scale(
+            palette_selected_tile.image, (config.TILE_SIZE * zoom, config.TILE_SIZE * zoom))
+        screen.blit(scaled_image, mouse_pos)
+
+    screen.blit(palette, (PALETTE_POS, 0))
 
     pg.display.update()
     clock.tick(60)
