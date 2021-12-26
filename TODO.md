@@ -4,7 +4,7 @@
 - [ ] Load textures in level, then pass the image obj to tile obj
 - [x] Decrease gravity, set max value
 - [x] Fix palette generation changing y in same row
-- [ ] Change crosshair to the currently selected tile
+- [x] Change crosshair to the currently selected tile
 - [ ] Add forgeground and background layers in the editor
 
 # Back burner:

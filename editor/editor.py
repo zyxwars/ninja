@@ -1,9 +1,24 @@
+if __name__ == '__main__':
+    # HACK: allow file to be run directly while also using relative imports from the root folder of the project
+    import os
+    import sys
+
+    def get_path(script_path, relative_path):
+        relative_path = os.path.normpath(relative_path)
+        file_dir = os.path.dirname(os.path.realpath(script_path))
+
+        return os.path.join(file_dir, relative_path)
+
+    sys.path.append(get_path(__file__, '..'))
+    import editor_launcher
+    sys.exit()
+
 import pygame as pg
 
-
 from level.tile import Tile
-from utils import debug
 import config
+from utils import get_path
+from utils import debug
 
 
 pg.init()
@@ -13,7 +28,13 @@ clock = pg.time.Clock()
 level = pg.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 tiles = pg.sprite.Group()
 drag_start_pos = (0, 0)
+total_drag = pg.math.Vector2(0, 0)
 zoom = 1
+
+pg.mouse.set_visible(False)
+cursors = {'normal': pg.image.load(get_path(__file__, 'assets/normal.png')), 'grab': pg.image.load(get_path(__file__, 'assets/grab.png')),
+           'eraser': pg.image.load(get_path(__file__, 'assets/eraser.png')), 'picker': pg.image.load(get_path(__file__, 'assets/picker.png'))}
+current_cursor = 'normal'
 
 
 with open('./level/level.txt', encoding='utf-8') as f:
@@ -44,13 +65,13 @@ for i, tile_type in enumerate(['0', '1', '2', "3", "4", "5", "6", "7", "8", "9",
 
     x += config.TILE_SIZE
 
-# pg.mouse.set_visible(False)
 
 while True:
     events = pg.event.get()
     keys = pg.key.get_pressed()
     mouse = pg.mouse.get_pressed()
     mouse_pos = pg.mouse.get_pos()
+    current_cursor = 'normal'
 
     for e in events:
         if e.type == pg.QUIT:
@@ -73,11 +94,16 @@ while True:
 
         # Scroll level
         if keys[pg.K_LCTRL] and mouse[0]:
+            current_cursor = 'grab'
             for tile in tiles.sprites():
                 tile.rect.x += mouse_pos[0] - drag_start_pos[0]
                 tile.rect.y += mouse_pos[1] - drag_start_pos[1]
 
+            total_drag.x += mouse_pos[0] - drag_start_pos[0]
+            total_drag.y += mouse_pos[1] - drag_start_pos[1]
+
             drag_start_pos = mouse_pos
+
         elif mouse[0] and palette_selected_tile:
             # Update existing tile texture
             for tile in tiles:
@@ -87,12 +113,15 @@ while True:
                     break
             # Create new tile
             else:
-                tile = Tile((mouse_pos[0] * zoom ** -1 // 32 * 32,
-                            mouse_pos[1] * zoom ** -1 // 32 * 32), palette_selected_tile.tile_type)
+                tile = Tile(((mouse_pos[0] * zoom ** -
+                              1 - total_drag.x) // config.TILE_SIZE * config.TILE_SIZE + total_drag.x, (mouse_pos[1] * zoom ** -
+                                                                                                        1 - total_drag.y) // config.TILE_SIZE * config.TILE_SIZE + total_drag.y),
+                            palette_selected_tile.tile_type)
                 tiles.add(tile)
 
         # Delete tile
         if mouse[2]:
+            current_cursor = 'eraser'
             for tile in tiles:
                 if tile.rect.collidepoint(mouse_pos[0] * zoom ** -1, mouse_pos[1] * zoom ** -1):
                     tiles.remove(tile)
@@ -118,12 +147,26 @@ while True:
     palette.fill('white')
     palette_tiles.draw(palette)
 
-    if palette_selected_tile:
-        scaled_image = pg.transform.scale(
-            palette_selected_tile.image, (config.TILE_SIZE * zoom, config.TILE_SIZE * zoom))
-        screen.blit(scaled_image, mouse_pos)
+    # Draw cursor
+    # Non-scalable cursors, center in the top left corner
+    if current_cursor == 'normal' and not palette_selected_tile or current_cursor in ['grab']:
+        screen.blit(
+            cursors[current_cursor], (mouse_pos[0], mouse_pos[1]))
+    # Scalable and centered cursors
+    else:
+        if current_cursor == 'normal' and palette_selected_tile:
+            cursor = palette_selected_tile.image
+        else:
+            cursor = cursors[current_cursor]
+
+        cursor = pg.transform.scale(
+            cursor, (config.TILE_SIZE * zoom, config.TILE_SIZE * zoom))
+        screen.blit(
+            cursor, (mouse_pos[0] - cursor.get_width() / 2, mouse_pos[1] - cursor.get_height() / 2))
 
     screen.blit(palette, (PALETTE_POS, 0))
+
+    debug.draw(screen)
 
     pg.display.update()
     clock.tick(60)
