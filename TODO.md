@@ -2,11 +2,10 @@
 
 - [ ] Make tile textures a tile set
 - [ ] Load textures in level, then pass the image obj to tile obj
-- [x] Decrease gravity, set max value
-- [x] Fix palette generation changing y in same row
-- [x] Change crosshair to the currently selected tile
 - [ ] Add forgeground and background layers in the editor
-- [x] Fix ghosting effect on palette, caused by transparency
+- [x] Editor save and load
+- [ ] Make editor a class
+- [ ] Editor grid
 
 # Back burner:
 
@@ -15,15 +14,14 @@
 - [ ] Fix crosshair accuracy
 - [ ] Custom collisions for entity and tiles
 - [ ] Enemy follow, jump ai
-- [x] Level editor
 - [ ] Fix projectile indicator offset
 
 # Roadmap:
 
 - [x] Camera scroll
+- [x] Level editor
 - [ ] Textures
-  - [ ] Decode pixel map to level data
-  - [ ] Fall impact smoke
+  - [ ] Fall impact smoke, particles
 - [x] Sound effects
   - [ ] Add variation
 - [ ] Boost orbs

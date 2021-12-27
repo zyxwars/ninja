@@ -1,7 +1,7 @@
 import pygame as pg
 
 import config
-import shared_data
+import game
 
 
 class BaseHumanoid(pg.sprite.Sprite):
@@ -22,10 +22,10 @@ class BaseHumanoid(pg.sprite.Sprite):
         # 32(tile height) - 1 (added in collision check)
         if self.dir.x > 0:
             self.rect.x = round(min(self.rect.x + self.dir.x *
-                                    self.speed * shared_data.delta_time, self.rect.x + 31))
+                                    self.speed * game.delta_time, self.rect.x + 31))
         else:
             self.rect.x = round(max(self.rect.x + self.dir.x *
-                                    self.speed * shared_data.delta_time, self.rect.x - 31))
+                                    self.speed * game.delta_time, self.rect.x - 31))
         self.collide_horizontal(tiles)
 
         # Jump force and gravity are directly added to the y dir
@@ -33,10 +33,10 @@ class BaseHumanoid(pg.sprite.Sprite):
 
         if self.dir.y > 0:
             self.rect.y = round(min(self.rect.y + self.dir.y *
-                                    shared_data.delta_time, self.rect.y + config.TILE_SIZE - 1))
+                                    game.delta_time, self.rect.y + config.TILE_SIZE - 1))
         else:
             self.rect.y = round(max(self.rect.y + self.dir.y *
-                                    shared_data.delta_time, self.rect.y - config.TILE_SIZE - 1))
+                                    game.delta_time, self.rect.y - config.TILE_SIZE - 1))
         self.collide_vertical(tiles)
 
         # If dir.x = 0 keep the last direction
@@ -81,7 +81,7 @@ class BaseHumanoid(pg.sprite.Sprite):
     def apply_gravity(self):
         # Limit max gravity momentum
         if self.dir.y < 2:
-            self.dir.y += self.gravity * shared_data.delta_time
+            self.dir.y += self.gravity * game.delta_time
 
     def jump(self):
         # Jump force is a positive number, so subtract it from self.dir.y

@@ -2,7 +2,7 @@ import pygame as pg
 import math
 
 from .base_humanoid import BaseHumanoid
-import shared_data
+import game
 import config
 
 
@@ -76,4 +76,4 @@ class AnimatedHumanoid(BaseHumanoid):
         self.image = pg.transform.flip(
             self.animation[math.floor(self.animation_index)], not self.facing_right, False)
 
-        self.animation_index += self.animation_speed * shared_data.delta_time
+        self.animation_index += self.animation_speed * game.delta_time

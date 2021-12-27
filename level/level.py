@@ -3,7 +3,7 @@ import pygame as pg
 from entities.player.player import Player
 from .tile import Tile
 import config
-import shared_data
+import game
 from utils import debug
 import utils
 
@@ -84,5 +84,5 @@ class Level:
             self.shift.y = 0
 
         for sprite in self.sprites:
-            sprite.rect.x += round(self.shift.x * shared_data.delta_time)
-            sprite.rect.y += round(self.shift.y * shared_data.delta_time)
+            sprite.rect.x += round(self.shift.x * game.delta_time)
+            sprite.rect.y += round(self.shift.y * game.delta_time)

@@ -4,7 +4,7 @@ import math
 import config
 from utils import debug
 import utils
-import shared_data
+import game
 from ..animated_humanoid import AnimatedHumanoid
 import utils
 
@@ -42,7 +42,7 @@ class Player(AnimatedHumanoid):
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
         debug.debug('dir', self.dir)
-        debug.debug('delta_time', shared_data.delta_time)
+        debug.debug('delta_time', game.delta_time)
         debug.debug('attacking', self.is_attacking)
         debug.debug('last_jumped', self.last_jumped)
 
@@ -52,7 +52,7 @@ class Player(AnimatedHumanoid):
         self.move(tiles)
         self.animate()
 
-        self.last_jumped += shared_data.delta_time
+        self.last_jumped += game.delta_time
 
         if self.is_grounded != self.last_grounded:
             if self.is_grounded and self.last_gravity > 1:

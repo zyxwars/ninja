@@ -4,7 +4,7 @@ import math
 from ..animated_humanoid import AnimatedHumanoid
 import config
 import utils
-import shared_data
+import game
 
 
 class BaseEnemy(AnimatedHumanoid):

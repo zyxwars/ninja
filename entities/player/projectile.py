@@ -1,7 +1,7 @@
 import pygame as pg
 
 import config
-import shared_data
+import game
 import utils
 
 
@@ -14,11 +14,11 @@ class Projectile(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=player_pos)
         self.dir = (pg.math.Vector2(
             mouse_pos) - pg.math.Vector2(player_pos)).normalize()
-        self.speed = config.PROJECTILE_SPEED
+        self.speed = config.PLAYER_PROJECTILE_SPEED
 
     def update(self):
         self.move()
 
     def move(self):
-        self.rect.x += self.dir.x * self.speed * shared_data.delta_time
-        self.rect.y += self.dir.y * self.speed * shared_data.delta_time
+        self.rect.x += self.dir.x * self.speed * game.delta_time
+        self.rect.y += self.dir.y * self.speed * game.delta_time

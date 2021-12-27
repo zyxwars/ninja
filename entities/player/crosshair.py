@@ -3,7 +3,7 @@ import math
 
 from .projectile import Projectile
 import config
-import shared_data
+import game
 import utils
 
 
