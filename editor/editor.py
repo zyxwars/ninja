@@ -11,19 +11,27 @@ import game
 
 PALETTE_SIZE = 8 * (config.TILE_SIZE + 4) + 4
 PALETTE_POS_X = config.SCREEN_WIDTH - PALETTE_SIZE
+HIDE_GRID_ZOOMOUT = 1
+GRID_OPACITY = 30
+# Grid background, colorkey filters out (1,2,3), so choose anything, but that
+GRID_COLOR = 'white'
 
 
 class Editor:
     def __init__(self):
-        self.screen = pg.display.set_mode(
+        self.screen_surface = pg.display.set_mode(
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.level = pg.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+        self.level_surface = pg.Surface(
+            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.tiles = pg.sprite.Group()
         self.drag_start_pos = (0, 0)
         self.total_drag = pg.math.Vector2(0, 0)
         self.zoom = 1
+        self.grid_surface = pg.Surface(
+            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+        self.grid_surface.set_alpha(GRID_OPACITY)
 
         pg.mouse.set_visible(False)
         self.cursors = {'normal': pg.image.load(get_path(__file__, 'assets/normal.png')), 'grab': pg.image.load(get_path(__file__, 'assets/grab.png')),
@@ -132,7 +140,7 @@ class Editor:
                 self.zoom += e.y * 0.1
                 self.zoom = max(0.1, self.zoom)
 
-                self.level = pg.Surface(
+                self.level_surface = pg.Surface(
                     (config.SCREEN_WIDTH * self.zoom ** -1, config.SCREEN_HEIGHT * self.zoom ** -1))
             elif e.type == pg.MOUSEBUTTONDOWN:
                 # Start scroll
@@ -143,13 +151,13 @@ class Editor:
         if keys[pg.K_LCTRL] and mouse[0]:
             self.current_cursor = 'grab'
 
-            drag = pg.math.Vector2(mouse_pos[0] - self.drag_start_pos[0], mouse_pos[1] - self.drag_start_pos[1]
-                                   )
+            drag = pg.math.Vector2(int((mouse_pos[0] - self.drag_start_pos[0]) * self.zoom ** -1), int(
+                (mouse_pos[1] - self.drag_start_pos[1]) * self.zoom ** -1))
 
-            if self.total_drag.x + mouse_pos[0] - self.drag_start_pos[0] > 0:
+            if self.total_drag.x + drag.x > 0:
                 drag.x = 0
 
-            if self.total_drag.y + mouse_pos[1] - self.drag_start_pos[1] > 0:
+            if self.total_drag.y + drag.y > 0:
                 drag.y = 0
 
             for tile in self.tiles.sprites():
@@ -201,33 +209,52 @@ class Editor:
         self.draw_palette()
         self.draw_cursor()
 
-        debug.draw(self.screen)
+        debug.draw(self.screen_surface)
 
     def draw_level(self):
-        self.level.fill('black')
-        self.tiles.draw(self.level)
-        level_size = self.level.get_size()
+        self.level_surface.fill('black')
+        self.tiles.draw(self.level_surface)
+        level_size = self.level_surface.get_size()
         scaled_level = pg.transform.scale(
-            self.level, (level_size[0] * self.zoom, level_size[1] * self.zoom))
-        self.screen.blit(scaled_level, (0, 0))
+            self.level_surface, (level_size[0] * self.zoom, level_size[1] * self.zoom))
+        self.screen_surface.blit(scaled_level, (0, 0))
+
+        if HIDE_GRID_ZOOMOUT > self.zoom:
+            return
+
+        self.grid_surface.fill((1, 2, 3))
+        self.grid_surface.set_colorkey((1, 2, 3))
+        for line in range(int(config.SCREEN_HEIGHT // (config.TILE_SIZE * self.zoom) + 1)):
+            y = line * config.TILE_SIZE
+            drag_shift = self.total_drag.y % config.TILE_SIZE
+            pg.draw.line(self.grid_surface, GRID_COLOR, (0, (y + drag_shift) * self.zoom),
+                         (config.SCREEN_WIDTH, (y + drag_shift) * self.zoom))
+
+        for line in range(int(config.SCREEN_WIDTH // (config.TILE_SIZE * self.zoom) + 1)):
+            x = line * config.TILE_SIZE
+            drag_shift = self.total_drag.x % config.TILE_SIZE
+            pg.draw.line(self.grid_surface, GRID_COLOR, ((x + drag_shift) * self.zoom, 0),
+                         ((x + drag_shift) * self.zoom, config.SCREEN_HEIGHT))
+
+        self.screen_surface.blit(self.grid_surface, (0, 0))
 
     def draw_palette(self):
         self.palette.fill('white')
         self.palette_tiles.draw(self.palette)
 
-        self.screen.blit(self.palette, (PALETTE_POS_X, 0))
+        self.screen_surface.blit(self.palette, (PALETTE_POS_X, 0))
 
         # This is on the main surface to keep it's alpha
         # If used on a different surface you would need to check against (mouse - surface offset)
-        self.save_button.draw(self.screen)
-        self.load_button.draw(self.screen)
+        self.save_button.draw(self.screen_surface)
+        self.load_button.draw(self.screen_surface)
 
     def draw_cursor(self):
         mouse_pos = pg.mouse.get_pos()
 
         # Non-scalable cursors, center in the top left corner
         if self.current_cursor == 'normal' and not self.palette_selected_tile or self.current_cursor in ['grab']:
-            self.screen.blit(
+            self.screen_surface.blit(
                 self.cursors[self.current_cursor], (mouse_pos[0], mouse_pos[1]))
         # Scalable and centered cursors
         else:
@@ -238,7 +265,7 @@ class Editor:
 
             cursor = pg.transform.scale(
                 cursor, (config.TILE_SIZE * self.zoom, config.TILE_SIZE * self.zoom))
-            self.screen.blit(
+            self.screen_surface.blit(
                 cursor, (mouse_pos[0] - cursor.get_width() / 2, mouse_pos[1] - cursor.get_height() / 2))
 
     def main(self):

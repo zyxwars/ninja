@@ -8,8 +8,9 @@
 
 - [ ] Add color picker
 - [ ] Add paint bucket
-- [ ] Add grid
+- [x] Add grid
 - [x] Don't allow scrolling to negative positions
+- [ ] Save as csv to allow more tile types
 
 # Back burner:
 
