@@ -42,7 +42,10 @@ class Editor:
 
     def load_level(self, relative_path: str):
         with open(get_path(__file__, relative_path), encoding='utf-8') as f:
+            # Reset level
             self.tiles = pg.sprite.Group()
+            self.total_drag = pg.math.Vector2(0, 0)
+
             for row_index, row in enumerate(f):
                 for col_index, tile_type in enumerate(row):
                     if tile_type in [' ', '', '\n']:
@@ -110,10 +113,6 @@ class Editor:
                     self.save_level()
 
                     print('saved')
-            # FIXME: if this is move to a separate event loop it won't trigger
-            elif e.type == pg.MOUSEBUTTONUP:
-                if e.button == 1:
-                    self.load_button.collide(e.pos)
 
         if mouse_pos[0] < PALETTE_POS_X:
             self.get_level_input()

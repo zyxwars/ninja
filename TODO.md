@@ -4,7 +4,7 @@
 - [ ] Load textures in level, then pass the image obj to tile obj
 - [ ] Add forgeground and background layers in the editor
 - [x] Editor save and load
-- [ ] Make editor a class
+- [x] Make editor a class
 - [ ] Editor grid
 
 # Back burner:
