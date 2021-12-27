@@ -3,7 +3,7 @@ from pygame.constants import MOUSEBUTTONUP
 
 from level.tile import Tile
 import config
-from utils import get_path
+from utils import filedialog, get_path
 from utils import debug
 from .button import Button
 import game
@@ -35,13 +35,15 @@ class Editor:
         self.palette_selected_tile = None
         self.draw_palette_tiles()
 
+        self.save_button = Button(
+            'Save (f1)', self.save_level, (128, 32), (PALETTE_POS_X + 32, config.SCREEN_HEIGHT - 104), 32, 'white', 'red', pg.K_F1)
         self.load_button = Button(
-            'Load', lambda: self.load_level('../level/level.txt'), (128, 32), (50, 50), 32, 'white', 'red')
+            'Load (f2)', self.load_level, (128, 32), (PALETTE_POS_X + 32, config.SCREEN_HEIGHT - 64), 32, 'white', 'red', pg.K_F2)
 
         self.main()
 
-    def load_level(self, relative_path: str):
-        with open(get_path(__file__, relative_path), encoding='utf-8') as f:
+    def load_level(self):
+        with open(filedialog.askopenfilename(), encoding='utf-8') as f:
             # Reset level
             self.tiles = pg.sprite.Group()
             self.total_drag = pg.math.Vector2(0, 0)
@@ -54,8 +56,10 @@ class Editor:
                         self.tiles.add(Tile((col_index * config.TILE_SIZE,
                                             row_index * config.TILE_SIZE), tile_type))
 
-    def save_level(self, ):
-        with open('test.txt', 'w', encoding='utf-8') as f:
+    def save_level(self):
+        print('saving...')
+
+        with open(filedialog.asksaveasfilename(), 'w', encoding='utf-8') as f:
             tiles = self.tiles.sprites()
             largest_y = 0
             for tile in tiles:
@@ -85,6 +89,8 @@ class Editor:
 
                 f.writelines(row_tile_types)
 
+        print('saved')
+
     def draw_palette_tiles(self):
         x = 0
         for i, tile_type in enumerate(['0', '1', '2', "3", "4", "5", "6", "7", "8", "9", 'P']):
@@ -107,12 +113,6 @@ class Editor:
             elif e.type == pg.KEYDOWN:
                 if e.key == pg.K_ESCAPE:
                     pg.quit()
-                if e.key == pg.K_F1:
-                    print('saving')
-
-                    self.save_level()
-
-                    print('saved')
 
         if mouse_pos[0] < PALETTE_POS_X:
             self.get_level_input()
@@ -124,7 +124,7 @@ class Editor:
         mouse = pg.mouse.get_pressed()
         mouse_pos = pg.mouse.get_pos()
 
-        self.palette.set_alpha(50)
+        self.palette.set_alpha(int(255 / 2))
 
         for e in game.events:
             # Zoom
@@ -142,12 +142,22 @@ class Editor:
         # Scroll level
         if keys[pg.K_LCTRL] and mouse[0]:
             self.current_cursor = 'grab'
-            for tile in self.tiles.sprites():
-                tile.rect.x += mouse_pos[0] - self.drag_start_pos[0]
-                tile.rect.y += mouse_pos[1] - self.drag_start_pos[1]
 
-            self.total_drag.x += mouse_pos[0] - self.drag_start_pos[0]
-            self.total_drag.y += mouse_pos[1] - self.drag_start_pos[1]
+            drag = pg.math.Vector2(mouse_pos[0] - self.drag_start_pos[0], mouse_pos[1] - self.drag_start_pos[1]
+                                   )
+
+            if self.total_drag.x + mouse_pos[0] - self.drag_start_pos[0] > 0:
+                drag.x = 0
+
+            if self.total_drag.y + mouse_pos[1] - self.drag_start_pos[1] > 0:
+                drag.y = 0
+
+            for tile in self.tiles.sprites():
+                tile.rect.x += drag.x
+                tile.rect.y += drag.y
+
+            self.total_drag.x += drag.x
+            self.total_drag.y += drag.y
 
             self.drag_start_pos = mouse_pos
 
@@ -165,9 +175,8 @@ class Editor:
                                                                                                                 1 - self.total_drag.y) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.y),
                             self.palette_selected_tile.tile_type)
                 self.tiles.add(tile)
-
         # Delete tile
-        if mouse[2]:
+        elif mouse[2]:
             self.current_cursor = 'eraser'
             for tile in self.tiles:
                 if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
@@ -187,26 +196,35 @@ class Editor:
                     break
 
     def draw(self):
-        mouse_pos = pg.mouse.get_pos()
 
-        # region render Level
-        self.level.fill('gray')
+        self.draw_level()
+        self.draw_palette()
+        self.draw_cursor()
+
+        debug.draw(self.screen)
+
+    def draw_level(self):
+        self.level.fill('black')
         self.tiles.draw(self.level)
         level_size = self.level.get_size()
         scaled_level = pg.transform.scale(
             self.level, (level_size[0] * self.zoom, level_size[1] * self.zoom))
         self.screen.blit(scaled_level, (0, 0))
-        # endregion
 
-        # region render Palette
+    def draw_palette(self):
         self.palette.fill('white')
         self.palette_tiles.draw(self.palette)
-        self.screen.blit(self.palette, (PALETTE_POS_X, 0))
-        # endregion
 
+        self.screen.blit(self.palette, (PALETTE_POS_X, 0))
+
+        # This is on the main surface to keep it's alpha
+        # If used on a different surface you would need to check against (mouse - surface offset)
+        self.save_button.draw(self.screen)
         self.load_button.draw(self.screen)
 
-        # region render Cursor
+    def draw_cursor(self):
+        mouse_pos = pg.mouse.get_pos()
+
         # Non-scalable cursors, center in the top left corner
         if self.current_cursor == 'normal' and not self.palette_selected_tile or self.current_cursor in ['grab']:
             self.screen.blit(
@@ -222,9 +240,6 @@ class Editor:
                 cursor, (config.TILE_SIZE * self.zoom, config.TILE_SIZE * self.zoom))
             self.screen.blit(
                 cursor, (mouse_pos[0] - cursor.get_width() / 2, mouse_pos[1] - cursor.get_height() / 2))
-        # endregion
-
-        debug.draw(self.screen)
 
     def main(self):
         while True:

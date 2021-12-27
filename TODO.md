@@ -2,10 +2,14 @@
 
 - [ ] Make tile textures a tile set
 - [ ] Load textures in level, then pass the image obj to tile obj
-- [ ] Add forgeground and background layers in the editor
-- [x] Editor save and load
-- [x] Make editor a class
-- [ ] Editor grid
+- [ ] Add foreground and background layers in the editor
+
+# Editor:
+
+- [ ] Add color picker
+- [ ] Add paint bucket
+- [ ] Add grid
+- [x] Don't allow scrolling to negative positions
 
 # Back burner:
 
