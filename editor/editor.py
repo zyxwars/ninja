@@ -1,5 +1,5 @@
+import csv
 import pygame as pg
-from pygame.constants import MOUSEBUTTONUP
 
 from level.tile import Tile
 import config
@@ -15,6 +15,8 @@ HIDE_GRID_ZOOMOUT = 1
 GRID_OPACITY = 30
 # Grid background, colorkey filters out (1,2,3), so choose anything, but that
 GRID_COLOR = 'white'
+ENTITY_TYPES = [-1]
+TILE_TYPES = [1, 2, 3]
 
 
 class Editor:
@@ -51,23 +53,35 @@ class Editor:
         self.main()
 
     def load_level(self):
-        with open(filedialog.askopenfilename(), encoding='utf-8') as f:
+        filename = filedialog.askopenfilename()
+        if not filename:
+            return
+
+        with open(filename) as f:
             # Reset level
             self.tiles = pg.sprite.Group()
             self.total_drag = pg.math.Vector2(0, 0)
 
-            for row_index, row in enumerate(f):
+            reader = csv.reader(f, delimiter=',')
+
+            for row_index, row in enumerate(reader):
                 for col_index, tile_type in enumerate(row):
-                    if tile_type in [' ', '', '\n']:
+                    tile_type = int(tile_type)
+
+                    if tile_type == 0:
                         continue
-                    else:
-                        self.tiles.add(Tile((col_index * config.TILE_SIZE,
-                                            row_index * config.TILE_SIZE), tile_type))
+
+                    self.tiles.add(Tile((col_index * config.TILE_SIZE,
+                                        row_index * config.TILE_SIZE), tile_type))
 
     def save_level(self):
         print('saving...')
 
-        with open(filedialog.asksaveasfilename(), 'w', encoding='utf-8') as f:
+        filename = filedialog.asksaveasfilename()
+        if not filename:
+            return
+
+        with open(filename, 'w', newline='') as f:
             tiles = self.tiles.sprites()
             largest_y = 0
             for tile in tiles:
@@ -84,24 +98,24 @@ class Editor:
                 rows[int((tile.rect.y - self.total_drag.y) // 32)
                      ][int((tile.rect.x - self.total_drag.x) // 32)] = tile.tile_type
 
+            writer = csv.writer(f, delimiter=",")
             for row in rows:
-                if len(row) < 1:
-                    continue
+                largest_x = 0
+                if len(row) > 0:
+                    largest_x = max(row.keys())
 
-                largest_x = max(row.keys())
-                row_tile_types = (largest_x + 1) * [' ']
+                row_tile_types = (largest_x + 1) * [0]
 
                 for tile_x, tile_type in row.items():
                     row_tile_types[tile_x] = tile_type
-                row_tile_types.append('\n')
 
-                f.writelines(row_tile_types)
+                writer.writerow(row_tile_types)
 
         print('saved')
 
     def draw_palette_tiles(self):
         x = 0
-        for i, tile_type in enumerate(['0', '1', '2', "3", "4", "5", "6", "7", "8", "9", 'P']):
+        for i, tile_type in enumerate([*ENTITY_TYPES, *TILE_TYPES]):
             if i % 8 == 0:
                 x = 0
             x += 4

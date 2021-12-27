@@ -1,3 +1,4 @@
+import csv
 import pygame as pg
 
 from entities.player.player import Player
@@ -25,18 +26,23 @@ class Level:
     def setup(self):
         self.start_sound.play(maxtime=3000, fade_ms=1000)
 
-        with open('./level/level.txt', encoding='utf-8') as f:
-            for row_index, row in enumerate(f):
-                for col_index, tile in enumerate(row):
-                    if tile in [' ', '', '\n']:
+        with open('./level/level.csv') as f:
+            reader = csv.reader(f, delimiter=',')
+
+            # Entities are negative, tiles positive and void is zero
+            for row_index, row in enumerate(reader):
+                for col_index, tile_type in enumerate(row):
+                    tile_type = int(tile_type)
+
+                    if tile_type == 0:
                         continue
 
-                    if tile == 'P':
+                    if tile_type == -1:
                         self.player.add(
                             Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
                     else:
                         self.tiles.add(
-                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile))
+                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile_type))
 
         for tile in self.tiles:
             self.sprites.append(tile)

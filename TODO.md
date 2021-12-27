@@ -3,6 +3,7 @@
 - [ ] Make tile textures a tile set
 - [ ] Load textures in level, then pass the image obj to tile obj
 - [ ] Add foreground and background layers in the editor
+- [ ] Add filetype to dialog
 
 # Editor:
 
@@ -10,7 +11,7 @@
 - [ ] Add paint bucket
 - [x] Add grid
 - [x] Don't allow scrolling to negative positions
-- [ ] Save as csv to allow more tile types
+- [x] Save as csv to allow more tile types
 
 # Back burner:
 
