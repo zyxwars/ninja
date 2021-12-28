@@ -13,7 +13,7 @@ class Tile(pg.sprite.Sprite):
         try:
             # Tile is foreground if tile_type is positive, otherwise it is in the background
             self.image = pg.image.load(
-                get_path(__file__, f'assets/tile{abs(tile_type) if  isinstance(tile_type, int) else tile_type}.png')).convert_alpha()
+                get_path(__file__, f'assets/tile/{abs(tile_type) if  isinstance(tile_type, int) else tile_type}.png')).convert_alpha()
         except FileNotFoundError:
             self.image = pg.Surface((config.TILE_SIZE, config.TILE_SIZE))
             self.image.fill('#ff00ff')

@@ -16,7 +16,7 @@ GRID_OPACITY = 30
 # Grid background, colorkey filters out (1,2,3), so choose anything, but that
 GRID_COLOR = 'white'
 ENTITY_TYPES = ['a']
-TILE_TYPES = [1, 2, 3]
+TILE_TYPES = list(range(1, 64))
 
 
 class Editor:
