@@ -42,9 +42,6 @@ class Player(AnimatedHumanoid):
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
         debug.debug('dir', self.dir)
-        debug.debug('delta_time', game.delta_time)
-        debug.debug('attacking', self.is_attacking)
-        debug.debug('last_jumped', self.last_jumped)
 
     def update(self, tiles):
         self.debug()

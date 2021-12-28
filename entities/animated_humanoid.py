@@ -4,6 +4,7 @@ import math
 from .base_humanoid import BaseHumanoid
 import game
 import config
+from utils import debug
 
 
 class AnimatedHumanoid(BaseHumanoid):
@@ -18,8 +19,8 @@ class AnimatedHumanoid(BaseHumanoid):
         self.push_animation = animations['push']
         self.wall_slide_animation = animations['wall_slide']
 
-        self.ANIMATION_SPEED = config.ANIMATION_SPEED
-        self.ATTACK_SPEED = config.ATTACK_SPEED
+        self.animation_speed = config.ANIMATION_SPEED
+        self.attack_speed = config.ATTACK_SPEED
 
         # Attack speed is directly tied to the attack animation speed
         self.is_attacking = False
@@ -29,14 +30,12 @@ class AnimatedHumanoid(BaseHumanoid):
         self.animation_index = 0
 
     def animate(self):
-        self.animation_speed = self.ANIMATION_SPEED
-
         last_frame_animation = self.animation
 
         # Attacking
         if self.is_attacking:
             self.animation = self.attack_animation
-            self.animation_speed = self.ATTACK_SPEED
+            self.animation_speed = self.attack_speed
         # Touching wall
         elif self.touching_wall:
             # Running against wall
@@ -54,10 +53,10 @@ class AnimatedHumanoid(BaseHumanoid):
         elif self.dir.y < 0:
             self.animation = self.jump_animation
         # Falling
-        elif self.dir.y >= 0.5 and not self.is_grounded:
+        elif (self.animation in [self.jump_animation, self.fall_animation] and self.dir.y > 0.5) or self.dir.y > 1:
             self.animation = self.fall_animation
         # Idle
-        else:
+        elif self.dir == pg.math.Vector2(0, 0):
             self.animation = self.idle_animation
 
         # Restart animation  when animation state changes

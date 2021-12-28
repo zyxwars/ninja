@@ -18,13 +18,15 @@ class Level:
 
         self.shift = pg.math.Vector2(0, 0)
 
-        self.start_sound = pg.mixer.Sound(
+        self.wind_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/wind1.wav'))
 
         self.setup()
 
     def setup(self):
-        self.start_sound.play(maxtime=3000, fade_ms=1000)
+        # TODO: set length to infinite
+        self.wind_sound.set_volume(0.5)
+        self.wind_sound.play(9999999)
 
         with open('./level/level.csv') as f:
             reader = csv.reader(f, delimiter=',')
