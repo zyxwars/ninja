@@ -63,8 +63,11 @@ class BaseHumanoid(pg.sprite.Sprite):
 
         # Check collision 1 pixel below the actual position
         # This prevents collision not being detected when apply_gravity() moves less than 1 pixel every frame
+
+        # Lowering the rect causes head collision to be confused with horizontal collision
+        # Inflating the rect instead of moving it seems to work for now
         temp_rect = self.rect.copy()
-        temp_rect.y += 1
+        temp_rect = temp_rect.inflate(0, 1)
 
         for tile in tiles:
             if tile.colliderect(temp_rect):

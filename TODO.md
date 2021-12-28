@@ -11,8 +11,9 @@
 
 # Bugs:
 
+- [ ] Scrolling camera causes weird speed up effect after running for some time
 - [ ] Rounding error when value is less than a pixel due to delta_time
-- [ ] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
+- [x] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
 - [ ] Fix crosshair accuracy
 - [ ] Fix projectile indicator offset
 
