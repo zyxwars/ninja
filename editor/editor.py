@@ -15,7 +15,7 @@ HIDE_GRID_ZOOMOUT = 1
 GRID_OPACITY = 30
 # Grid background, colorkey filters out (1,2,3), so choose anything, but that
 GRID_COLOR = 'white'
-ENTITY_TYPES = [-1]
+ENTITY_TYPES = ['a']
 TILE_TYPES = [1, 2, 3]
 
 
@@ -28,9 +28,14 @@ class Editor:
         self.level_surface = pg.Surface(
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.tiles = pg.sprite.Group()
+        self.is_fg_focus = True
+        self.is_blend_fg_bg = False
+
         self.drag_start_pos = (0, 0)
         self.total_drag = pg.math.Vector2(0, 0)
+
         self.zoom = 1
+
         self.grid_surface = pg.Surface(
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.grid_surface.set_alpha(GRID_OPACITY)
@@ -43,7 +48,7 @@ class Editor:
         self.palette = pg.Surface((PALETTE_SIZE, config.SCREEN_HEIGHT))
         self.palette_tiles = pg.sprite.Group()
         self.palette_selected_tile = None
-        self.draw_palette_tiles()
+        self.load_palette()
 
         self.save_button = Button(
             'Save (f1)', self.save_level, (128, 32), (PALETTE_POS_X + 32, config.SCREEN_HEIGHT - 104), 32, 'white', 'red', pg.K_F1)
@@ -57,7 +62,7 @@ class Editor:
         if not filename:
             return
 
-        with open(filename) as f:
+        with open(filename, encoding='utf-8') as f:
             # Reset level
             self.tiles = pg.sprite.Group()
             self.total_drag = pg.math.Vector2(0, 0)
@@ -66,13 +71,14 @@ class Editor:
 
             for row_index, row in enumerate(reader):
                 for col_index, tile_type in enumerate(row):
-                    tile_type = int(tile_type)
+                    if tile_type.lstrip('+-').isdigit():
+                        tile_type = int(tile_type)
 
-                    if tile_type == 0:
-                        continue
+                        if tile_type == 0:
+                            continue
 
                     self.tiles.add(Tile((col_index * config.TILE_SIZE,
-                                        row_index * config.TILE_SIZE), tile_type))
+                                         row_index * config.TILE_SIZE), tile_type))
 
     def save_level(self):
         print('saving...')
@@ -81,7 +87,8 @@ class Editor:
         if not filename:
             return
 
-        with open(filename, 'w', newline='') as f:
+        # Without newline='' the file would have every second row empty
+        with open(filename, 'w', newline='', encoding='utf-8') as f:
             tiles = self.tiles.sprites()
             largest_y = 0
             for tile in tiles:
@@ -113,7 +120,7 @@ class Editor:
 
         print('saved')
 
-    def draw_palette_tiles(self):
+    def load_palette(self):
         x = 0
         for i, tile_type in enumerate([*ENTITY_TYPES, *TILE_TYPES]):
             if i % 8 == 0:
@@ -148,6 +155,9 @@ class Editor:
 
         self.palette.set_alpha(int(255 / 2))
 
+        debug.debug('Draw foreground (w)', self.is_fg_focus)
+        debug.debug('Blend layers (z)', self.is_blend_fg_bg)
+
         for e in game.events:
             # Zoom
             if e.type == pg.MOUSEWHEEL:
@@ -160,6 +170,11 @@ class Editor:
                 # Start scroll
                 if e.button == 1 and keys[pg.K_LCTRL]:
                     self.drag_start_pos = mouse_pos
+            elif e.type == pg.KEYDOWN:
+                if e.key == pg.K_w:
+                    self.is_fg_focus = not self.is_fg_focus
+                if e.key == pg.K_z:
+                    self.is_blend_fg_bg = not self.is_blend_fg_bg
 
         # Scroll level
         if keys[pg.K_LCTRL] and mouse[0]:
@@ -184,18 +199,27 @@ class Editor:
             self.drag_start_pos = mouse_pos
 
         elif mouse[0] and self.palette_selected_tile:
+            tile_type = self.palette_selected_tile.tile_type
+
+            # If tile is string, that means it's entity, which is always in the foreground layer
+            if not isinstance(tile_type, str):
+                if not self.is_fg_focus:
+                    tile_type = -tile_type
+
             # Update existing tile texture
             for tile in self.tiles:
                 if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
-                    tile.image = self.palette_selected_tile.image
-                    tile.tile_type = self.palette_selected_tile.tile_type
+                    tile.image = self.palette_selected_tile.image.copy()
+                    tile.set_type(
+                        tile_type)
                     break
             # Create new tile
             else:
+
                 tile = Tile(((mouse_pos[0] * self.zoom ** -
                             1 - self.total_drag.x) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.x, (mouse_pos[1] * self.zoom ** -
                                                                                                                 1 - self.total_drag.y) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.y),
-                            self.palette_selected_tile.tile_type)
+                            tile_type)
                 self.tiles.add(tile)
         # Delete tile
         elif mouse[2]:
@@ -227,7 +251,29 @@ class Editor:
 
     def draw_level(self):
         self.level_surface.fill('black')
+
+        for tile in self.tiles.sprites():
+
+            # String is entity, always in foreground
+            if isinstance(tile.tile_type, str):
+                continue
+
+            if self.is_blend_fg_bg:
+                tile.image.set_alpha(255)
+                continue
+
+            # Set bg opacity
+            if tile.tile_type < 0:
+                tile.image.set_alpha(
+                    int(255 / (2 if self.is_fg_focus else 1)))
+                continue
+
+            # Set fg opacity
+            tile.image.set_alpha(
+                int(255 / (2 if not self.is_fg_focus else 1)))
+
         self.tiles.draw(self.level_surface)
+
         level_size = self.level_surface.get_size()
         scaled_level = pg.transform.scale(
             self.level_surface, (level_size[0] * self.zoom, level_size[1] * self.zoom))

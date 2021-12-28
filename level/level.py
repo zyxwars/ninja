@@ -31,20 +31,19 @@ class Level:
         with open('./level/level.csv') as f:
             reader = csv.reader(f, delimiter=',')
 
-            # Entities are negative, tiles positive and void is zero
             for row_index, row in enumerate(reader):
                 for col_index, tile_type in enumerate(row):
-                    tile_type = int(tile_type)
+                    if not tile_type.lstrip('+-').isdigit():
+                        self.player.add(
+                            Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
+                        continue
 
+                    tile_type = int(tile_type)
                     if tile_type == 0:
                         continue
 
-                    if tile_type == -1:
-                        self.player.add(
-                            Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
-                    else:
-                        self.tiles.add(
-                            Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile_type))
+                    self.tiles.add(
+                        Tile((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), tile_type))
 
         for tile in self.tiles:
             self.sprites.append(tile)

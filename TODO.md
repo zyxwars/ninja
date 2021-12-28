@@ -1,14 +1,13 @@
 # Current:
 
 - [ ] Make tile textures a tile set
-- [ ] Load textures in level, then pass the image obj to tile obj
-- [ ] Add foreground and background layers in the editor
+- [x] Add foreground and background layers in the editor
 - [ ] Add filetype to dialog
-- [ ] Fix player starting fall animation, when falling just one block
+- [x] Fix player starting fall animation, when falling just one block
 
 # Editor:
 
-- [ ] Add background and foreground layers, image background as well
+- [ ] Add image background, parallax
 - [ ] Add color picker
 - [ ] Add paint bucket
 - [x] Add grid
