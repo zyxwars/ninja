@@ -30,6 +30,7 @@
   - [ ] Fall impact smoke, particles
 - [x] Sound effects
   - [ ] Add variation
+  - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen

@@ -17,15 +17,14 @@ class Level:
 
         self.shift = pg.math.Vector2(0, 0)
 
-        self.music = pg.mixer.Sound(
+        self.wind_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/wind1.wav'))
 
         self.setup(level_path)
 
     def setup(self, level_path):
-        # TODO: set length to infinite
-        self.music.set_volume(0.5)
-        self.music.play(-1)
+        self.wind_sound.set_volume(0.5)
+        self.wind_sound.play(-1)
 
         with open(level_path, encoding='utf-8') as f:
             reader = csv.reader(f, delimiter=',')
@@ -51,7 +50,7 @@ class Level:
 
         for sprite in self.sprites:
             sprite.rect.x += -2000
-            sprite.rect.y += 500
+            sprite.rect.y -= 500
 
     def update(self, screen_surface):
         screen_surface.fill('black')
