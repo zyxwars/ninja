@@ -69,7 +69,8 @@ class Editor:
         self.main()
 
     def load_level(self):
-        filename = filedialog.askopenfilename()
+        filename = filedialog.askopenfilename(
+            filetypes=[("Csv", '.csv'), ("Any", '*')])
         if not filename:
             return
 
@@ -94,7 +95,7 @@ class Editor:
     def save_level(self):
         print('saving...')
 
-        filename = filedialog.asksaveasfilename()
+        filename = filedialog.asksaveasfilename(defaultextension='.csv',filetypes=[("Csv", '.csv'), ("Any", '*')])
         if not filename:
             return
 

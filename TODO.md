@@ -1,8 +1,6 @@
 # Current:
 
-- [ ] Add filetype to dialog
-- [x] Add color picker
-- [x] Fix color picker confusing layers
+- [x] Add filetype to dialog
 
 # Back burner:
 
