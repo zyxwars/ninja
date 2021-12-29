@@ -2,6 +2,7 @@ import pygame as pg
 
 import config
 import game
+from utils import debug
 
 
 class BaseHumanoid(pg.sprite.Sprite):
@@ -26,6 +27,8 @@ class BaseHumanoid(pg.sprite.Sprite):
         else:
             self.rect.x = round(max(self.rect.x + self.dir.x *
                                     self.speed * game.delta_time, self.rect.x - 31))
+
+
         self.collide_horizontal(tiles)
 
         # Jump force and gravity are directly added to the y dir

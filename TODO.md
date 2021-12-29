@@ -1,21 +1,25 @@
 # Current:
 
 - [ ] Add filetype to dialog
-- [ ] Add paint bucket
+- [x] Add color picker
 
 # Back burner:
 
 - [ ] Add image background, parallax
-- [ ] Add color picker
+- [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
+- [ ] Add editor undo button
+- [ ] Reformat editor cursor picking system
+- [ ] Change the multi surface layout to single surface with multiple sprite groups
+- [ ] Split tiles and props to sprite group layers
 
 # Bugs:
 
 - [ ] Scrolling camera causes weird speed up effect after running for some time
 - [ ] Rounding error when value is less than a pixel due to delta_time
-- [x] When hitting head and moving to the side at the exact same time the player teleports > confused horizontal and vertical collisions
 - [ ] Fix crosshair accuracy
 - [ ] Fix projectile indicator offset
+- [ ] Weird collision still sometimes happens
 
 # Roadmap:
 

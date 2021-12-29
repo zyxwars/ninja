@@ -8,7 +8,8 @@ import game
 pg.init()
 screen = pg.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 clock = pg.time.Clock()
-level = Level(screen)
+
+level = Level('./level/level.csv')
 
 
 while True:
@@ -19,7 +20,7 @@ while True:
         if e.type == pg.QUIT:
             pg.quit()
 
-    level.update()
+    level.update(screen)
 
     debug.debug('delta_time', game.delta_time)
     debug.debug('fps', clock.get_fps())

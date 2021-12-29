@@ -15,7 +15,7 @@ HIDE_GRID_ZOOMOUT = 1
 GRID_OPACITY = 30
 # Grid background, colorkey filters out (1,2,3), so choose anything, but that
 GRID_COLOR = 'white'
-ENTITY_TYPES = ['a']
+ENTITY_TYPES = ['player', 'checkpoint', 'finish']
 TILE_TYPES = list(range(1, 64))
 
 
@@ -44,6 +44,7 @@ class Editor:
         self.cursors = {'normal': pg.image.load(get_path(__file__, 'assets/normal.png')), 'grab': pg.image.load(get_path(__file__, 'assets/grab.png')),
                         'eraser': pg.image.load(get_path(__file__, 'assets/eraser.png')), 'picker': pg.image.load(get_path(__file__, 'assets/picker.png'))}
         self.current_cursor = 'normal'
+        self.toggle_cursors = ['picker']
 
         self.palette = pg.Surface((PALETTE_SIZE, config.SCREEN_HEIGHT))
         self.palette_tiles = pg.sprite.Group()
@@ -155,6 +156,8 @@ class Editor:
 
         self.palette.set_alpha(int(255 / 2))
 
+        debug.debug(
+            'Draw (mouse 1) Grab (ctrl + mouse 1) Erase (mouse 2) Color picker (q)', self.current_cursor)
         debug.debug('Draw foreground (w)', self.is_fg_focus)
         debug.debug('Blend layers (z)', self.is_blend_fg_bg)
 
@@ -175,52 +178,62 @@ class Editor:
                     self.is_fg_focus = not self.is_fg_focus
                 if e.key == pg.K_z:
                     self.is_blend_fg_bg = not self.is_blend_fg_bg
+                if e.key == pg.K_q:
+                    self.current_cursor = 'normal' if self.current_cursor == 'picker' else 'picker'
 
-        # Scroll level
-        if keys[pg.K_LCTRL] and mouse[0]:
-            self.current_cursor = 'grab'
+        if mouse[0]:
+            # Scroll level
+            if keys[pg.K_LCTRL]:
+                self.current_cursor = 'grab'
 
-            drag = pg.math.Vector2(int((mouse_pos[0] - self.drag_start_pos[0]) * self.zoom ** -1), int(
-                (mouse_pos[1] - self.drag_start_pos[1]) * self.zoom ** -1))
+                drag = pg.math.Vector2(int((mouse_pos[0] - self.drag_start_pos[0]) * self.zoom ** -1), int(
+                    (mouse_pos[1] - self.drag_start_pos[1]) * self.zoom ** -1))
 
-            if self.total_drag.x + drag.x > 0:
-                drag.x = 0
+                if self.total_drag.x + drag.x > 0:
+                    drag.x = 0
 
-            if self.total_drag.y + drag.y > 0:
-                drag.y = 0
+                if self.total_drag.y + drag.y > 0:
+                    drag.y = 0
 
-            for tile in self.tiles.sprites():
-                tile.rect.x += drag.x
-                tile.rect.y += drag.y
+                for tile in self.tiles.sprites():
+                    tile.rect.x += drag.x
+                    tile.rect.y += drag.y
 
-            self.total_drag.x += drag.x
-            self.total_drag.y += drag.y
+                self.total_drag.x += drag.x
+                self.total_drag.y += drag.y
 
-            self.drag_start_pos = mouse_pos
+                self.drag_start_pos = mouse_pos
+            # Pick tile
+            elif self.current_cursor == 'picker':
+                for tile in self.tiles:
+                    if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
+                        self.palette_selected_tile = tile
+                        self.current_cursor = 'normal'
+                        break
+            # Draw tile
+            elif self.palette_selected_tile:
+                tile_type = self.palette_selected_tile.tile_type
 
-        elif mouse[0] and self.palette_selected_tile:
-            tile_type = self.palette_selected_tile.tile_type
+                # If tile is string, that means it's entity, which is always in the foreground layer
+                if not isinstance(tile_type, str):
+                    if not self.is_fg_focus:
+                        tile_type = -tile_type
 
-            # If tile is string, that means it's entity, which is always in the foreground layer
-            if not isinstance(tile_type, str):
-                if not self.is_fg_focus:
-                    tile_type = -tile_type
-
-            # Update existing tile texture
-            for tile in self.tiles:
-                if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
-                    tile.image = self.palette_selected_tile.image.copy()
-                    tile.set_type(
-                        tile_type)
-                    break
-            # Create new tile
-            else:
-
-                tile = Tile(((mouse_pos[0] * self.zoom ** -
-                            1 - self.total_drag.x) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.x, (mouse_pos[1] * self.zoom ** -
-                                                                                                                1 - self.total_drag.y) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.y),
+                # Update existing tile texture
+                for tile in self.tiles:
+                    if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
+                        tile.image = self.palette_selected_tile.image.copy()
+                        tile.set_type(
                             tile_type)
-                self.tiles.add(tile)
+                        break
+                # Create new tile
+                else:
+
+                    tile = Tile(((mouse_pos[0] * self.zoom ** -
+                                1 - self.total_drag.x) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.x, (mouse_pos[1] * self.zoom ** -
+                                                                                                                    1 - self.total_drag.y) // config.TILE_SIZE * config.TILE_SIZE + self.total_drag.y),
+                                tile_type)
+                    self.tiles.add(tile)
         # Delete tile
         elif mouse[2]:
             self.current_cursor = 'eraser'
@@ -239,6 +252,7 @@ class Editor:
             for tile in self.palette_tiles:
                 if tile.rect.collidepoint(mouse_pos[0] - PALETTE_POS_X, mouse_pos[1]):
                     self.palette_selected_tile = tile
+                    self.current_cursor = 'normal'
                     break
 
     def draw(self):
@@ -333,7 +347,8 @@ class Editor:
             # Call only once every frame
             game.events = pg.event.get()
 
-            self.current_cursor = 'normal'
+            if self.current_cursor not in self.toggle_cursors:
+                self.current_cursor = 'normal'
 
             self.get_input()
 

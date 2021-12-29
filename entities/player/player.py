@@ -1,5 +1,4 @@
 import pygame as pg
-import math
 
 import config
 from utils import debug

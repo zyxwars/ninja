@@ -10,8 +10,7 @@ import utils
 
 
 class Level:
-    def __init__(self, surface):
-        self.screen_surface = surface
+    def __init__(self, level_path):
         self.player = pg.sprite.GroupSingle()
         self.tiles = pg.sprite.Group()
         self.sprites = []
@@ -21,21 +20,22 @@ class Level:
         self.wind_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/wind1.wav'))
 
-        self.setup()
+        self.setup(level_path)
 
-    def setup(self):
+    def setup(self, level_path):
         # TODO: set length to infinite
         self.wind_sound.set_volume(0.5)
-        self.wind_sound.play(9999999)
+        self.wind_sound.play(-1)
 
-        with open('./level/level.csv') as f:
+        with open(level_path, encoding='utf-8') as f:
             reader = csv.reader(f, delimiter=',')
 
             for row_index, row in enumerate(reader):
                 for col_index, tile_type in enumerate(row):
                     if not tile_type.lstrip('+-').isdigit():
-                        self.player.add(
-                            Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
+                        if tile_type == 'player':
+                            self.player.add(
+                                Player((col_index * config.TILE_SIZE, row_index * config.TILE_SIZE), (64, 64)))
                         continue
 
                     tile_type = int(tile_type)
@@ -49,15 +49,19 @@ class Level:
             self.sprites.append(tile)
         self.sprites.append(self.player.sprite)
 
-    def update(self):
-        self.screen_surface.fill('black')
+        for sprite in self.sprites:
+            sprite.rect.x += -2000
+            sprite.rect.y += 500
 
-        self.tiles.draw(self.screen_surface)
+    def update(self, screen_surface):
+        screen_surface.fill('black')
+
+        self.tiles.draw(screen_surface)
 
         # sprite is needed because the function returns player_pos
         player_pos, player_speed_x, player_speed_y = self.player.sprite.update(
             self.tiles.sprites())
-        self.player.draw(self.screen_surface)
+        self.player.draw(screen_surface)
 
         if player_pos[0] > config.SCREEN_CENTER[0]:
             if player_pos[0] - config.SCREEN_CENTER[0] / 2 > config.SCREEN_CENTER[0]:
