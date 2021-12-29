@@ -2,9 +2,11 @@
 
 - [ ] Add filetype to dialog
 - [x] Add color picker
+- [x] Fix color picker confusing layers
 
 # Back burner:
 
+- [ ] Block camera movement over 0, 0
 - [ ] Add image background, parallax
 - [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
