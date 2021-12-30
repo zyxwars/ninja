@@ -21,7 +21,9 @@ TILE_TYPES = list(range(1, 64))
 
 class PaletteTile:
     def __init__(self, tile_type, image):
-        self.tile_type = abs(tile_type)
+        self.tile_type = tile_type
+        if not isinstance(tile_type, str):
+            self.tile_type = abs(tile_type)
         self.image = image.copy()
         self.image.set_alpha(255)
 
@@ -95,7 +97,8 @@ class Editor:
     def save_level(self):
         print('saving...')
 
-        filename = filedialog.asksaveasfilename(defaultextension='.csv',filetypes=[("Csv", '.csv'), ("Any", '*')])
+        filename = filedialog.asksaveasfilename(defaultextension='.csv', filetypes=[
+                                                ("Csv", '.csv'), ("Any", '*')])
         if not filename:
             return
 

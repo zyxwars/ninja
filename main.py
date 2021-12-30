@@ -1,7 +1,7 @@
 import pygame as pg
+import random
 
 from scenes.level import Level
-from scenes.hub import Hub
 from utils import debug
 import config
 import game
@@ -14,7 +14,7 @@ class Game:
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.scene = Hub()
+        self.scene = Level('./scenes/level/1.csv')
 
     def run(self):
         while True:

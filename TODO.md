@@ -1,6 +1,8 @@
 # Current:
 
 - [x] Add filetype to dialog
+- [x] Delta time rounding, still not fixed
+- [x] If delta is too low nothing will move as 0.5 -> 0
 
 # Back burner:
 
@@ -16,11 +18,12 @@
 
 # Bugs:
 
+- [ ] Head jump collision might be caused by jump force being added exactly during the horizontal check
+- [ ] Weird collision still sometimes happens
 - [x] Scrolling camera causes weird speed up effect after running for some time
 - [x] Rounding error when value is less than a pixel due to delta_time
 - [ ] Fix crosshair accuracy
 - [ ] Fix projectile indicator offset
-- [ ] Weird collision still sometimes happens
 
 # Roadmap:
 
