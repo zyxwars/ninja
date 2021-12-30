@@ -1,10 +1,10 @@
 import pygame as pg
 import random
 
-from scenes.level import Level
 from utils import debug
 import config
 import game
+from scenes.level.hub import Hub
 
 
 class Game:
@@ -14,7 +14,7 @@ class Game:
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.scene = Level('./scenes/level/1.csv')
+        self.scene = Hub(self.change_level, './scenes/level/hub.csv')
 
     def run(self):
         while True:
@@ -34,6 +34,9 @@ class Game:
 
             pg.display.update()
             game.delta_time = self.clock.tick(300)
+
+    def change_level(self, new_level):
+        self.scene = new_level
 
 
 game_loop = Game()

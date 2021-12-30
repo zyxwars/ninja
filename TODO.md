@@ -11,14 +11,11 @@
 - [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
 - [ ] Add editor undo button
-- [ ] Reformat editor cursor picking system
 - [ ] Change the multi surface layout to single surface with multiple sprite groups
-- [ ] Split tiles and props to sprite group layers
 - [ ] Add jump buffer back
 
 # Bugs:
 
-- [ ] Head jump collision might be caused by jump force being added exactly during the horizontal check
 - [ ] Weird collision still sometimes happens
 - [x] Scrolling camera causes weird speed up effect after running for some time
 - [x] Rounding error when value is less than a pixel due to delta_time
@@ -33,6 +30,7 @@
 - [x] Sound effects
   - [ ] Add variation
   - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
+- [ ] Add layers to editor
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen
