@@ -22,12 +22,11 @@ class BaseHumanoid(pg.sprite.Sprite):
         # making the player phase through it
         # 32(tile height) - 1 (added in collision check)
         if self.dir.x > 0:
-            self.rect.x = round(min(self.rect.x + self.dir.x *
-                                    self.speed * game.delta_time, self.rect.x + 31))
+            self.rect.x = min(self.rect.x + int(self.dir.x *
+                                                self.speed * game.delta_time), self.rect.x + 31)
         else:
-            self.rect.x = round(max(self.rect.x + self.dir.x *
-                                    self.speed * game.delta_time, self.rect.x - 31))
-
+            self.rect.x = max(self.rect.x + int(self.dir.x *
+                                                self.speed * game.delta_time), self.rect.x - 31)
 
         self.collide_horizontal(tiles)
 
@@ -35,14 +34,14 @@ class BaseHumanoid(pg.sprite.Sprite):
         self.apply_gravity()
 
         if self.dir.y > 0:
-            self.rect.y = round(min(self.rect.y + self.dir.y *
-                                    game.delta_time, self.rect.y + config.TILE_SIZE - 1))
+            self.rect.y = min(self.rect.y + int(self.dir.y *
+                                                game.delta_time), self.rect.y + config.TILE_SIZE - 1)
         else:
-            self.rect.y = round(max(self.rect.y + self.dir.y *
-                                    game.delta_time, self.rect.y - config.TILE_SIZE - 1))
+            self.rect.y = max(self.rect.y + int(self.dir.y *
+                              game.delta_time), self.rect.y - config.TILE_SIZE - 1)
         self.collide_vertical(tiles)
 
-        # If dir.x = 0 keep the last direction
+        # If dir.x = 0 keep facing in the last direction
         if self.dir.x > 0:
             self.facing_right = True
         elif self.dir.x < 0:

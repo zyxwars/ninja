@@ -15,7 +15,9 @@ class Level:
         self.tiles = pg.sprite.Group()
         self.sprites = []
 
+        self.camera_start_pos = pg.math.Vector2(2000, 500)
         self.shift = pg.math.Vector2(0, 0)
+        self.total_shift = pg.math.Vector2(0, 0)
 
         self.wind_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/wind1.wav'))
@@ -49,8 +51,8 @@ class Level:
         self.sprites.append(self.player.sprite)
 
         for sprite in self.sprites:
-            sprite.rect.x += -2000
-            sprite.rect.y -= 500
+            sprite.rect.x -= self.camera_start_pos.x
+            sprite.rect.y -= self.camera_start_pos.y
 
     def update(self, screen_surface):
         screen_surface.fill('black')
@@ -94,5 +96,20 @@ class Level:
             self.shift.y = 0
 
         for sprite in self.sprites:
-            sprite.rect.x += round(self.shift.x * game.delta_time)
-            sprite.rect.y += round(self.shift.y * game.delta_time)
+            sprite.rect.x += int(self.shift.x * game.delta_time)
+            sprite.rect.y += int(self.shift.y * game.delta_time)
+
+        self.total_shift.x += int(self.shift.x * game.delta_time)
+        self.total_shift.y += int(self.shift.y * game.delta_time)
+
+        debug.debug('shift', self.total_shift)
+        font = pg.font.SysFont(None, 64)
+        img = font.render('Settings', True, 'white')
+        screen_surface.blit(
+            img, (int(-1950 + self.total_shift.x), int(-50 + self.total_shift.y)))
+        img = font.render('Campaign', True, 'white')
+        screen_surface.blit(
+            img, (int(-1250 + self.total_shift.x), int(-150 + self.total_shift.y)))
+        img = font.render('Editor', True, 'white')
+        screen_surface.blit(
+            img, (int(-650 + self.total_shift.x), int(-50 + self.total_shift.y)))
