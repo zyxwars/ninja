@@ -12,11 +12,12 @@
 - [ ] Reformat editor cursor picking system
 - [ ] Change the multi surface layout to single surface with multiple sprite groups
 - [ ] Split tiles and props to sprite group layers
+- [ ] Add jump buffer back
 
 # Bugs:
 
-- [ ] Scrolling camera causes weird speed up effect after running for some time
-- [ ] Rounding error when value is less than a pixel due to delta_time
+- [x] Scrolling camera causes weird speed up effect after running for some time
+- [x] Rounding error when value is less than a pixel due to delta_time
 - [ ] Fix crosshair accuracy
 - [ ] Fix projectile indicator offset
 - [ ] Weird collision still sometimes happens
