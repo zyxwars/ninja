@@ -1,13 +1,13 @@
 import pygame as pg
 import math
 
-from .base_humanoid import BaseHumanoid
+from .humanoid import Humanoid
 import game
 import config
 from utils import debug
 
 
-class AnimatedHumanoid(BaseHumanoid):
+class AnimatedHumanoid(Humanoid):
     def __init__(self, rect, animations):
         super().__init__(rect)
 

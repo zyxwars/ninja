@@ -1,8 +1,8 @@
 # Current:
 
-- [ ] Add filetype to dialog
-- [x] Add color picker
-- [x] Fix color picker confusing layers
+- [x] Add filetype to dialog
+- [x] Delta time rounding, still not fixed
+- [x] If delta is too low nothing will move as 0.5 -> 0
 
 # Back burner:
 
@@ -11,17 +11,16 @@
 - [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
 - [ ] Add editor undo button
-- [ ] Reformat editor cursor picking system
 - [ ] Change the multi surface layout to single surface with multiple sprite groups
-- [ ] Split tiles and props to sprite group layers
+- [ ] Add jump buffer back
 
 # Bugs:
 
-- [ ] Scrolling camera causes weird speed up effect after running for some time
-- [ ] Rounding error when value is less than a pixel due to delta_time
+- [ ] Weird collision still sometimes happens
+- [x] Scrolling camera causes weird speed up effect after running for some time
+- [x] Rounding error when value is less than a pixel due to delta_time
 - [ ] Fix crosshair accuracy
 - [ ] Fix projectile indicator offset
-- [ ] Weird collision still sometimes happens
 
 # Roadmap:
 
@@ -30,6 +29,8 @@
   - [ ] Fall impact smoke, particles
 - [x] Sound effects
   - [ ] Add variation
+  - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
+- [ ] Add layers to editor
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen

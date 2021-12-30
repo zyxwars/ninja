@@ -48,6 +48,7 @@ class Player(AnimatedHumanoid):
         self.move(tiles)
         self.animate()
 
+        # Play land sound logic
         self.last_jumped += game.delta_time
 
         if self.is_grounded != self.last_grounded:
@@ -56,7 +57,7 @@ class Player(AnimatedHumanoid):
         self.last_grounded = self.is_grounded
         self.last_gravity = self.dir.y
 
-        return self.rect.center, self.speed, self.dir.y
+        return self.rect.topleft
 
     def get_input(self):
         keys = pg.key.get_pressed()
