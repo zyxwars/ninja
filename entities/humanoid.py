@@ -3,11 +3,13 @@ import pygame as pg
 import config
 import game
 from utils import debug
+from utils.shiftable_sprite import ShiftableSprite
 
 
-class BaseHumanoid(pg.sprite.Sprite):
+class Humanoid(ShiftableSprite):
     def __init__(self, rect):
         super().__init__()
+        self.pos = pg.math.Vector2(rect.x, rect.y)
         self.rect = rect
         self.dir = pg.math.Vector2(0, 0)
         self.speed = config.SPEED
@@ -17,32 +19,32 @@ class BaseHumanoid(pg.sprite.Sprite):
         self.touching_wall = False
         self.facing_right = True
 
-    def move(self, tiles):
-        # If delta time is large enough it is possible for y to be bigger than the tile height
+    def add_x(self, x):
+        # If delta time is large enough it is possible for add pos to be bigger than the tile
         # making the player phase through it
-        # 32(tile height) - 1 (added in collision check)
-        if self.dir.x > 0:
-            self.rect.x = round(min(self.rect.x + self.dir.x *
-                                    self.speed * game.delta_time, self.rect.x + 31))
-        else:
-            self.rect.x = round(max(self.rect.x + self.dir.x *
-                                    self.speed * game.delta_time, self.rect.x - 31))
+        if abs(abs(self.pos.x) - abs(self.pos.x + x)) >= config.TILE_SIZE:
+            x = (config.TILE_SIZE - 1) * (x/abs(x))
 
+        self.pos.x += x
 
+    def add_y(self, y):
+        if abs(abs(self.pos.y) - abs(self.pos.y + y)) >= config.TILE_SIZE:
+            y = (config.TILE_SIZE - 1) * (y/abs(y))
+
+        self.pos.y += y
+
+    def move(self, tiles):
+        self.add_x(self.dir.x * self.speed * game.delta_time)
+        self.rect.x = int(self.pos.x)
         self.collide_horizontal(tiles)
 
         # Jump force and gravity are directly added to the y dir
         self.apply_gravity()
-
-        if self.dir.y > 0:
-            self.rect.y = round(min(self.rect.y + self.dir.y *
-                                    game.delta_time, self.rect.y + config.TILE_SIZE - 1))
-        else:
-            self.rect.y = round(max(self.rect.y + self.dir.y *
-                                    game.delta_time, self.rect.y - config.TILE_SIZE - 1))
+        self.add_y(self.dir.y * game.delta_time)
+        self.rect.y = int(self.pos.y)
         self.collide_vertical(tiles)
 
-        # If dir.x = 0 keep the last direction
+        # If dir.x = 0 keep facing in the last direction
         if self.dir.x > 0:
             self.facing_right = True
         elif self.dir.x < 0:
@@ -60,6 +62,8 @@ class BaseHumanoid(pg.sprite.Sprite):
                 if self.dir.x < 0:
                     self.rect.left = tile.rect.right
                     self.touching_wall = 'left'
+
+                self.pos.x = self.rect.x
 
     def collide_vertical(self, tiles):
         self.is_grounded = False
@@ -83,6 +87,7 @@ class BaseHumanoid(pg.sprite.Sprite):
                     self.rect.top = tile.rect.bottom
 
                 self.dir.y = 0
+                self.pos.y = self.rect.y
 
     def apply_gravity(self):
         # Limit max gravity momentum
@@ -90,5 +95,5 @@ class BaseHumanoid(pg.sprite.Sprite):
             self.dir.y += self.gravity * game.delta_time
 
     def jump(self):
-        # Jump force is a positive number, so subtract it from self.dir.y
+        # Jump force is a positive number, so to jump we need its opposite
         self.dir.y = -self.jump_force

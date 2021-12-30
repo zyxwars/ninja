@@ -2,12 +2,14 @@ import pygame as pg
 
 from utils import get_path
 import config
+from utils.shiftable_sprite import ShiftableSprite
 
 
-class Tile(pg.sprite.Sprite):
+class Tile(ShiftableSprite):
     def __init__(self, pos, tile_type,  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tile_type = tile_type
+        self.pos = pg.math.Vector2(pos)
 
         # Load image
         try:

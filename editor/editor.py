@@ -1,7 +1,7 @@
 import csv
 import pygame as pg
 
-from level.tile import Tile
+from scenes.tile import Tile
 import config
 from utils import filedialog, get_path
 from utils import debug
@@ -17,6 +17,15 @@ GRID_OPACITY = 30
 GRID_COLOR = 'white'
 ENTITY_TYPES = ['player', 'checkpoint', 'finish']
 TILE_TYPES = list(range(1, 64))
+
+
+class PaletteTile:
+    def __init__(self, tile_type, image):
+        self.tile_type = tile_type
+        if not isinstance(tile_type, str):
+            self.tile_type = abs(tile_type)
+        self.image = image.copy()
+        self.image.set_alpha(255)
 
 
 class Editor:
@@ -45,6 +54,9 @@ class Editor:
                         'eraser': pg.image.load(get_path(__file__, 'assets/eraser.png')), 'picker': pg.image.load(get_path(__file__, 'assets/picker.png'))}
         self.current_cursor = 'normal'
         self.toggle_cursors = ['picker']
+        # Tile gets overwritten on the second frame right after picking it
+        # if the layer was picked from the bg it gets overwritten as a fg and the other way around
+        self.click_started_with_picker = False
 
         self.palette = pg.Surface((PALETTE_SIZE, config.SCREEN_HEIGHT))
         self.palette_tiles = pg.sprite.Group()
@@ -59,7 +71,8 @@ class Editor:
         self.main()
 
     def load_level(self):
-        filename = filedialog.askopenfilename()
+        filename = filedialog.askopenfilename(
+            filetypes=[("Csv", '.csv'), ("Any", '*')])
         if not filename:
             return
 
@@ -84,7 +97,8 @@ class Editor:
     def save_level(self):
         print('saving...')
 
-        filename = filedialog.asksaveasfilename()
+        filename = filedialog.asksaveasfilename(defaultextension='.csv', filetypes=[
+                                                ("Csv", '.csv'), ("Any", '*')])
         if not filename:
             return
 
@@ -170,9 +184,11 @@ class Editor:
                 self.level_surface = pg.Surface(
                     (config.SCREEN_WIDTH * self.zoom ** -1, config.SCREEN_HEIGHT * self.zoom ** -1))
             elif e.type == pg.MOUSEBUTTONDOWN:
-                # Start scroll
-                if e.button == 1 and keys[pg.K_LCTRL]:
-                    self.drag_start_pos = mouse_pos
+                if e.button == 1:
+                    self.click_started_with_picker = False
+                    # Start scroll
+                    if keys[pg.K_LCTRL]:
+                        self.drag_start_pos = mouse_pos
             elif e.type == pg.KEYDOWN:
                 if e.key == pg.K_w:
                     self.is_fg_focus = not self.is_fg_focus
@@ -207,11 +223,16 @@ class Editor:
             elif self.current_cursor == 'picker':
                 for tile in self.tiles:
                     if tile.rect.collidepoint(mouse_pos[0] * self.zoom ** -1, mouse_pos[1] * self.zoom ** -1):
-                        self.palette_selected_tile = tile
+                        self.palette_selected_tile = PaletteTile(
+                            tile.tile_type, tile.image)
+                        self.click_started_with_picker = True
                         self.current_cursor = 'normal'
                         break
             # Draw tile
             elif self.palette_selected_tile:
+                if self.click_started_with_picker:
+                    return
+
                 tile_type = self.palette_selected_tile.tile_type
 
                 # If tile is string, that means it's entity, which is always in the foreground layer
@@ -251,7 +272,8 @@ class Editor:
         if mouse[0]:
             for tile in self.palette_tiles:
                 if tile.rect.collidepoint(mouse_pos[0] - PALETTE_POS_X, mouse_pos[1]):
-                    self.palette_selected_tile = tile
+                    self.palette_selected_tile = PaletteTile(
+                        tile.tile_type, tile.image)
                     self.current_cursor = 'normal'
                     break
 

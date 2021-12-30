@@ -1,30 +1,43 @@
 import pygame as pg
+import random
 
-from level.level import Level
 from utils import debug
 import config
 import game
-
-pg.init()
-screen = pg.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-clock = pg.time.Clock()
-
-level = Level('./level/level.csv')
+from scenes.level.hub import Hub
 
 
-while True:
-    # Call only once every frame
-    game.events = pg.event.get()
+class Game:
+    def __init__(self):
+        pg.init()
+        self.screen = pg.display.set_mode(
+            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+        self.clock = pg.time.Clock()
 
-    for e in game.events:
-        if e.type == pg.QUIT:
-            pg.quit()
+        self.scene = Hub(self.change_level, './scenes/level/hub.csv')
 
-    level.update(screen)
+    def run(self):
+        while True:
+            # Call only once every frame
+            game.events = pg.event.get()
 
-    debug.debug('delta_time', game.delta_time)
-    debug.debug('fps', clock.get_fps())
-    debug.draw(screen)
+            for e in game.events:
+                if e.type == pg.QUIT:
+                    pg.quit()
 
-    pg.display.update()
-    game.delta_time = clock.tick(300)
+            if self.scene:
+                self.scene.update(self.screen)
+
+            debug.debug('delta_time', game.delta_time)
+            debug.debug('fps', self.clock.get_fps())
+            debug.draw(self.screen)
+
+            pg.display.update()
+            game.delta_time = self.clock.tick(300)
+
+    def change_level(self, new_level):
+        self.scene = new_level
+
+
+game_loop = Game()
+game_loop.run()
