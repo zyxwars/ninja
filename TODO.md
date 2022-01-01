@@ -1,11 +1,8 @@
 # Current:
 
-- [x] Add filetype to dialog
-- [x] Delta time rounding, still not fixed
-- [x] If delta is too low nothing will move as 0.5 -> 0
-
 # Back burner:
 
+- [ ] Smooth out scrolling jitter over small distance
 - [ ] Block camera movement over 0, 0
 - [ ] Add image background, parallax
 - [ ] Add paint bucket
@@ -35,6 +32,7 @@
 - [ ] Saving game state
 - [ ] Menu screen
 
+- [ ] Dialog system, bubbles, gibberish sound effects
 - [ ] Boost orbs
 - [ ] Enemies
 

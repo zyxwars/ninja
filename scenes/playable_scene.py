@@ -48,8 +48,7 @@ class PlayableScene:
             self.tiles.sprites())
         self.player.sprite.draw(screen_surface, self.shift)
 
-        # TODO: make camera speed a config variable
         self.shift[0] += ((self.camera_pos.x -
-                           (player_pos[0] + self.shift[0])) / 500) * game.delta_time
+                           (player_pos[0] + self.shift[0])) / config.CAMERA_X_SPEED) * game.delta_time
         self.shift[1] += ((self.camera_pos.y -
-                           (player_pos[1] + self.shift[1])) / 500) * game.delta_time
+                           (player_pos[1] + self.shift[1])) / config.CAMERA_Y_SPEED) * game.delta_time

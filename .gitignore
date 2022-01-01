@@ -1,5 +1,6 @@
 test.py
 test.txt
+data.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

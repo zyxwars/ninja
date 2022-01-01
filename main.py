@@ -1,5 +1,4 @@
 import pygame as pg
-import random
 
 from utils import debug
 import config
