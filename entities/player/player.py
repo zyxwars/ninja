@@ -57,7 +57,7 @@ class Player(AnimatedHumanoid):
         self.last_grounded = self.is_grounded
         self.last_gravity = self.dir.y
 
-        return self.rect.topleft
+        return self.rect.center
 
     def get_input(self):
         keys = pg.key.get_pressed()

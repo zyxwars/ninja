@@ -1,15 +1,17 @@
+Add convert or convert_alpha to every image for massive performance improvement
+
 # Current:
 
 # Back burner:
 
 - [ ] Smooth out scrolling jitter over small distance
-- [ ] Block camera movement over 0, 0
-- [ ] Add image background, parallax
+- [x] Block camera movement over 0, 0
+- [x] Add image background, parallax
 - [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
 - [ ] Add editor undo button
-- [ ] Change the multi surface layout to single surface with multiple sprite groups
 - [ ] Add jump buffer back
+- [ ] Background scrolling doesn't work over 0, 0
 
 # Bugs:
 

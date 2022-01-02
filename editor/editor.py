@@ -50,8 +50,8 @@ class Editor:
         self.grid_surface.set_alpha(GRID_OPACITY)
 
         pg.mouse.set_visible(False)
-        self.cursors = {'normal': pg.image.load(get_path(__file__, 'assets/normal.png')), 'grab': pg.image.load(get_path(__file__, 'assets/grab.png')),
-                        'eraser': pg.image.load(get_path(__file__, 'assets/eraser.png')), 'picker': pg.image.load(get_path(__file__, 'assets/picker.png'))}
+        self.cursors = {'normal': pg.image.load(get_path(__file__, 'assets/normal.png')).convert_alpha(), 'grab': pg.image.load(get_path(__file__, 'assets/grab.png')).convert_alpha(),
+                        'eraser': pg.image.load(get_path(__file__, 'assets/eraser.png')).convert_alpha(), 'picker': pg.image.load(get_path(__file__, 'assets/picker.png')).convert_alpha()}
         self.current_cursor = 'normal'
         self.toggle_cursors = ['picker']
         # Tile gets overwritten on the second frame right after picking it
