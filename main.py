@@ -13,7 +13,7 @@ class Game:
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.scene = Hub(self.change_level, './scenes/level/plane.csv')
+        self.scene = Hub(self.change_level, './scenes/level/hub.csv')
 
     def run(self):
         while True:

@@ -74,7 +74,7 @@ class PlayableScene:
         # Python modulo returns -12 % 7 as 2, c_mod returns -5
         # The scrolling doesn't work when shift is positive
         screen_surface.blit(
-            self.background, (0 + utils.c_mod((self.shift[0] * 0.2), self.background.get_width() / 2), 0))
+            self.background, (0 + utils.c_mod((self.shift[0] * 0.2), self.background.get_width() / 2), -100))
 
         screen_surface.blit(
             self.background2, (0 + utils.c_mod((self.shift[0] * 0.3), self.background2.get_width() / 2), 0))
