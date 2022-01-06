@@ -3,7 +3,7 @@ import pygame as pg
 from utils import debug
 import config
 import game
-from scenes.level.hub import Hub
+from scenes.playable_scene import PlayableScene
 
 
 class Game:
@@ -13,7 +13,7 @@ class Game:
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.scene = Hub(self.change_level, './scenes/level/hub.csv')
+        self.scene = PlayableScene('./scenes/map/1.json')
 
     def run(self):
         while True:
