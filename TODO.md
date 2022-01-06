@@ -2,14 +2,15 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
+- [ ] Organize layers
+- [ ] Create tiled objects for entities, triggers
+
 # Back burner:
 
 - [ ] Smooth out scrolling jitter over small distance
 - [x] Block camera movement over 0, 0
 - [x] Add image background, parallax
-- [ ] Add paint bucket
 - [ ] Minimize the number of places where assets are loaded in
-- [ ] Add editor undo button
 - [ ] Add jump buffer back
 - [ ] Background scrolling doesn't work over 0, 0
 
@@ -29,7 +30,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [x] Sound effects
   - [ ] Add variation
   - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
-- [ ] Add layers to editor
+- [x] Move to Tiled
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen

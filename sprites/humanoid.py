@@ -55,7 +55,7 @@ class Humanoid(ShiftableSprite):
         self.is_touching_right_wall = False
 
         for tile in tiles:
-            if tile.colliderect(self.rect):
+            if tile.rect.colliderect(self.rect):
                 if self.dir.x > 0:
                     self.rect.right = tile.rect.left
                     self.touching_wall = 'right'
@@ -77,7 +77,7 @@ class Humanoid(ShiftableSprite):
         temp_rect = temp_rect.inflate(0, 1)
 
         for tile in tiles:
-            if tile.colliderect(temp_rect):
+            if tile.rect.colliderect(temp_rect):
                 # Falling
                 if self.dir.y > 0:
                     self.rect.bottom = tile.rect.top
