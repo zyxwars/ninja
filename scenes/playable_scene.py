@@ -5,12 +5,9 @@ import math
 from sprites.player.player import Player
 import config
 import game
-from utils import debug
-from utils.get_path import get_path
-from utils.sheet_parser import SheetParser
+from utils import debug, get_path, SheetParser, ShiftableGroup, c_mod
 from sprites.tile import Tile
-from utils import ShiftableGroup
-import utils
+from .trigger import Trigger
 
 
 def make_scrollable(surface: pg.surface.Surface, scale_by_x=True):
@@ -42,6 +39,7 @@ class PlayableScene:
         self.terrain = ShiftableGroup()
         self.player = None
         self.foreground = ShiftableGroup()
+        self.triggers = []
 
         self.camera_pos = pg.Vector2(
             config.SCREEN_CENTER[0], config.SCREEN_CENTER[1] + 100)
@@ -49,6 +47,13 @@ class PlayableScene:
         self.last_player_pos = (0, 0)
 
         self.load_map(map_path)
+
+    def load_trigger(self, trigger):
+        """Override this to add extra trigger types, or change trigger behavior"""
+
+        if trigger['name'] == 'finish':
+            self.triggers.append(
+                Trigger(lambda: print('finish level'), trigger['x'], trigger['y'], trigger['width'], trigger['height']))
 
     def load_map(self, map_path):
         with open(map_path, encoding='utf-8') as f:
@@ -66,7 +71,7 @@ class PlayableScene:
                         x = i % w * config.TILE_SIZE
                         y = i // w * config.TILE_SIZE
 
-                        # The first tile is 1, but the sheet parser starts with x, y = 0, 0
+                        # tile - 1 >> The first tile has value of 1, but the sheet parser starts with x, y = 0, 0
                         tile = Tile((x, y),
                                     sheet_parser.load_image(((tile - 1) % 10, (tile - 1) // 10)))
 
@@ -83,11 +88,14 @@ class PlayableScene:
                             if entity['name'] == 'player':
                                 self.player = Player(
                                     (entity['x'], entity['y']), (64, 64))
+                    elif layer['name'] == 'triggers':
+                        for trigger in layer['objects']:
+                            self.load_trigger(trigger)
 
     def update(self, screen_surface):
         screen_surface.fill('black')
         screen_surface.blit(
-            self.bg_img, (0 + utils.c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), 0))
+            self.bg_img, (0 + c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), 0))
 
         # Background
         self.background.draw(screen_surface, self.shift)
@@ -102,6 +110,9 @@ class PlayableScene:
             player_pos = (0, 0)
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
+        # Triggers
+        for trigger in self.triggers:
+            trigger.collidepoint(player_pos[0], player_pos[1])
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -

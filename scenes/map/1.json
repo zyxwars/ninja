@@ -59,9 +59,31 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":11,
+         "name":"triggers",
+         "objects":[
+                {
+                 "height":382.666666666667,
+                 "id":19,
+                 "name":"finish",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":61.3333333333335,
+                 "x":2078.66666666667,
+                 "y":0.666666666666686
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":11,
- "nextobjectid":18,
+ "nextlayerid":12,
+ "nextobjectid":21,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

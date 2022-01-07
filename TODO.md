@@ -3,7 +3,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Current:
 
 - [x] Organize layers
-- [ ] Create tiled objects for entities, triggers
+- [x] Create tiled objects for entities, triggers
+- [ ] Add slower shifting bg layer for objects like trees
 
 # Back burner:
 
