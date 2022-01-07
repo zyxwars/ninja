@@ -42,6 +42,10 @@ class Player(AnimatedHumanoid):
         debug.debug('is_grounded', self.is_grounded)
         debug.debug('dir', self.dir)
 
+    def draw(self, screen, shift: pg.Vector2):
+        screen.blit(self.image, (self.rect.x +
+                    int(shift.x), self.rect.y + int(shift.y)))
+
     def update(self, tiles):
         self.debug()
         self.get_input()

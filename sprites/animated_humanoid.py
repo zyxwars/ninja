@@ -56,7 +56,7 @@ class AnimatedHumanoid(Humanoid):
         elif (self.animation in [self.jump_animation, self.fall_animation] and self.dir.y > 0.5) or self.dir.y > 1:
             self.animation = self.fall_animation
         # Idle
-        elif self.dir == pg.math.Vector2(0, 0):
+        elif self.dir == pg.Vector2(0, 0):
             self.animation = self.idle_animation
 
         # Restart animation  when animation state changes

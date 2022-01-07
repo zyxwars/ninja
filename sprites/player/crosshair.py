@@ -25,8 +25,8 @@ class Crosshair(pg.sprite.Sprite):
         self.projectiles.draw(surface)
 
     def animate(self, player_pos):
-        distance_vector = pg.math.Vector2(
-            pg.mouse.get_pos()) - pg.math.Vector2(player_pos)
+        distance_vector = pg.Vector2(
+            pg.mouse.get_pos()) - pg.Vector2(player_pos)
         angle = math.degrees(
             math.atan2(-distance_vector.y, distance_vector.x))
 

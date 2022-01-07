@@ -2,7 +2,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Organize layers
+- [x] Organize layers
 - [ ] Create tiled objects for entities, triggers
 
 # Back burner:
@@ -35,9 +35,9 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [ ] Saving game state
 - [ ] Menu screen
 
+- [ ] Enemies
 - [ ] Dialog system, bubbles, gibberish sound effects
 - [ ] Boost orbs
-- [ ] Enemies
 
 - [ ] Resolution scaling
 

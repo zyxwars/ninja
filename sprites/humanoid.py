@@ -3,15 +3,14 @@ import pygame as pg
 import config
 import game
 from utils import debug
-from utils.shiftable_sprite import ShiftableSprite
 
 
-class Humanoid(ShiftableSprite):
+class Humanoid(pg.sprite.Sprite):
     def __init__(self, rect):
         super().__init__()
-        self.pos = pg.math.Vector2(rect.x, rect.y)
+        self.pos = pg.Vector2(rect.x, rect.y)
         self.rect = rect
-        self.dir = pg.math.Vector2(0, 0)
+        self.dir = pg.Vector2(0, 0)
         self.speed = config.SPEED
         self.jump_force = config.JUMP_FORCE
         self.gravity = config.GRAVITY

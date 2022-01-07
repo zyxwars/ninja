@@ -6,6 +6,9 @@ import game
 from scenes.playable_scene import PlayableScene
 
 
+
+
+
 class Game:
     def __init__(self):
         pg.init()
