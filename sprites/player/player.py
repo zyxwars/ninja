@@ -9,18 +9,18 @@ import utils
 
 
 class Player(AnimatedHumanoid):
-    def __init__(self, pos, size):
+    def __init__(self, pos, scale):
         sheet_parser = utils.SheetParser(
             __file__, 'assets/player_sheet.png')
-        self.image = pg.Surface(size).convert_alpha()
+        self.image = pg.Surface(scale).convert_alpha()
 
-        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, size),
-                           'attack': sheet_parser.load_images_row((0, 1), 4, size),
-                           'jump': sheet_parser.load_images_row((0, 2), 1, size),
-                           'fall': sheet_parser.load_images_row((0, 3), 1, size),
-                           'run': sheet_parser.load_images_row((0, 4), 3, size),
-                           'push': sheet_parser.load_images_row((0, 5), 3, size),
-                           'wall_slide': sheet_parser.load_images_row((0, 6), 1, size)}
+        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, scale),
+                           'attack': sheet_parser.load_images_row((0, 1), 4, scale),
+                           'jump': sheet_parser.load_images_row((0, 2), 1, scale),
+                           'fall': sheet_parser.load_images_row((0, 3), 1, scale),
+                           'run': sheet_parser.load_images_row((0, 4), 3, scale),
+                           'push': sheet_parser.load_images_row((0, 5), 3, scale),
+                           'wall_slide': sheet_parser.load_images_row((0, 6), 1, scale)}
 
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))

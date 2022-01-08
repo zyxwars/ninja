@@ -1,3 +1,4 @@
+from typing import Tuple
 import pygame as pg
 import json
 import math
@@ -29,11 +30,19 @@ def make_scrollable(surface: pg.surface.Surface, scale_by_x=True):
     return pg.transform.smoothscale(new_surface, (w * scale, h * scale))
 
 
+class Image():
+    def __init__(self, image, x, y, *args, **kwargs):
+        self.image = image.convert_alpha()
+        # Tiled tile object shows coords as bottomleft
+        self.rect = self.image.get_rect(bottomleft=(x, y))
+
+
 class PlayableScene:
     def __init__(self, map_path):
         self.bg_img = make_scrollable(pg.image.load(
             get_path(__file__, 'assets/bg.png')))
 
+        self.parallax = []
         self.background = ShiftableGroup()
         # Collidable with player
         self.terrain = ShiftableGroup()
@@ -88,6 +97,15 @@ class PlayableScene:
                             if entity['name'] == 'player':
                                 self.player = Player(
                                     (entity['x'], entity['y']), (64, 64))
+
+                    elif layer['name'] == 'parallax':
+                        tree_sheet_parser = SheetParser(
+                            __file__, 'assets/trees.png')
+                        for img in layer['objects']:
+                            if img['name'].startswith('tree'):
+                                self.parallax.append(Image(tree_sheet_parser.load_image(
+                                    ((int(img['name'].split('_')[-1]) - 1), 0), (330, 600)), img['x'], img['y']))
+
                     elif layer['name'] == 'triggers':
                         for trigger in layer['objects']:
                             self.load_trigger(trigger)
@@ -95,7 +113,11 @@ class PlayableScene:
     def update(self, screen_surface):
         screen_surface.fill('black')
         screen_surface.blit(
-            self.bg_img, (0 + c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), 0))
+            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), 0))
+
+        for img in self.parallax:
+            screen_surface.blit(
+                img.image, (img.rect.x + self.shift[0] * 0.9, img.rect.y))
 
         # Background
         self.background.draw(screen_surface, self.shift)
