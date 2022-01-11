@@ -13,7 +13,7 @@ class Game:
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
 
-        self.scene = PlayableScene('./scenes/map/1.json')
+        self.scene = PlayableScene('./scenes/map/2.json')
 
     def run(self):
         while True:

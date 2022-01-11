@@ -51,7 +51,7 @@ class PlayableScene:
         self.triggers = []
 
         self.camera_pos = pg.Vector2(
-            config.SCREEN_CENTER[0], config.SCREEN_CENTER[1] + 100)
+            config.SCREEN_CENTER[0], config.SCREEN_HEIGHT * 0.6)
         self.shift = pg.Vector2(0, 0)
         self.last_player_pos = (0, 0)
 
@@ -111,15 +111,19 @@ class PlayableScene:
                             self.load_trigger(trigger)
 
     def update(self, screen_surface):
+        # Static image background
         screen_surface.fill('black')
-        screen_surface.blit(
-            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), 0))
 
+        # Clamp background vertically between zero and its height, while also having parallax effect
+        screen_surface.blit(
+            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), min(0, max(self.shift[1] * 0.9, -self.bg_img.get_height() + config.SCREEN_HEIGHT))))
+
+        # Parallax background
         for img in self.parallax:
             screen_surface.blit(
-                img.image, (img.rect.x + self.shift[0] * 0.9, img.rect.y))
+                img.image, (img.rect.x + self.shift[0] * 0.9, img.rect.y + self.shift[1]))
 
-        # Background
+        # Background tiles
         self.background.draw(screen_surface, self.shift)
         # Collidable
         self.terrain.draw(screen_surface, self.shift)
@@ -142,6 +146,7 @@ class PlayableScene:
         self.shift[1] += ((self.camera_pos.y -
                            (player_pos[1] + self.shift[1])) / config.CAMERA_Y_SPEED) * game.delta_time
         self.shift[0] = min(self.shift[0], 0)
-        self.shift[1] = min(self.shift[1], 0)
+        # The background doesn't scroll vertically so allow scrolling to negatives
+        # self.shift[1] = min(self.shift[1], 0)
 
         self.last_player_pos = player_pos

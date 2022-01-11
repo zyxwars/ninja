@@ -1,6 +1,7 @@
 import pygame as pg
 
 import config
+from sprites.damageable import Damageable
 from utils import debug
 import utils
 import game
@@ -8,7 +9,7 @@ from ..animated_humanoid import AnimatedHumanoid
 import utils
 
 
-class Player(AnimatedHumanoid):
+class Player(AnimatedHumanoid, Damageable):
     def __init__(self, pos, scale):
         sheet_parser = utils.SheetParser(
             __file__, 'assets/player_sheet.png')
@@ -33,7 +34,10 @@ class Player(AnimatedHumanoid):
         self.last_grounded = False
         self.last_gravity = 0
 
-        super().__init__(self.image.get_rect(topleft=pos), self.animations)
+        AnimatedHumanoid.__init__(
+            self, self.image.get_rect(topleft=pos), self.animations)
+        Damageable.__init__(self, 100, lambda: print(
+            'ouch'), lambda: print('oof'))
 
     def debug(self):
         debug.debug('rect', self.rect)
@@ -75,6 +79,7 @@ class Player(AnimatedHumanoid):
 
         if keys[pg.K_SPACE]:
             self.jump()
+            self.damage(50)
 
     def jump(self):
         if self.is_grounded:
