@@ -49,6 +49,7 @@ class PlayableScene:
         self.player = None
         self.foreground = ShiftableGroup()
         self.triggers = []
+        self.fg_objects = []
 
         self.camera_pos = pg.Vector2(
             config.SCREEN_CENTER[0], config.SCREEN_HEIGHT * 0.6)
@@ -98,13 +99,13 @@ class PlayableScene:
                                 self.player = Player(
                                     (entity['x'], entity['y']), (64, 64))
 
-                    elif layer['name'] == 'parallax':
+                    elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
                             __file__, 'assets/trees.png')
                         for img in layer['objects']:
-                            if img['name'].startswith('tree'):
-                                self.parallax.append(Image(tree_sheet_parser.load_image(
-                                    ((int(img['name'].split('_')[-1]) - 1), 0), (330, 600)), img['x'], img['y']))
+                            tree_layer = self.parallax if 'parallax' in layer['name'] else self.fg_objects
+                            tree_layer.append(Image(tree_sheet_parser.load_image(
+                                ((int(img['name'].split('_')[-1]) - 1), 0), (330, 600)), img['x'], img['y']))
 
                     elif layer['name'] == 'triggers':
                         for trigger in layer['objects']:
@@ -139,6 +140,10 @@ class PlayableScene:
         # Triggers
         for trigger in self.triggers:
             trigger.collidepoint(player_pos[0], player_pos[1])
+        # Parallax foreground
+        for img in self.fg_objects:
+            screen_surface.blit(
+                img.image, (img.rect.x + self.shift[0], img.rect.y + self.shift[1]))
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -

@@ -12,8 +12,9 @@ class Game:
         self.screen = pg.display.set_mode(
             (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
+        self.is_debug = False
 
-        self.scene = PlayableScene('./scenes/map/2.json')
+        self.scene = PlayableScene('./scenes/map/1.json')
 
     def run(self):
         while True:
@@ -23,13 +24,17 @@ class Game:
             for e in game.events:
                 if e.type == pg.QUIT:
                     pg.quit()
+                if e.type == pg.KEYDOWN:
+                    if e.key == pg.K_F3:
+                        self.is_debug = not self.is_debug
 
             if self.scene:
                 self.scene.update(self.screen)
 
             debug.debug('delta_time', game.delta_time)
             debug.debug('fps', self.clock.get_fps())
-            debug.draw(self.screen)
+            if self.is_debug:
+                debug.draw(self.screen)
 
             pg.display.update()
             game.delta_time = self.clock.tick(300)
