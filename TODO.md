@@ -2,9 +2,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [x] Organize layers
-- [x] Create tiled objects for entities, triggers
-- [x] Add slower shifting bg layer for objects like trees
+- [ ] Add proper support for larger non tileable images, like trees
 
 # Back burner:
 
