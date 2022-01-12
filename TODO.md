@@ -27,8 +27,6 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Roadmap:
 
-### Before v1
-
 - [x] Textures
   - [x] Texture importing workflow
   - [ ] Fall impact smoke, particles
@@ -37,12 +35,17 @@ Add convert or convert_alpha to every image for massive performance improvement
   - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
 - [x] Move to Tiled
 - [ ] Enemies
+
+### v0.2 ^
+
 - [ ] Dialog system, bubbles, gibberish sound effects
 - [ ] Boost orbs
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen
 - [ ] Resolution scaling
+
+### v1 ^
 
 ### Concepts
 
