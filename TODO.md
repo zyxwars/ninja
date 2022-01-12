@@ -5,6 +5,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [ ] Add proper support for larger non tileable images, like trees
 - [x] Start work on enemies
 - [ ] Enemy player alert
+  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
+- [ ] Fix roaming enemies getting stuck when jumping
 
 # Back burner:
 

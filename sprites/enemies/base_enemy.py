@@ -25,7 +25,8 @@ class BaseEnemy(AnimatedHumanoid):
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
 
         self.speed = config.SPEED * 0.5
-        self.patrol_route = [600, 1500]
+        self.patrol_route = [600, 1000]
+        self.roam_route = [10, 1000]
 
     def patrol(self):
         if self.touching_wall and self.is_grounded:
@@ -64,6 +65,11 @@ class BaseEnemy(AnimatedHumanoid):
             self.dir.x = random.randint(-1, 1)
             return
 
+        # Reverse direction
+        if self.pos.x < self.roam_route[0] or self.pos.x > self.roam_route[1]:
+            self.dir.x = - self.dir.x
+
+        # Make the chance equal with different fps > delta_time
         if random.random() < 0.001 * game.delta_time:
             self.dir.x = -self.dir.x
 

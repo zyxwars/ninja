@@ -47,7 +47,7 @@ class PlayableScene:
         self.background = ShiftableGroup()
         # Collidable with player
         self.terrain = ShiftableGroup()
-        self.test_enemy = None
+        self.test_enemies = ShiftableGroup()
         self.player = None
         self.foreground = ShiftableGroup()
         self.triggers = []
@@ -101,8 +101,8 @@ class PlayableScene:
                                 self.player = Player(
                                     (entity['x'], entity['y']), (64, 64))
                             elif entity['name'] == 'enemy':
-                                self.test_enemy = BaseEnemy(
-                                    (entity['x'], entity['y']), (64, 64))
+                                self.test_enemies.add(BaseEnemy(
+                                    (entity['x'], entity['y']), (64, 64)))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -143,8 +143,8 @@ class PlayableScene:
             player_pos = (0, 0)
 
         # TODO: Make child class for enemy support as not every playable scene will have them
-        self.test_enemy.update(self.terrain.sprites(), player_pos)
-        self.test_enemy.draw(screen_surface, self.shift)
+        self.test_enemies.update(self.terrain.sprites(), player_pos)
+        self.test_enemies.draw(screen_surface, self.shift)
 
         # Foreground
         self.foreground.draw(screen_surface, self.shift)

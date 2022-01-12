@@ -18,10 +18,6 @@ class Humanoid(pg.sprite.Sprite):
         self.touching_wall = False
         self.facing_right = True
 
-    def draw(self, screen, shift: pg.Vector2):
-        screen.blit(self.image, (self.rect.x +
-                    int(shift.x), self.rect.y + int(shift.y)))
-
     def add_x(self, x):
         # If delta time is large enough it is possible for add pos to be bigger than the tile
         # making the player phase through it
