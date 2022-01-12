@@ -26,7 +26,7 @@ class AnimatedHumanoid(Humanoid):
         self.is_attacking = False
         self.jumped_from_wall = False
 
-        self.animation = []
+        self.animation = self.idle_animation
         self.animation_index = 0
 
     def animate(self):

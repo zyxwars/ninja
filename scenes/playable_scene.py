@@ -2,6 +2,7 @@ from typing import Tuple
 import pygame as pg
 import json
 import math
+from sprites.enemies.base_enemy import BaseEnemy
 
 from sprites.player.player import Player
 import config
@@ -46,6 +47,7 @@ class PlayableScene:
         self.background = ShiftableGroup()
         # Collidable with player
         self.terrain = ShiftableGroup()
+        self.test_enemy = None
         self.player = None
         self.foreground = ShiftableGroup()
         self.triggers = []
@@ -98,6 +100,9 @@ class PlayableScene:
                             if entity['name'] == 'player':
                                 self.player = Player(
                                     (entity['x'], entity['y']), (64, 64))
+                            elif entity['name'] == 'enemy':
+                                self.test_enemy = BaseEnemy(
+                                    (entity['x'], entity['y']), (64, 64))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -128,6 +133,7 @@ class PlayableScene:
         self.background.draw(screen_surface, self.shift)
         # Collidable
         self.terrain.draw(screen_surface, self.shift)
+
         # Player
         if self.player:
             player_pos = self.player.update(
@@ -135,6 +141,11 @@ class PlayableScene:
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)
+
+        # TODO: Make child class for enemy support as not every playable scene will have them
+        self.test_enemy.update(self.terrain.sprites(), player_pos)
+        self.test_enemy.draw(screen_surface, self.shift)
+
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
         # Triggers

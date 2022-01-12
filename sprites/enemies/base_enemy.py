@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 import math
 
 from ..animated_humanoid import AnimatedHumanoid
@@ -23,18 +24,53 @@ class BaseEnemy(AnimatedHumanoid):
 
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
 
-        self.speed = config.ENEMY_SPEED
+        self.speed = config.SPEED * 0.5
+        self.patrol_route = [600, 1500]
+
+    def patrol(self):
+        if self.touching_wall and self.is_grounded:
+            self.jump()
+
+        if self.dir.x == 0:
+            self.dir.x = random.randint(-1, 1)
+            return
+
+        # Reverse direction
+        if self.pos.x < self.patrol_route[0] or self.pos.x > self.patrol_route[1]:
+            self.dir.x = - self.dir.x
+
+    def follow(self, pos):
+        if self.touching_wall and self.is_grounded:
+            self.jump()
+
+        if self.rect.centerx > pos[0]:
+            self.dir.x = -1
+        elif self.rect.centerx < pos[0]:
+            self.dir.x = 1
+        else:
+            self.dir.x = 0
+
+    def roam(self):
+        if self.touching_wall and self.is_grounded:
+            # Sometimes turn and sometimes jump over obstacles
+            if random.random() < 0.5:
+                self.jump()
+            else:
+                self.dir.x = -self.dir.x
+
+            return
+
+        if self.dir.x == 0:
+            self.dir.x = random.randint(-1, 1)
+            return
+
+        if random.random() < 0.001 * game.delta_time:
+            self.dir.x = -self.dir.x
 
     def update(self, tiles, player_pos):
-        self.dir.x = 0
 
-        if self.rect.centerx > player_pos[0]:
-            self.dir.x = -1
-        elif self.rect.centerx < player_pos[0]:
-            self.dir.x = 1
-
-        if self.touching_wall and self.is_grounded:
-            self.dir.y = -1.5
+        # self.follow(player_pos)
+        self.roam()
 
         self.move(tiles)
         self.animate()

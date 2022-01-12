@@ -3,6 +3,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Current:
 
 - [ ] Add proper support for larger non tileable images, like trees
+- [x] Start work on enemies
+- [ ] Enemy player alert
 
 # Back burner:
 
