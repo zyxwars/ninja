@@ -31,6 +31,7 @@ class AnimatedHumanoid(Humanoid):
 
     def animate(self):
         last_frame_animation = self.animation
+        self.animation_speed = config.ANIMATION_SPEED
 
         # Attacking
         if self.is_attacking:

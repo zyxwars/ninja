@@ -2,13 +2,15 @@ import pygame as pg
 import random
 import math
 
+from sprites.damageable import Damageable
+
 from ..animated_humanoid import AnimatedHumanoid
 import config
 import utils
 import game
 
 
-class BaseEnemy(AnimatedHumanoid):
+class BaseEnemy(AnimatedHumanoid, Damageable):
     def __init__(self, pos, size):
         sheet_parser = utils.SheetParser(
             __file__, 'assets/enemy_sheet.png')
@@ -18,11 +20,13 @@ class BaseEnemy(AnimatedHumanoid):
                            'attack': sheet_parser.load_images_row((0, 1), 4, size),
                            'jump': sheet_parser.load_images_row((0, 2), 1, size),
                            'fall': sheet_parser.load_images_row((0, 3), 1, size),
-                           'run': sheet_parser.load_images_row((0, 4), 3, size),
+                           'run': sheet_parser.load_images_row((0, 4), 2, size),
                            'push': sheet_parser.load_images_row((0, 5), 3, size),
                            'wall_slide': sheet_parser.load_images_row((0, 6), 1, size)}
 
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
+        Damageable.__init__(self, 100, lambda: print(
+            f'damaged {self.rect.topleft}'), self.kill)
 
         self.speed = config.SPEED * 0.5
         self.patrol_route = [600, 1000]
@@ -73,10 +77,6 @@ class BaseEnemy(AnimatedHumanoid):
         if random.random() < 0.001 * game.delta_time:
             self.dir.x = -self.dir.x
 
-    def update(self, tiles, player_pos):
-
-        # self.follow(player_pos)
-        self.roam()
-
+    def update(self, tiles):
         self.move(tiles)
         self.animate()

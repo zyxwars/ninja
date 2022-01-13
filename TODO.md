@@ -2,14 +2,16 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Add proper support for larger non tileable images, like trees
-- [x] Start work on enemies
-- [ ] Enemy player alert
-  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
-- [ ] Fix roaming enemies getting stuck when jumping
+- [ ] Make attack function a class
+- [ ] Framework for adding weapons and attack types easily
+- [ ] Make shift accessible in debug
 
 # Back burner:
 
+- [ ] Enemy player alert
+  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
+- [ ] Fix roaming enemies getting stuck when jumping
+- [ ] Add proper support for larger non tileable images, like trees
 - [x] Block camera movement over 0, 0
 - [x] Add image background, parallax
 - [ ] Minimize the number of places where assets are loaded in

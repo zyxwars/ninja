@@ -134,17 +134,17 @@ class PlayableScene:
         # Collidable
         self.terrain.draw(screen_surface, self.shift)
 
+        # TODO: Make child class for enemy support as not every playable scene will have them
+        self.test_enemies.update(self.terrain.sprites())
+        self.test_enemies.draw(screen_surface, self.shift)
+
         # Player
         if self.player:
             player_pos = self.player.update(
-                self.terrain.sprites())
+                self.terrain.sprites(), self.test_enemies.sprites())
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)
-
-        # TODO: Make child class for enemy support as not every playable scene will have them
-        self.test_enemies.update(self.terrain.sprites(), player_pos)
-        self.test_enemies.draw(screen_surface, self.shift)
 
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
