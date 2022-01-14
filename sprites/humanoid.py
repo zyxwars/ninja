@@ -1,98 +1,105 @@
 import pygame as pg
+import math
 
-import config
+from .physics_entity import PhysicsEntity
 import game
+import config
 from utils import debug
+from .damageable import Damageable
 
 
-class Humanoid(pg.sprite.Sprite):
-    def __init__(self, rect):
-        super().__init__()
-        self.pos = pg.Vector2(rect.x, rect.y)
-        self.rect = rect
-        self.dir = pg.Vector2(0, 0)
-        self.speed = config.SPEED
-        self.jump_force = config.JUMP_FORCE
-        self.gravity = config.GRAVITY
-        self.is_grounded = False
-        self.touching_wall = False
-        self.facing_right = True
+class Humanoid(PhysicsEntity):
+    def __init__(self, rect, animations):
+        super().__init__(rect)
 
-    def add_x(self, x):
-        # If delta time is large enough it is possible for add pos to be bigger than the tile
-        # making the player phase through it
-        if abs(abs(self.pos.x) - abs(self.pos.x + x)) >= config.TILE_SIZE:
-            x = (config.TILE_SIZE - 1) * (x/abs(x))
+        # TODO: Change the animatin initialization
+        self.idle_animation = animations['idle']
+        self.attack_animation = animations['attack']
+        self.jump_animation = animations['jump']
+        self.fall_animation = animations['fall']
+        self.run_animation = animations['run']
+        self.push_animation = animations['push']
+        self.wall_slide_animation = animations['wall_slide']
 
-        self.pos.x += x
+        self.animation_speed = config.ANIMATION_SPEED
+        self.attack_speed = config.ATTACK_SPEED
 
-    def add_y(self, y):
-        if abs(abs(self.pos.y) - abs(self.pos.y + y)) >= config.TILE_SIZE:
-            y = (config.TILE_SIZE - 1) * (y/abs(y))
+        # Attack speed is directly tied to the attack animation speed
+        self.is_attacking = False
+        self.jumped_from_wall = False
 
-        self.pos.y += y
+        self.animation = self.idle_animation
+        self.animation_index = 0
 
-    def move(self, tiles):
-        self.add_x(self.dir.x * self.speed * game.delta_time)
-        self.rect.x = int(self.pos.x)
-        self.collide_horizontal(tiles)
+    def attack(self, entities, attack_sound, hit_sound):
+        if self.is_attacking:
+            return
 
-        # Jump force and gravity are directly added to the y dir
-        self.apply_gravity()
-        self.add_y(self.dir.y * game.delta_time)
-        self.rect.y = int(self.pos.y)
-        self.collide_vertical(tiles)
+        is_hit = False
+        self.is_attacking = True
 
-        # If dir.x = 0 keep facing in the last direction
-        if self.dir.x > 0:
-            self.facing_right = True
-        elif self.dir.x < 0:
-            self.facing_right = False
+        for entity in entities:
+            if entity is self:
+                continue
 
-    def collide_horizontal(self, tiles):
-        self.touching_wall = False
-        self.is_touching_right_wall = False
+            # TODO: use collidelist
+            attack_rect = self.rect.copy()
+            attack_rect.x += 8 if self.facing_right else -8
 
-        for tile in tiles:
-            if tile.rect.colliderect(self.rect):
-                if self.dir.x > 0:
-                    self.rect.right = tile.rect.left
-                    self.touching_wall = 'right'
-                if self.dir.x < 0:
-                    self.rect.left = tile.rect.right
-                    self.touching_wall = 'left'
+            if attack_rect.colliderect(entity.rect):
+                if isinstance(entity, Damageable):
+                    hit_sound.play()
+                    entity.damage(25)
+                    is_hit = True
 
-                self.pos.x = self.rect.x
+        if not is_hit:
+            attack_sound.play()
 
-    def collide_vertical(self, tiles):
-        self.is_grounded = False
+    def animate(self):
+        last_frame_animation = self.animation
+        self.animation_speed = config.ANIMATION_SPEED
 
-        # Check collision 1 pixel below the actual position
-        # This prevents collision not being detected when apply_gravity() moves less than 1 pixel every frame
+        # Attacking
+        if self.is_attacking:
+            self.animation = self.attack_animation
+            self.animation_speed = self.attack_speed
+        # Touching wall
+        elif self.touching_wall:
+            # Running against wall
+            if self.is_grounded:
+                self.animation = self.push_animation
+            # Wall sliding
+            else:
+                self.animation = self.wall_slide_animation
+                # Slow down gravity when player is wallsliding
+                self.dir.y = min(self.dir.y, 0.5)
+        # Running
+        elif self.is_grounded and self.dir.x != 0:
+            self.animation = self.run_animation
+        # Jumping
+        elif self.dir.y < 0:
+            self.animation = self.jump_animation
+        # Falling
+        elif (self.animation in [self.jump_animation, self.fall_animation] and self.dir.y > 0.5) or self.dir.y > 1:
+            self.animation = self.fall_animation
+        # Idle
+        elif self.dir == pg.Vector2(0, 0):
+            self.animation = self.idle_animation
 
-        # Lowering the rect causes head collision to be confused with horizontal collision
-        # Inflating the rect instead of moving it seems to work for now
-        temp_rect = self.rect.copy()
-        temp_rect = temp_rect.inflate(0, 1)
+        # Restart animation  when animation state changes
+        # This is required since attack speed is tied to the animation,
+        # animation starting on index > 0 caused the attack cooldown to reset early
+        if last_frame_animation != self.animation:
+            self.animation_index = 0
 
-        for tile in tiles:
-            if tile.rect.colliderect(temp_rect):
-                # Falling
-                if self.dir.y > 0:
-                    self.rect.bottom = tile.rect.top
-                    self.is_grounded = True
-                # Jumping
-                if self.dir.y < 0:
-                    self.rect.top = tile.rect.bottom
+        if self.animation_index >= len(self.animation):
+            self.animation_index = 0
+            # End attack animation after it played once
+            if self.is_attacking:
+                self.is_attacking = False
 
-                self.dir.y = 0
-                self.pos.y = self.rect.y
+        # flip_x = !facing_right, flip image only when not facing right
+        self.image = pg.transform.flip(
+            self.animation[math.floor(self.animation_index)], not self.facing_right, False)
 
-    def apply_gravity(self):
-        # Limit max gravity momentum
-        if self.dir.y < 2:
-            self.dir.y += self.gravity * game.delta_time
-
-    def jump(self):
-        # Jump force is a positive number, so to jump we need its opposite
-        self.dir.y = -self.jump_force
+        self.animation_index += self.animation_speed * game.delta_time

@@ -6,6 +6,7 @@ https://opengameart.org/content/wind1 wind sound
 https://opengameart.org/content/liyan hub music
 https://opengameart.org/content/asian-duet music
 https://opengameart.org/content/samurai-nights music
+https://opengameart.org/content/37-hitspunches punch sound effects
 
 ### Images
 

@@ -4,10 +4,8 @@ import game
 
 
 class Damageable():
-    def __init__(self, hp, on_damaged, on_died):
+    def __init__(self, hp):
         self.hp = hp
-        self.on_died = on_died
-        self.on_damaged = on_damaged
 
     def damage(self, dmg_amount):
         self.hp -= dmg_amount
@@ -17,3 +15,9 @@ class Damageable():
             return
 
         self.on_damaged()
+
+    def on_damaged(self):
+        pass
+
+    def on_died(self):
+        pass

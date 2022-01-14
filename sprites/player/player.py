@@ -1,3 +1,4 @@
+import random
 import pygame as pg
 
 import config
@@ -5,11 +6,11 @@ from sprites.damageable import Damageable
 from utils import debug
 import utils
 import game
-from ..animated_humanoid import AnimatedHumanoid
+from ..humanoid import Humanoid
 import utils
 
 
-class Player(AnimatedHumanoid, Damageable):
+class Player(Humanoid, Damageable):
     def __init__(self, pos, scale):
         sheet_parser = utils.SheetParser(
             __file__, 'assets/player_sheet.png')
@@ -23,6 +24,7 @@ class Player(AnimatedHumanoid, Damageable):
                            'push': sheet_parser.load_images_row((0, 5), 3, scale),
                            'wall_slide': sheet_parser.load_images_row((0, 6), 1, scale)}
 
+        # Sounds
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))
         self.jump_sound.set_volume(0.5)
@@ -34,10 +36,22 @@ class Player(AnimatedHumanoid, Damageable):
         self.last_grounded = False
         self.last_gravity = 0
 
-        AnimatedHumanoid.__init__(
+        self.punch_sounds = []
+        for sound_name in range(1, 38):
+            sound = pg.mixer.Sound(
+                utils.get_path(__file__, f'assets/hits/hit{sound_name:02d}.mp3.flac'))
+            sound.set_volume(0.5)
+            self.punch_sounds.append(sound)
+
+        Humanoid.__init__(
             self, self.image.get_rect(topleft=pos), self.animations)
-        Damageable.__init__(self, 100, lambda: print(
-            f'damaged {self}'), lambda: print('oof'))
+        Damageable.__init__(self, 100)
+
+    def on_died(self):
+        pass
+
+    def on_damaged(self):
+        pass
 
     def debug(self):
         debug.debug('rect', self.rect)
@@ -83,7 +97,8 @@ class Player(AnimatedHumanoid, Damageable):
             self.jump()
 
         if mouse[0]:
-            self.attack(entities)
+            self.attack(entities, self.jump_sound,
+                        random.choice(self.punch_sounds))
 
     def jump(self):
         if self.is_grounded:
@@ -105,21 +120,3 @@ class Player(AnimatedHumanoid, Damageable):
             self.last_jumped = 0
 
         super().jump()
-
-    def attack(self, entities):
-        if self.is_attacking:
-            return
-
-        self.is_attacking = True
-
-        for entity in entities:
-            if entity is self:
-                continue
-
-            # TODO: use collidelist
-            temp_rect = self.rect.copy()
-            temp_rect.x += 32 if self.facing_right else -32
-
-            if temp_rect.colliderect(entity.rect):
-                if isinstance(entity, Damageable):
-                    entity.damage(50)

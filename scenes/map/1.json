@@ -65,7 +65,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -118,30 +118,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":94.6666666666667,
-                 "y":768
-                }, 
-                {
-                 "height":0,
-                 "id":68,
-                 "name":"enemy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":638.666666666667,
-                 "y":794.666666666667
-                }, 
-                {
-                 "height":0,
-                 "id":74,
-                 "name":"enemy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":549.333333333333,
-                 "y":784
+                 "x":285.666666666667,
+                 "y":793
                 }, 
                 {
                  "height":0,
@@ -151,41 +129,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":208,
-                 "y":793.333333333333
-                }, 
-                {
-                 "height":0,
-                 "id":76,
-                 "name":"enemy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":318.666666666667,
-                 "y":794.666666666667
-                }, 
-                {
-                 "height":0,
-                 "id":77,
-                 "name":"enemy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":410.666666666667,
-                 "y":786.666666666667
-                }, 
-                {
-                 "height":0,
-                 "id":79,
-                 "name":"enemy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":468,
-                 "y":794
+                 "x":470,
+                 "y":785.333333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -211,7 +156,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -264,7 +209,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }],

@@ -4,13 +4,13 @@ import math
 
 from sprites.damageable import Damageable
 
-from ..animated_humanoid import AnimatedHumanoid
+from ..humanoid import Humanoid
 import config
 import utils
 import game
 
 
-class BaseEnemy(AnimatedHumanoid, Damageable):
+class BaseEnemy(Humanoid, Damageable):
     def __init__(self, pos, size):
         sheet_parser = utils.SheetParser(
             __file__, 'assets/enemy_sheet.png')
@@ -25,12 +25,19 @@ class BaseEnemy(AnimatedHumanoid, Damageable):
                            'wall_slide': sheet_parser.load_images_row((0, 6), 1, size)}
 
         super().__init__(self.image.get_rect(topleft=pos), self.animations)
-        Damageable.__init__(self, 100, lambda: print(
-            f'damaged {self.rect.topleft}'), self.kill)
+        Damageable.__init__(self, 100)
 
         self.speed = config.SPEED * 0.5
         self.patrol_route = [600, 1000]
         self.roam_route = [10, 1000]
+
+    def on_died(self):
+        pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/death.mp3')).play()
+        self.kill()
+
+    def on_damaged(self):
+        self.add_x(5)
 
     def patrol(self):
         if self.touching_wall and self.is_grounded:

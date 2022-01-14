@@ -2,9 +2,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Make attack function a class
 - [ ] Framework for adding weapons and attack types easily
-- [ ] Make shift accessible in debug
+- [ ] Make camera shift accessible in debug
 
 # Back burner:
 
