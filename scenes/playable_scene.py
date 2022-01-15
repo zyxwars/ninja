@@ -41,7 +41,7 @@ class Image():
 class PlayableScene:
     def __init__(self, map_path):
         self.bg_img = make_scrollable(pg.image.load(
-            get_path(__file__, 'assets/bg.png')))
+            get_path(__file__, 'assets/bg.png')).convert())
 
         self.parallax = []
         self.background = ShiftableGroup()
