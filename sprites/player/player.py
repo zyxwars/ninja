@@ -65,10 +65,10 @@ class Player(Humanoid, Damageable):
         screen.blit(self.image, (self.rect.x +
                     int(shift.x), self.rect.y + int(shift.y)))
 
-    def update(self, tiles, entities):
+    def update(self, terrain, enemies, collectables):
         self.debug()
-        self.get_input(entities)
-        self.move(tiles)
+        self.get_input(enemies, collectables)
+        self.move(terrain)
         self.animate()
 
         # Play land sound logic
@@ -82,7 +82,7 @@ class Player(Humanoid, Damageable):
 
         return self.rect.center
 
-    def get_input(self, entities):
+    def get_input(self, enemies, collectables):
         keys = pg.key.get_pressed()
         mouse = pg.mouse.get_pressed()
 
@@ -95,9 +95,11 @@ class Player(Humanoid, Damageable):
 
         if keys[pg.K_SPACE]:
             self.jump()
+        if keys[pg.K_e]:
+            self.collect(collectables)
 
         if mouse[0]:
-            self.attack(entities, self.jump_sound,
+            self.attack(enemies, self.jump_sound,
                         random.choice(self.punch_sounds))
 
     def jump(self):

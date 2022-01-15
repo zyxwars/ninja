@@ -37,6 +37,7 @@ class BaseEnemy(Humanoid, Damageable):
         self.kill()
 
     def on_damaged(self):
+        print(self.hp)
         self.add_x(5)
 
     def patrol(self):

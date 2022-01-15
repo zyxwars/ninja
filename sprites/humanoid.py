@@ -1,18 +1,22 @@
 import pygame as pg
 import math
 
+from sprites.weapons.weapon import Weapon
+
 from .physics_entity import PhysicsEntity
 import game
 import config
 from utils import debug
 from .damageable import Damageable
 
+from .weapons.punch import Punch
+
 
 class Humanoid(PhysicsEntity):
     def __init__(self, rect, animations):
         super().__init__(rect)
 
-        # TODO: Change the animatin initialization
+        # TODO: Change the animation initialization
         self.idle_animation = animations['idle']
         self.attack_animation = animations['attack']
         self.jump_animation = animations['jump']
@@ -22,7 +26,7 @@ class Humanoid(PhysicsEntity):
         self.wall_slide_animation = animations['wall_slide']
 
         self.animation_speed = config.ANIMATION_SPEED
-        self.attack_speed = config.ATTACK_SPEED
+        self.weapon = Punch()
 
         # Attack speed is directly tied to the attack animation speed
         self.is_attacking = False
@@ -38,22 +42,28 @@ class Humanoid(PhysicsEntity):
         is_hit = False
         self.is_attacking = True
 
+        attack_rect = self.rect.copy()
+        attack_rect.x += 8 if self.facing_right else -8
+
         for entity in entities:
             if entity is self:
                 continue
 
-            # TODO: use collidelist
-            attack_rect = self.rect.copy()
-            attack_rect.x += 8 if self.facing_right else -8
-
             if attack_rect.colliderect(entity.rect):
                 if isinstance(entity, Damageable):
                     hit_sound.play()
-                    entity.damage(25)
+                    entity.damage(self.weapon.damage)
                     is_hit = True
 
         if not is_hit:
             attack_sound.play()
+
+    def collect(self, collectables):
+        for collectable in collectables:
+            if collectable.rect.colliderect(self.rect):
+                if isinstance(collectable, Weapon):
+                    self.weapon = collectable.equip()
+                break
 
     def animate(self):
         last_frame_animation = self.animation
@@ -62,7 +72,7 @@ class Humanoid(PhysicsEntity):
         # Attacking
         if self.is_attacking:
             self.animation = self.attack_animation
-            self.animation_speed = self.attack_speed
+            self.animation_speed = self.weapon.attack_length_ms ** -1
         # Touching wall
         elif self.touching_wall:
             # Running against wall

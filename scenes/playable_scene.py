@@ -7,6 +7,7 @@ from sprites.enemies.base_enemy import BaseEnemy
 from sprites.player.player import Player
 import config
 import game
+from sprites.weapons.katana import Katana
 from utils import debug, get_path, SheetParser, ShiftableGroup, c_mod
 from sprites.tile import Tile
 from .trigger import Trigger
@@ -47,8 +48,10 @@ class PlayableScene:
         self.background = ShiftableGroup()
         # Collidable with player
         self.terrain = ShiftableGroup()
-        self.test_enemies = ShiftableGroup()
+        self.enemies = ShiftableGroup()
         self.player = None
+        # Collectable in the sense of being able to be picked up, the "s" signifies it is a list when used in a loop
+        self.collectables = ShiftableGroup()
         self.foreground = ShiftableGroup()
         self.triggers = []
         self.fg_objects = []
@@ -95,14 +98,19 @@ class PlayableScene:
                             self.terrain.add(tile)
 
                 elif layer['type'] == 'objectgroup':
+                    # Entities
                     if layer['name'] == 'entities':
                         for entity in layer['objects']:
+                            pos = (entity['x'], entity['y'])
+
                             if entity['name'] == 'player':
                                 self.player = Player(
-                                    (entity['x'], entity['y']), (64, 64))
+                                    (pos), (64, 64))
                             elif entity['name'] == 'enemy':
-                                self.test_enemies.add(BaseEnemy(
-                                    (entity['x'], entity['y']), (64, 64)))
+                                self.enemies.add(BaseEnemy(
+                                    (pos), (64, 64)))
+                            elif entity['name'] == 'katana':
+                                self.collectables.add(Katana(pos))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -134,18 +142,19 @@ class PlayableScene:
         # Collidable
         self.terrain.draw(screen_surface, self.shift)
 
-        # TODO: Make child class for enemy support as not every playable scene will have them
-        self.test_enemies.update(self.terrain.sprites())
-        self.test_enemies.draw(screen_surface, self.shift)
-
+        # Enemies
+        self.enemies.update(self.terrain.sprites())
+        self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:
             player_pos = self.player.update(
-                self.terrain.sprites(), self.test_enemies.sprites())
+                self.terrain.sprites(), self.enemies.sprites(), self.collectables.sprites())
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)
-
+        # collectables
+        self.collectables.update(self.terrain)
+        self.collectables.draw(screen_surface, self.shift)
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
         # Triggers

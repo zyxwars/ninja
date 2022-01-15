@@ -18,6 +18,11 @@ class PhysicsEntity(pg.sprite.Sprite):
         self.touching_wall = False
         self.facing_right = True
 
+    def set_pos(self, x=None, y=None):
+        # FIXME: Can't set pos of 0, might not ever be needed
+        self.pos.x = x or self.pos.x
+        self.pos.y = y or self.pos.y
+
     def add_x(self, x):
         # If delta time is large enough it is possible for add pos to be bigger than the tile
         # making the player phase through it
@@ -32,16 +37,16 @@ class PhysicsEntity(pg.sprite.Sprite):
 
         self.pos.y += y
 
-    def move(self, tiles):
+    def move(self, terrain):
         self.add_x(self.dir.x * self.speed * game.delta_time)
         self.rect.x = int(self.pos.x)
-        self.collide_horizontal(tiles)
+        self.collide_horizontal(terrain)
 
         # Jump force and gravity are directly added to the y dir
         self.apply_gravity()
         self.add_y(self.dir.y * game.delta_time)
         self.rect.y = int(self.pos.y)
-        self.collide_vertical(tiles)
+        self.collide_vertical(terrain)
 
         # If dir.x = 0 keep facing in the last direction
         if self.dir.x > 0:

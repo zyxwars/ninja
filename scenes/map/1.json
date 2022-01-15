@@ -131,6 +131,39 @@
                  "width":0,
                  "x":470,
                  "y":785.333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":112,
+                 "name":"katana",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":768,
+                 "y":798
+                }, 
+                {
+                 "height":3,
+                 "id":113,
+                 "name":"enemy",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":523,
+                 "y":787
+                }, 
+                {
+                 "height":0,
+                 "id":114,
+                 "name":"enemy",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":626,
+                 "y":805
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -214,7 +247,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":112,
+ "nextobjectid":115,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

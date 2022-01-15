@@ -2,8 +2,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Framework for adding weapons and attack types easily
-- [ ] Make camera shift accessible in debug
+- [x] Framework for adding weapons and attack types easily
+- [ ] Highlight collectable that will picked up when player is standing in certain position
 
 # Back burner:
 
@@ -14,6 +14,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [x] Block camera movement over 0, 0
 - [x] Add image background, parallax
 - [ ] Minimize the number of places where assets are loaded in
+- [ ] Minimize number of surfaces, especially transparency
 - [ ] Add jump buffer back
 - [ ] Background scrolling doesn't work over 0, 0
 
