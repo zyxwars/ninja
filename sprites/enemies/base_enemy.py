@@ -12,20 +12,19 @@ import game
 
 class BaseEnemy(Humanoid, Damageable):
     def __init__(self, pos, size):
+        self.image = pg.Surface(size).convert()
+        super().__init__(self.image.get_rect(topleft=pos))
+        Damageable.__init__(self, 100)
+
         sheet_parser = utils.SheetParser(
             __file__, 'assets/enemy_sheet.png')
-        self.image = pg.Surface(size).convert_alpha()
-
         self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, size),
-                           'attack': sheet_parser.load_images_row((0, 1), 4, size),
+                           'attack': {'punch': sheet_parser.load_images_row((0, 1), 4, size)},
                            'jump': sheet_parser.load_images_row((0, 2), 1, size),
                            'fall': sheet_parser.load_images_row((0, 3), 1, size),
                            'run': sheet_parser.load_images_row((0, 4), 2, size),
                            'push': sheet_parser.load_images_row((0, 5), 3, size),
                            'wall_slide': sheet_parser.load_images_row((0, 6), 1, size)}
-
-        super().__init__(self.image.get_rect(topleft=pos), self.animations)
-        Damageable.__init__(self, 100)
 
         self.speed = config.SPEED * 0.5
         self.patrol_route = [600, 1000]

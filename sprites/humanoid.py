@@ -13,17 +13,13 @@ from .weapons.punch import Punch
 
 
 class Humanoid(PhysicsEntity):
-    def __init__(self, rect, animations):
+    def __init__(self, rect):
         super().__init__(rect)
 
-        # TODO: Change the animation initialization
-        self.idle_animation = animations['idle']
-        self.attack_animation = animations['attack']
-        self.jump_animation = animations['jump']
-        self.fall_animation = animations['fall']
-        self.run_animation = animations['run']
-        self.push_animation = animations['push']
-        self.wall_slide_animation = animations['wall_slide']
+        self.animations = {'idle': [], 'attack': {'punch': []}, 'jump': [],
+                           'fall': [], 'run': [], 'push': [], 'wallslide': []}
+        self.animation = 'idle'
+        self.animation_index = 0
 
         self.animation_speed = config.ANIMATION_SPEED
         self.weapon = Punch()
@@ -31,9 +27,6 @@ class Humanoid(PhysicsEntity):
         # Attack speed is directly tied to the attack animation speed
         self.is_attacking = False
         self.jumped_from_wall = False
-
-        self.animation = self.idle_animation
-        self.animation_index = 0
 
     def attack(self, entities, attack_sound, hit_sound):
         if self.is_attacking:
@@ -67,34 +60,34 @@ class Humanoid(PhysicsEntity):
 
     def animate(self):
         last_frame_animation = self.animation
-        self.animation_speed = config.ANIMATION_SPEED
 
         # Attacking
         if self.is_attacking:
-            self.animation = self.attack_animation
-            self.animation_speed = self.weapon.attack_length_ms ** -1
+            self.animation = 'attack'
+            self.animation_speed = (
+                self.weapon.attack_length_ms / len(self.animations['attack'][self.weapon.name])) ** -1
         # Touching wall
         elif self.touching_wall:
             # Running against wall
             if self.is_grounded:
-                self.animation = self.push_animation
+                self.animation = 'push'
             # Wall sliding
             else:
-                self.animation = self.wall_slide_animation
+                self.animation = 'wallslide'
                 # Slow down gravity when player is wallsliding
                 self.dir.y = min(self.dir.y, 0.5)
         # Running
         elif self.is_grounded and self.dir.x != 0:
-            self.animation = self.run_animation
+            self.animation = 'run'
         # Jumping
         elif self.dir.y < 0:
-            self.animation = self.jump_animation
+            self.animation = 'jump'
         # Falling
-        elif (self.animation in [self.jump_animation, self.fall_animation] and self.dir.y > 0.5) or self.dir.y > 1:
-            self.animation = self.fall_animation
+        elif (self.animation in ['jump', 'fall'] and self.dir.y > 0.5) or self.dir.y > 1:
+            self.animation = 'fall'
         # Idle
         elif self.dir == pg.Vector2(0, 0):
-            self.animation = self.idle_animation
+            self.animation = 'idle'
 
         # Restart animation  when animation state changes
         # This is required since attack speed is tied to the animation,
@@ -102,14 +95,23 @@ class Humanoid(PhysicsEntity):
         if last_frame_animation != self.animation:
             self.animation_index = 0
 
-        if self.animation_index >= len(self.animation):
-            self.animation_index = 0
+        if self.animation == 'attack':
             # End attack animation after it played once
-            if self.is_attacking:
+            if self.animation_index >= len(self.animations['attack'][self.weapon.name]):
+                self.animation_index = 0
+                self.animation = 'idle'
                 self.is_attacking = False
+                self.animation_speed = config.ANIMATION_SPEED
+        else:
+            if self.animation_index >= len(self.animations[self.animation]):
+                self.animation_index = 0
 
-        # flip_x = !facing_right, flip image only when not facing right
-        self.image = pg.transform.flip(
-            self.animation[math.floor(self.animation_index)], not self.facing_right, False)
+        if self.animation == 'attack':
+            self.image = pg.transform.flip(
+                self.animations['attack'][self.weapon.name][math.floor(self.animation_index)], not self.facing_right, False)
+        else:
+            # flip_x = !facing_right, flip image only when not facing right
+            self.image = pg.transform.flip(
+                self.animations[self.animation][math.floor(self.animation_index)], not self.facing_right, False)
 
         self.animation_index += self.animation_speed * game.delta_time

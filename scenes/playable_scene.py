@@ -165,6 +165,8 @@ class PlayableScene:
             screen_surface.blit(
                 img.image, (img.rect.x + self.shift[0], img.rect.y + self.shift[1]))
 
+        screen_surface.blit(self.player.weapon.image, (0, 0))
+
         # Shift
         self.shift[0] += ((self.camera_pos.x -
                            (player_pos[0] + self.shift[0])) / config.CAMERA_X_SPEED) * game.delta_time

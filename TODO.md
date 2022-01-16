@@ -4,6 +4,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 - [x] Framework for adding weapons and attack types easily
 - [ ] Highlight collectable that will picked up when player is standing in certain position
+      = [ ] Move attack to certain time after attack animation started
 
 # Back burner:
 
@@ -30,21 +31,24 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Roadmap:
 
 - [x] Textures
-  - [x] Texture importing workflow
-  - [ ] Fall impact smoke, particles
+  - Texture importing workflow
 - [x] Sound effects
-  - [ ] Add variation
-  - [ ] Change based on in-game tension (number of enemies, player health, player kill streak)
 - [x] Move to Tiled
 - [ ] Enemies
 
 ### v0.2 ^
 
-- [ ] Dialog system, bubbles, gibberish sound effects
-- [ ] Boost orbs
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen
+- [ ] Particles
+- [ ] Dynamic sound track
+  - Change based on in-game tension (number of enemies, player health, player kill streak)
+
+### v0.3 ^
+
+- [ ] Dialog system, bubbles, gibberish sound effects
+- [ ] Boost orbs
 - [ ] Resolution scaling
 
 ### v1 ^

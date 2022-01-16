@@ -12,17 +12,25 @@ import utils
 
 class Player(Humanoid, Damageable):
     def __init__(self, pos, scale):
+        self.image = pg.Surface(scale).convert()
+        Humanoid.__init__(
+            self, self.image.get_rect(topleft=pos))
+        Damageable.__init__(self, 100)
+
         sheet_parser = utils.SheetParser(
             __file__, 'assets/player_sheet.png')
-        self.image = pg.Surface(scale).convert_alpha()
-
+        attack_sheet_parse = utils.SheetParser(
+            __file__, 'assets/attack_sheet.png')
         self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, scale),
-                           'attack': sheet_parser.load_images_row((0, 1), 4, scale),
+                           'attack': {'punch': attack_sheet_parse.load_images_row((0, 0), 4, scale),
+                                      'kick': attack_sheet_parse.load_images_row((0, 1), 7, scale),
+                                      'katana': attack_sheet_parse.load_images_row((0, 2), 6, scale)
+                                      },
                            'jump': sheet_parser.load_images_row((0, 2), 1, scale),
                            'fall': sheet_parser.load_images_row((0, 3), 1, scale),
                            'run': sheet_parser.load_images_row((0, 4), 2, scale),
                            'push': sheet_parser.load_images_row((0, 5), 3, scale),
-                           'wall_slide': sheet_parser.load_images_row((0, 6), 1, scale)}
+                           'wallslide': sheet_parser.load_images_row((0, 6), 1, scale)}
 
         # Sounds
         self.jump_sound = pg.mixer.Sound(
@@ -43,10 +51,6 @@ class Player(Humanoid, Damageable):
             sound.set_volume(0.5)
             self.punch_sounds.append(sound)
 
-        Humanoid.__init__(
-            self, self.image.get_rect(topleft=pos), self.animations)
-        Damageable.__init__(self, 100)
-
     def on_died(self):
         pass
 
@@ -59,7 +63,7 @@ class Player(Humanoid, Damageable):
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
         debug.debug('dir', self.dir)
-        debug.debug('attacking', self.is_attacking)
+        debug.debug('animation', self.animation)
 
     def draw(self, screen, shift: pg.Vector2):
         screen.blit(self.image, (self.rect.x +
