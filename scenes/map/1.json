@@ -164,6 +164,28 @@
                  "width":0,
                  "x":626,
                  "y":805
+                }, 
+                {
+                 "height":0,
+                 "id":115,
+                 "name":"katana",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":738,
+                 "y":813
+                }, 
+                {
+                 "height":0,
+                 "id":116,
+                 "name":"katana",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":811,
+                 "y":821
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -247,7 +269,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":115,
+ "nextobjectid":117,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

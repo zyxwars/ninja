@@ -51,13 +51,6 @@ class Humanoid(PhysicsEntity):
         if not is_hit:
             attack_sound.play()
 
-    def collect(self, collectables):
-        for collectable in collectables:
-            if collectable.rect.colliderect(self.rect):
-                if isinstance(collectable, Weapon):
-                    self.weapon = collectable.equip()
-                break
-
     def animate(self):
         last_frame_animation = self.animation
 

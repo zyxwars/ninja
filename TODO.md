@@ -3,8 +3,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Current:
 
 - [x] Framework for adding weapons and attack types easily
-- [ ] Highlight collectable that will picked up when player is standing in certain position
-      = [ ] Move attack to certain time after attack animation started
+- [x] Highlight collectable that will picked up when player is standing in certain position
+- [ ] Move attack to certain time after attack animation started
 
 # Back burner:
 

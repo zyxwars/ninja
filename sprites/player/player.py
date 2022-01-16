@@ -3,6 +3,8 @@ import pygame as pg
 
 import config
 from sprites.damageable import Damageable
+from sprites.weapons.punch import Punch
+from sprites.weapons.weapon import Weapon
 from utils import debug
 import utils
 import game
@@ -51,6 +53,8 @@ class Player(Humanoid, Damageable):
             sound.set_volume(0.5)
             self.punch_sounds.append(sound)
 
+        self.equip_cooldown = 250
+
     def on_died(self):
         pass
 
@@ -69,9 +73,9 @@ class Player(Humanoid, Damageable):
         screen.blit(self.image, (self.rect.x +
                     int(shift.x), self.rect.y + int(shift.y)))
 
-    def update(self, terrain, enemies, collectables):
+    def update(self, terrain, enemies, collectables_group):
         self.debug()
-        self.get_input(enemies, collectables)
+        self.get_input(enemies, collectables_group)
         self.move(terrain)
         self.animate()
 
@@ -84,9 +88,11 @@ class Player(Humanoid, Damageable):
         self.last_grounded = self.is_grounded
         self.last_gravity = self.dir.y
 
+        self.equip_cooldown += game.delta_time
+
         return self.rect.center
 
-    def get_input(self, enemies, collectables):
+    def get_input(self, enemies, collectables_group):
         keys = pg.key.get_pressed()
         mouse = pg.mouse.get_pressed()
 
@@ -100,11 +106,34 @@ class Player(Humanoid, Damageable):
         if keys[pg.K_SPACE]:
             self.jump()
         if keys[pg.K_e]:
-            self.collect(collectables)
+            if self.equip_cooldown > 250:
+                self.collect(collectables_group)
+        if keys[pg.K_g]:
+            self.drop(collectables_group)
 
         if mouse[0]:
             self.attack(enemies, self.jump_sound,
                         random.choice(self.punch_sounds))
+
+    def collect(self, collectables_group):
+        i = self.rect.collidelist(collectables_group.sprites())
+        if i == -1:
+            return
+
+        collectable = collectables_group.sprites()[i]
+
+        if isinstance(collectable, Weapon):
+            to_equip = collectable.equip()
+            if to_equip:
+                self.drop(collectables_group)
+                self.weapon = to_equip
+                self.equip_cooldown = 0
+
+    def drop(self, collectables_group):
+        if not isinstance(self.weapon, Punch):
+            collectables_group.add(self.weapon.unequip(
+                (self.rect.centerx + random.randint(0, 64) * (-1 if not self.facing_right else 1), self.rect.centery - 64)))
+            self.weapon = Punch()
 
     def jump(self):
         if self.is_grounded:

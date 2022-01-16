@@ -3,12 +3,14 @@ import pygame as pg
 import json
 import math
 from sprites.enemies.base_enemy import BaseEnemy
+from sprites.groups.collectable_group import CollectableGroup
+from sprites.groups.shiftable_group import ShiftableGroup
 
 from sprites.player.player import Player
 import config
 import game
 from sprites.weapons.katana import Katana
-from utils import debug, get_path, SheetParser, ShiftableGroup, c_mod
+from utils import debug, get_path, SheetParser, c_mod
 from sprites.tile import Tile
 from .trigger import Trigger
 
@@ -51,7 +53,7 @@ class PlayableScene:
         self.enemies = ShiftableGroup()
         self.player = None
         # Collectable in the sense of being able to be picked up, the "s" signifies it is a list when used in a loop
-        self.collectables = ShiftableGroup()
+        self.collectables = CollectableGroup()
         self.foreground = ShiftableGroup()
         self.triggers = []
         self.fg_objects = []
@@ -148,13 +150,13 @@ class PlayableScene:
         # Player
         if self.player:
             player_pos = self.player.update(
-                self.terrain.sprites(), self.enemies.sprites(), self.collectables.sprites())
+                self.terrain.sprites(), self.enemies.sprites(), self.collectables)
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)
         # collectables
         self.collectables.update(self.terrain)
-        self.collectables.draw(screen_surface, self.shift)
+        self.collectables.draw(self.player.rect, screen_surface, self.shift)
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
         # Triggers
