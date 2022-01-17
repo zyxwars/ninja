@@ -4,6 +4,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 - [x] Framework for adding weapons and attack types easily
 - [x] Highlight collectable that will picked up when player is standing in certain position
+- [x] Make collectable class, which weapon inherits from
+- [ ] Clean up prop passing inside playable_scene
 - [ ] Move attack to certain time after attack animation started
 
 # Back burner:

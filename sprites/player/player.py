@@ -123,7 +123,7 @@ class Player(Humanoid, Damageable):
         collectable = collectables_group.sprites()[i]
 
         if isinstance(collectable, Weapon):
-            to_equip = collectable.equip()
+            to_equip = collectable.collect()
             if to_equip:
                 self.drop(collectables_group)
                 self.weapon = to_equip
@@ -131,7 +131,7 @@ class Player(Humanoid, Damageable):
 
     def drop(self, collectables_group):
         if not isinstance(self.weapon, Punch):
-            collectables_group.add(self.weapon.unequip(
+            collectables_group.add(self.weapon.drop(
                 (self.rect.centerx + random.randint(0, 64) * (-1 if not self.facing_right else 1), self.rect.centery - 64)))
             self.weapon = Punch()
 
