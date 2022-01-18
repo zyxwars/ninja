@@ -13,8 +13,8 @@ import utils
 
 
 class Player(Humanoid, Damageable):
-    def __init__(self, pos, scale):
-        self.image = pg.Surface(scale).convert()
+    def __init__(self, pos):
+        self.image = pg.Surface((64, 64)).convert()
         Humanoid.__init__(
             self, self.image.get_rect(topleft=pos))
         Damageable.__init__(self, 100)
@@ -23,16 +23,16 @@ class Player(Humanoid, Damageable):
             __file__, 'assets/player_sheet.png')
         attack_sheet_parse = utils.SheetParser(
             __file__, 'assets/attack_sheet.png')
-        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, scale),
-                           'attack': {'punch': attack_sheet_parse.load_images_row((0, 0), 4, scale),
-                                      'kick': attack_sheet_parse.load_images_row((0, 1), 7, scale),
-                                      'katana': attack_sheet_parse.load_images_row((0, 2), 6, scale)
+        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, (64, 64)),
+                           'attack': {'punch': attack_sheet_parse.load_images_row((0, 0), 4, (64, 64)),
+                                      'kick': attack_sheet_parse.load_images_row((0, 1), 7, (64, 64)),
+                                      'katana': attack_sheet_parse.load_images_row((0, 2), 6, (64, 64))
                                       },
-                           'jump': sheet_parser.load_images_row((0, 2), 1, scale),
-                           'fall': sheet_parser.load_images_row((0, 3), 1, scale),
-                           'run': sheet_parser.load_images_row((0, 4), 2, scale),
-                           'push': sheet_parser.load_images_row((0, 5), 3, scale),
-                           'wallslide': sheet_parser.load_images_row((0, 6), 1, scale)}
+                           'jump': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
+                           'fall': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
+                           'run': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
+                           'push': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
+                           'wallslide': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
 
         # Sounds
         self.jump_sound = pg.mixer.Sound(

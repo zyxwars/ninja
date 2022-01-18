@@ -2,16 +2,15 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [x] Framework for adding weapons and attack types easily
-- [x] Highlight collectable that will picked up when player is standing in certain position
-- [x] Make collectable class, which weapon inherits from
 - [ ] Clean up prop passing inside playable_scene
 - [ ] Move attack to certain time after attack animation started
+- [ ] Enemy player alert
+  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
+- [ ] Load object images using their name as the filename
 
 # Back burner:
 
-- [ ] Enemy player alert
-  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
+- [ ] Order sprites rendering with layers
 - [ ] Fix roaming enemies getting stuck when jumping
 - [ ] Add proper support for larger non tileable images, like trees
 - [x] Block camera movement over 0, 0

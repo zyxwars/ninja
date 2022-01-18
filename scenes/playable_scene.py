@@ -2,17 +2,18 @@ from typing import Tuple
 import pygame as pg
 import json
 import math
+
 from sprites.enemies.base_enemy import BaseEnemy
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.groups.shiftable_group import ShiftableGroup
-
 from sprites.player.player import Player
 import config
 import game
-from sprites.weapons.katana import Katana
 from utils import debug, get_path, SheetParser, c_mod
 from sprites.tile import Tile
 from .trigger import Trigger
+import sprites.enemies as enemies
+import sprites.weapons as weapons
 
 
 def make_scrollable(surface: pg.surface.Surface, scale_by_x=True):
@@ -105,14 +106,17 @@ class PlayableScene:
                         for entity in layer['objects']:
                             pos = (entity['x'], entity['y'])
 
+                            # Player
                             if entity['name'] == 'player':
-                                self.player = Player(
-                                    (pos), (64, 64))
-                            elif entity['name'] == 'enemy':
-                                self.enemies.add(BaseEnemy(
-                                    (pos), (64, 64)))
+                                self.player = Player(pos)
+                            # Enemies
+                            elif entity['name'] == 'prowler':
+                                self.enemies.add(enemies.Prowler(
+                                    pos, (pos[0], pos[0] + entity['width'])))
+                            # Collectables
                             elif entity['name'] == 'katana':
-                                self.collectables.add(Katana(pos))
+                                self.collectables.add(
+                                    weapons.Katana(pos))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(

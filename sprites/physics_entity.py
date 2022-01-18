@@ -6,10 +6,11 @@ from utils import debug
 
 
 class PhysicsEntity(pg.sprite.Sprite):
-    def __init__(self, rect):
-        super().__init__()
-        self.pos = pg.Vector2(rect.x, rect.y)
+    def __init__(self, rect, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.rect = rect
+        self.pos = pg.Vector2(rect.x, rect.y)
+
         self.dir = pg.Vector2(0, 0)
         self.speed = config.SPEED
         self.jump_force = config.JUMP_FORCE
