@@ -4,13 +4,13 @@ import math
 
 from sprites.damageable import Damageable
 
-from ..humanoid import Humanoid
 import config
+from sprites.physics_entity import PhysicsEntity
 import utils
 import game
 
 
-class BaseEnemy(Humanoid, Damageable):
+class BaseEnemy(PhysicsEntity, Damageable):
     def __init__(self, pos, patrol_area):
         self.image = pg.Surface((64, 64)).convert()
         super().__init__(self.image.get_rect(topleft=pos))
@@ -77,5 +77,5 @@ class BaseEnemy(Humanoid, Damageable):
         if random.random() < 0.0005 * game.delta_time:
             self.dir.x = -self.dir.x
 
-    def update(self, tiles):
+    def update(self, tiles, player):
         self.move(tiles)

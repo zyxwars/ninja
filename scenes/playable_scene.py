@@ -2,6 +2,7 @@ from typing import Tuple
 import pygame as pg
 import json
 import math
+from scenes.gui import Gui
 
 from sprites.enemies.base_enemy import BaseEnemy
 from sprites.groups.collectable_group import CollectableGroup
@@ -59,6 +60,8 @@ class PlayableScene:
         self.triggers = []
         self.fg_objects = []
 
+        self.gui = Gui()
+
         self.camera_pos = pg.Vector2(
             config.SCREEN_CENTER[0], config.SCREEN_HEIGHT * 0.6)
         self.shift = pg.Vector2(0, 0)
@@ -76,7 +79,7 @@ class PlayableScene:
     def load_map(self, map_path):
         with open(map_path, encoding='utf-8') as f:
             map_data = json.load(f)
-            sheet_parser = SheetParser(__file__, 'assets/tileset.png')
+            sheet_parser = SheetParser('assets/tileset.png', __file__)
 
             for layer in map_data['layers']:
                 if layer['type'] == 'tilelayer':
@@ -120,7 +123,7 @@ class PlayableScene:
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
-                            __file__, 'assets/trees.png')
+                            'assets/trees.png', __file__)
                         for img in layer['objects']:
                             tree_layer = self.parallax if 'parallax' in layer['name'] else self.fg_objects
                             tree_layer.append(Image(tree_sheet_parser.load_image(
@@ -149,7 +152,7 @@ class PlayableScene:
         self.terrain.draw(screen_surface, self.shift)
 
         # Enemies
-        self.enemies.update(self.terrain.sprites())
+        self.enemies.update(self.terrain.sprites(), self.player)
         self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:
@@ -171,7 +174,9 @@ class PlayableScene:
             screen_surface.blit(
                 img.image, (img.rect.x + self.shift[0], img.rect.y + self.shift[1]))
 
-        screen_surface.blit(self.player.weapon.image, (0, 0))
+        # Gui
+        self.gui.draw_equipped_weapon(self.player.weapon.image, screen_surface)
+        self.gui.draw_life_essence(self.player.hp, screen_surface)
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -

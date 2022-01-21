@@ -1,13 +1,14 @@
 import pygame as pg
 from .get_path import get_path
+from .load_image import load_image
 
 
 class SheetParser:
-    def __init__(self, script_path, relative_path):
-        self.sheet = pg.image.load(
-            get_path(script_path, relative_path)).convert_alpha()
+    def __init__(self, relative_path, script_path=None):
+        self.sheet = load_image(relative_path, script_path)
 
     # Pos comprises of (column, row)
+
     def load_image(self, pos, size=(32, 32), scale=None):
         image = pg.Surface(size, pg.SRCALPHA).convert_alpha()
         image.blit(self.sheet, (0, 0),

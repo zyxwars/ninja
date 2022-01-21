@@ -1,7 +1,8 @@
+from distutils.log import debug
 from lib2to3.pytree import Base
 import pygame as pg
 
-import utils
+from utils import debug
 from .base_enemy import BaseEnemy
 
 
