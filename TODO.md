@@ -2,11 +2,14 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
+- [ ] Fix enemy attack range
+- [ ] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
+- [ ] Use layers
 - [ ] Move attack to certain time after attack animation started
 - [ ] Enemy player alert
   - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
-- [ ] Load object images using their name as the filename
+- [ ] Load tiled object images using their name as the filename
 
 # Back burner:
 

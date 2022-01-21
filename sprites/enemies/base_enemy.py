@@ -8,6 +8,7 @@ import config
 from sprites.physics_entity import PhysicsEntity
 import utils
 import game
+from utils import debug
 
 
 class BaseEnemy(PhysicsEntity, Damageable):
@@ -18,6 +19,9 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.hp = 100
         self.speed = config.SPEED * 0.5
         self.patrol_area = patrol_area
+        self.is_alert = False
+        self.attack_cooldown_ms = 500
+        self.attack_cooldown = 0
 
     def on_died(self):
         pg.mixer.Sound(
@@ -40,16 +44,16 @@ class BaseEnemy(PhysicsEntity, Damageable):
     #     if self.pos.x < self.patrol_route[0] or self.pos.x > self.patrol_route[1]:
     #         self.dir.x = - self.dir.x
 
-    # def follow(self, pos):
-    #     if self.touching_wall and self.is_grounded:
-    #         self.jump()
+    def follow(self, pos):
+        if self.touching_wall and self.is_grounded:
+            self.jump()
 
-    #     if self.rect.centerx > pos[0]:
-    #         self.dir.x = -1
-    #     elif self.rect.centerx < pos[0]:
-    #         self.dir.x = 1
-    #     else:
-    #         self.dir.x = 0
+        if self.rect.centerx > pos[0]:
+            self.dir.x = -1
+        elif self.rect.centerx < pos[0]:
+            self.dir.x = 1
+        else:
+            self.dir.x = 0
 
     def roam(self):
         if self.touching_wall and self.is_grounded:
@@ -77,5 +81,29 @@ class BaseEnemy(PhysicsEntity, Damageable):
         if random.random() < 0.0005 * game.delta_time:
             self.dir.x = -self.dir.x
 
-    def update(self, tiles, player):
+    def spot_player(self, player):
+        if 0 > player.rect.x - self.rect.x > -128 and not self.facing_right:
+            self.is_alert = True
+        elif 0 < player.rect.x - self.rect.x < 128 and self.facing_right:
+            self.is_alert = True
+        else:
+            self.is_alert = False
+
+    def attack(self, entity):
+        if not self.attack_cooldown > self.attack_cooldown_ms:
+            return
+
+        is_hit = False
+        self.attack_cooldown = 0
+
+        attack_rect = self.rect.copy()
+        attack_rect.x += 8 if self.facing_right else -8
+
+        if attack_rect.colliderect(entity.rect):
+            if isinstance(entity, Damageable):
+                entity.damage(25)
+                is_hit = True
+
+    def update(self, tiles):
         self.move(tiles)
+        self.attack_cooldown += game.delta_time

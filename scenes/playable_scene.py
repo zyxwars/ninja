@@ -152,7 +152,7 @@ class PlayableScene:
         self.terrain.draw(screen_surface, self.shift)
 
         # Enemies
-        self.enemies.update(self.terrain.sprites(), self.player)
+        self.enemies.update(self.player, self.terrain.sprites())
         self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:

@@ -14,6 +14,12 @@ class Prowler(BaseEnemy):
 
         self.hp = 50
 
-    def update(self, *args, **kwargs):
-        self.roam()
+    def update(self, player, *args, **kwargs):
+        self.spot_player(player)
+
+        if self.is_alert:
+            self.follow(player.rect)
+            self.attack(player)
+        else:
+            self.roam()
         super().update(*args, **kwargs)
