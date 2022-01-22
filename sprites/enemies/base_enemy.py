@@ -19,9 +19,11 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.hp = 100
         self.speed = config.SPEED * 0.5
         self.patrol_area = patrol_area
-        self.is_alert = False
+        self.alert_timer_ms = 4000
+        self.alert_timer = 0
         self.attack_cooldown_ms = 500
         self.attack_cooldown = 0
+        self.last_seen_pos = None
 
     def on_died(self):
         pg.mixer.Sound(
@@ -32,17 +34,21 @@ class BaseEnemy(PhysicsEntity, Damageable):
         print(self.hp)
         self.add_x(5)
 
-    # def patrol(self):
-    #     if self.touching_wall and self.is_grounded:
-    #         self.jump()
+    def patrol(self):
+        if self.touching_wall and self.is_grounded:
+            self.jump()
 
-    #     if self.dir.x == 0:
-    #         self.dir.x = random.randint(-1, 1)
-    #         return
+        if self.dir.x == 0:
+            self.dir.x = random.randint(-1, 1)
+            return
 
-    #     # Reverse direction
-    #     if self.pos.x < self.patrol_route[0] or self.pos.x > self.patrol_route[1]:
-    #         self.dir.x = - self.dir.x
+      # Reverse direction if border is reached
+        if self.pos.x < self.patrol_area[0]:
+            self.dir.x = 1
+            return
+        if self.pos.x > self.patrol_area[1]:
+            self.dir.x = -1
+            return
 
     def follow(self, pos):
         if self.touching_wall and self.is_grounded:
@@ -55,7 +61,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
         else:
             self.dir.x = 0
 
-    def roam(self):
+    def roam(self, change_chance=0.0005):
         if self.touching_wall and self.is_grounded:
             # Sometimes turn and sometimes jump over obstacles
             if random.random() < 0.5:
@@ -78,16 +84,21 @@ class BaseEnemy(PhysicsEntity, Damageable):
             return
 
         # Make the chance equal with different fps > delta_time
-        if random.random() < 0.0005 * game.delta_time:
+        if random.random() < change_chance * game.delta_time:
             self.dir.x = -self.dir.x
 
     def spot_player(self, player):
-        if 0 > player.rect.x - self.rect.x > -128 and not self.facing_right:
-            self.is_alert = True
-        elif 0 < player.rect.x - self.rect.x < 128 and self.facing_right:
-            self.is_alert = True
-        else:
-            self.is_alert = False
+        if abs(player.rect.centery - self.rect.centery) > 32:
+            return
+
+        if 0 > player.rect.centerx - self.rect.centerx > -400 and not self.facing_right:
+            self.alert(player.rect.center)
+        elif 0 < player.rect.centerx - self.rect.centerx < 400 and self.facing_right:
+            self.alert(player.rect.center)
+
+    def alert(self, pos):
+        self.last_seen_pos = pos
+        self.alert_timer = self.alert_timer_ms
 
     def attack(self, entity):
         if not self.attack_cooldown > self.attack_cooldown_ms:
@@ -105,5 +116,8 @@ class BaseEnemy(PhysicsEntity, Damageable):
                 is_hit = True
 
     def update(self, tiles):
-        self.move(tiles)
+        debug.debug('e_alert', self.alert_timer)
+        debug.debug('last_seen', self.last_seen_pos)
+        self.alert_timer -= game.delta_time
         self.attack_cooldown += game.delta_time
+        self.move(tiles)

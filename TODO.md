@@ -2,13 +2,14 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
+- [ ] Use pygame events for enemy com
 - [ ] Fix enemy attack range
 - [ ] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
 - [ ] Use layers
 - [ ] Move attack to certain time after attack animation started
-- [ ] Enemy player alert
-  - [ ] Roam activated when searching for player or the patrol route is broken for some other reason
+- [x] Enemy player alert
+  - [x] Roam activated when searching for player or the patrol route is broken for some other reason
 - [ ] Load tiled object images using their name as the filename
 
 # Back burner:
