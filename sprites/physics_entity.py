@@ -96,7 +96,7 @@ class PhysicsEntity(pg.sprite.Sprite):
 
     def apply_gravity(self):
         # Limit max gravity momentum
-        if self.dir.y < 2:
+        if self.dir.y < 1.5:
             self.dir.y += self.gravity * game.delta_time
 
     def jump(self):

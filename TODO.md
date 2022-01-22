@@ -2,7 +2,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Use pygame events for enemy com
+- [ ] Use custom pygame events
 - [ ] Fix enemy attack range
 - [ ] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene

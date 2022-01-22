@@ -12,9 +12,10 @@ class Damageable():
 
         if self.hp <= 0:
             self.on_died()
-            return
+            return True
 
         self.on_damaged()
+        return False
 
     def on_damaged(self):
         pass

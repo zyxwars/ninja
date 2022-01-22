@@ -32,7 +32,7 @@ class Game:
                 self.scene.update(self.screen)
 
             debug.debug('delta_time', game.delta_time)
-            debug.debug('fps', self.clock.get_fps()) 
+            debug.debug('fps', self.clock.get_fps())
             if self.is_debug:
                 debug.draw(self.screen)
 

@@ -141,7 +141,10 @@ class Player(PhysicsEntity, Damageable):
             if attack_rect.colliderect(entity.rect):
                 if isinstance(entity, Damageable):
                     hit_sound.play()
-                    entity.damage(self.weapon.damage)
+                    # Returns true if entity died
+                    if entity.damage(self.weapon.damage):
+                        self.hp = min(self.hp + 25, 100)
+
                     is_hit = True
 
         if not is_hit:

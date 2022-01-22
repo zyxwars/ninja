@@ -23,7 +23,6 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.alert_timer = 0
         self.attack_cooldown_ms = 500
         self.attack_cooldown = 0
-        self.last_seen_pos = None
 
     def on_died(self):
         pg.mixer.Sound(
@@ -35,6 +34,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.add_x(5)
 
     def patrol(self):
+        self.image.fill('black')
         if self.touching_wall and self.is_grounded:
             self.jump()
 
@@ -51,6 +51,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
             return
 
     def follow(self, pos):
+        self.image.fill('red')
         if self.touching_wall and self.is_grounded:
             self.jump()
 
@@ -62,6 +63,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
             self.dir.x = 0
 
     def roam(self, change_chance=0.0005):
+        self.image.fill('orange')
         if self.touching_wall and self.is_grounded:
             # Sometimes turn and sometimes jump over obstacles
             if random.random() < 0.5:
@@ -91,14 +93,25 @@ class BaseEnemy(PhysicsEntity, Damageable):
         if abs(player.rect.centery - self.rect.centery) > 32:
             return
 
-        if 0 > player.rect.centerx - self.rect.centerx > -400 and not self.facing_right:
+        if 0 > player.rect.centerx - self.rect.centerx > -300 and not self.facing_right:
             self.alert(player.rect.center)
-        elif 0 < player.rect.centerx - self.rect.centerx < 400 and self.facing_right:
+        elif 0 < player.rect.centerx - self.rect.centerx < 300 and self.facing_right:
             self.alert(player.rect.center)
 
-    def alert(self, pos):
-        self.last_seen_pos = pos
+    def alert(self, alert_others=True):
         self.alert_timer = self.alert_timer_ms
+
+        if not alert_others:
+            return
+
+        for enemy in self.groups()[0] or []:
+            if enemy is self:
+                continue
+
+            if abs(enemy.rect.centerx - self.rect.centerx) > 800:
+                continue
+
+            enemy.alert(alert_others=False)
 
     def attack(self, entity):
         if not self.attack_cooldown > self.attack_cooldown_ms:
@@ -116,8 +129,6 @@ class BaseEnemy(PhysicsEntity, Damageable):
                 is_hit = True
 
     def update(self, tiles):
-        debug.debug('e_alert', self.alert_timer)
-        debug.debug('last_seen', self.last_seen_pos)
         self.alert_timer -= game.delta_time
         self.attack_cooldown += game.delta_time
         self.move(tiles)
