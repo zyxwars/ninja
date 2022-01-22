@@ -21,8 +21,23 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.patrol_area = patrol_area
         self.alert_timer_ms = 4000
         self.alert_timer = 0
-        self.attack_cooldown_ms = 500
+        self.attack_cooldown_ms = 1000
         self.attack_cooldown = 0
+
+        # Animation
+        sheet_parser = utils.SheetParser('assets/enemy_sheet.png', __file__)
+        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, (64, 64)),
+                           'attack': sheet_parser.load_images_row((0, 1), 4, (64, 64)),
+                           'jump': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
+                           'fall': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
+                           'run': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
+                           'push': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
+                           'wallslide': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
+        self.animation = 'idle'
+        self.animation_index = 0
+        self.animation_speed = config.ANIMATION_SPEED
+
+        self.is_attacking = False
 
     def on_died(self):
         pg.mixer.Sound(
@@ -34,7 +49,6 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.add_x(5)
 
     def patrol(self):
-        self.image.fill('black')
         if self.touching_wall and self.is_grounded:
             self.jump()
 
@@ -51,7 +65,6 @@ class BaseEnemy(PhysicsEntity, Damageable):
             return
 
     def follow(self, pos):
-        self.image.fill('red')
         if self.touching_wall and self.is_grounded:
             self.jump()
 
@@ -63,7 +76,6 @@ class BaseEnemy(PhysicsEntity, Damageable):
             self.dir.x = 0
 
     def roam(self, change_chance=0.0005):
-        self.image.fill('orange')
         if self.touching_wall and self.is_grounded:
             # Sometimes turn and sometimes jump over obstacles
             if random.random() < 0.5:
@@ -114,11 +126,10 @@ class BaseEnemy(PhysicsEntity, Damageable):
             enemy.alert(alert_others=False)
 
     def attack(self, entity):
-        if not self.attack_cooldown > self.attack_cooldown_ms:
+        if self.attack_cooldown > 0:
             return
 
-        is_hit = False
-        self.attack_cooldown = 0
+        self.attack_cooldown = self.attack_cooldown_ms
 
         attack_rect = self.rect.copy()
         attack_rect.x += 8 if self.facing_right else -8
@@ -126,9 +137,61 @@ class BaseEnemy(PhysicsEntity, Damageable):
         if attack_rect.colliderect(entity.rect):
             if isinstance(entity, Damageable):
                 entity.damage(25)
-                is_hit = True
 
-    def update(self, tiles):
+    def animate(self, player):
+        last_frame_animation = self.animation
+
+        # Attacking
+        if self.is_attacking:
+            self.animation = 'attack'
+        # Touching wall
+        elif self.touching_wall:
+            # Running against wall
+            if self.is_grounded:
+                self.animation = 'push'
+            # Wall sliding
+            else:
+                self.animation = 'wallslide'
+                # Slow down gravity when player is wallsliding
+                self.dir.y = min(self.dir.y, 0.5)
+        # Running
+        elif self.is_grounded and self.dir.x != 0:
+            self.animation = 'run'
+        # Jumping
+        elif self.dir.y < 0:
+            self.animation = 'jump'
+        # Falling
+        elif (self.animation in ['jump', 'fall'] and self.dir.y > 0.5) or self.dir.y > 1:
+            self.animation = 'fall'
+        # Idle
+        elif self.dir == pg.Vector2(0, 0):
+            self.animation = 'idle'
+
+        # Restart animation  when animation state changes
+        # This is required since attack speed is tied to the animation,
+        # animation starting on index > 0 caused the attack cooldown to reset early
+        if last_frame_animation != self.animation:
+            self.animation_index = 0
+
+        if self.animation_index >= len(self.animations[self.animation]):
+            if self.animation == 'attack':
+                self.animation_index = 0
+                self.animation = 'idle'
+                self.is_attacking = False
+                self.animation_speed = config.ANIMATION_SPEED
+                self.attack(player)
+                self.animation_index = 0
+            else:
+                self.animation_index = 0
+
+        # flip_x = !facing_right, flip image only when not facing right
+        self.image = pg.transform.flip(
+            self.animations[self.animation][math.floor(self.animation_index)], not self.facing_right, False)
+
+        self.animation_index += self.animation_speed * game.delta_time
+
+    def update(self, player, tiles):
         self.alert_timer -= game.delta_time
-        self.attack_cooldown += game.delta_time
+        self.attack_cooldown -= game.delta_time
         self.move(tiles)
+        self.animate(player)

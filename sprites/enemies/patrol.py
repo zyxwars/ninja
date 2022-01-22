@@ -20,8 +20,13 @@ class Patrol(BaseEnemy):
                 self.roam(0.001)
             else:
                 self.follow(player.rect.center)
-                self.attack(player)
+
+                if not self.is_attacking and self.attack_cooldown < 0:
+                    attack_rect = self.rect.copy()
+                    attack_rect.x += 16 if self.facing_right else -16
+                    if attack_rect.colliderect(player):
+                        self.is_attacking = True
         else:
             self.patrol()
 
-        super().update(*args, **kwargs)
+        super().update(player, *args, **kwargs)

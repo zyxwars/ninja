@@ -164,17 +164,6 @@
                  "width":180,
                  "x":982.333333333333,
                  "y":671.333333333333
-                }, 
-                {
-                 "height":41.3333,
-                 "id":120,
-                 "name":"patrol",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":180,
-                 "x":692,
-                 "y":783.33335
                 }],
          "opacity":1,
          "type":"objectgroup",
