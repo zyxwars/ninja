@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 import math
+from sprites import enemies
 
 from sprites.damageable import Damageable
 
@@ -12,18 +13,17 @@ import game
 from utils import debug
 
 
-class BaseEnemy(PhysicsEntity, Damageable):
+class Enemy(PhysicsEntity, Damageable):
     def __init__(self, pos, patrol_area):
         self.image = pg.Surface((64, 64)).convert()
         super().__init__(self.image.get_rect(topleft=pos))
 
         self.hp = 100
-        self.speed = config.SPEED * 0.5
+        self.speed = config.SPEED * (random.randrange(3, 7) / 10)
+        self.base_speed = self.speed
         self.patrol_area = patrol_area
         self.alert_timer_ms = 4000
         self.alert_timer = 0
-        self.attack_cooldown_ms = 500
-        self.attack_cooldown = 0
 
         # Animation
         sheet_parser = utils.SheetParser('assets/enemy_sheet.png', __file__)
@@ -37,7 +37,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.animation = 'idle'
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
-        self.attack_speed = 0.018
+        self.attack_speed_ms = 80
 
         self.is_touching_player = False
         self.last_touched_player = False
@@ -129,13 +129,11 @@ class BaseEnemy(PhysicsEntity, Damageable):
             enemy.alert(alert_others=False)
 
     def attack(self, entity):
-        if self.attack_cooldown > 0:
+        if self.is_attacking:
             return
 
-        self.attack_cooldown = self.attack_cooldown_ms
-
         attack_rect = self.rect.copy()
-        attack_rect.x += 8 if self.facing_right else -8
+        attack_rect.x += 16 if self.facing_right else -16
 
         if attack_rect.colliderect(entity.rect):
             if isinstance(entity, Damageable):
@@ -148,7 +146,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
         # Attacking
         if self.is_attacking:
             self.animation = 'attack'
-            self.animation_speed = self.attack_speed
+            self.animation_speed = self.attack_speed_ms ** -1
         # Touching wall
         elif self.touching_wall or self.last_touched_player:
             # Running against wall or player
@@ -216,9 +214,47 @@ class BaseEnemy(PhysicsEntity, Damageable):
                     self.is_touching_player = True
                 self.pos.x = self.rect.x
 
+    # def collide_vertical(self, collidables):
+    #     self.is_grounded = False
+
+    #     # Check collision 1 pixel below the actual position
+    #     # This prevents collision not being detected when apply_gravity() moves less than 1 pixel every frame
+
+    #     # Lowering the rect causes head collision to be confused with horizontal collision
+    #     # Inflating the rect instead of moving it seems to work for now
+    #     temp_rect = self.rect.copy()
+    #     temp_rect = temp_rect.inflate(0, 1)
+
+    #     for collidable in collidables:
+    #         if isinstance(collidable, Enemy):
+    #             continue
+    #         if collidable.rect.colliderect(temp_rect):
+    #             # Falling
+    #             if self.dir.y > 0:
+    #                 self.rect.bottom = collidable.rect.top
+    #                 self.is_grounded = True
+    #             # Jumping
+    #             if self.dir.y < 0:
+    #                 self.rect.top = collidable.rect.bottom
+
+    #             self.dir.y = 0
+    #             self.pos.y = self.rect.y
+
     def update(self, player, terrain):
+        if self.alert_timer > self.alert_timer_ms / 2:
+            self.speed = min(self.base_speed * 1.5, config.SPEED - 0.1)
+        else:
+            self.speed = self.base_speed
+
         self.alert_timer -= game.delta_time
-        self.attack_cooldown -= game.delta_time
+
+        # enemies = []
+        # for enemy in self.groups()[0]:
+        #     if enemy is self:
+        #         continue
+
+        #     enemies.append(enemy)
+
         self.move([*terrain, player])
         self.animate(player)
         self.last_touched_player = self.is_touching_player

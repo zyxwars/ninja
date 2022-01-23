@@ -164,6 +164,39 @@
                  "width":180,
                  "x":982.333333333333,
                  "y":671.333333333333
+                }, 
+                {
+                 "height":41.3333,
+                 "id":124,
+                 "name":"patrol",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":180,
+                 "x":1326,
+                 "y":787.33335
+                }, 
+                {
+                 "height":41.3333,
+                 "id":125,
+                 "name":"patrol",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":180,
+                 "x":1586,
+                 "y":781.33335
+                }, 
+                {
+                 "height":41.3333,
+                 "id":126,
+                 "name":"patrol",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":180,
+                 "x":1824,
+                 "y":785.33335
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -247,7 +280,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":121,
+ "nextobjectid":127,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

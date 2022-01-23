@@ -1,10 +1,10 @@
 import pygame as pg
 
 from utils import debug
-from .base_enemy import BaseEnemy
+from .enemy import Enemy
 
 
-class Prowler(BaseEnemy):
+class Prowler(Enemy):
     """Light-weight scout, low hp and damage, calls upon reinforcements when player is spotted."""
 
     def __init__(self, *args, **kwargs):

@@ -4,7 +4,7 @@ import json
 import math
 from scenes.gui import Gui
 
-from sprites.enemies.base_enemy import BaseEnemy
+from sprites.enemies.enemy import Enemy
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.groups.shiftable_group import ShiftableGroup
 from sprites.player.player import Player

@@ -18,7 +18,7 @@ class Game:
 
     def run(self):
         while True:
-            # Call only once every frame
+            # Call only once every framed
             game.events = pg.event.get()
 
             for e in game.events:
@@ -46,6 +46,5 @@ class Game:
 game_loop = Game()
 try:
     game_loop.run()
-except Exception as e:
-    print(e)
+finally:
     pg.quit()
