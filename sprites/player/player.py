@@ -18,7 +18,7 @@ class Player(PhysicsEntity, Damageable):
         self.image = pg.Surface((64, 64)).convert()
         PhysicsEntity.__init__(
             self, self.image.get_rect(topleft=pos))
-        Damageable.__init__(self, 1000)
+        Damageable.__init__(self, 100)
 
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)

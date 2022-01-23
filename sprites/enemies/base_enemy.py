@@ -22,7 +22,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.patrol_area = patrol_area
         self.alert_timer_ms = 4000
         self.alert_timer = 0
-        self.attack_cooldown_ms = 1000
+        self.attack_cooldown_ms = 500
         self.attack_cooldown = 0
 
         # Animation
@@ -37,9 +37,10 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.animation = 'idle'
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
-        self.attack_speed = 0.02
+        self.attack_speed = 0.018
 
         self.is_touching_player = False
+        self.last_touched_player = False
         self.is_attacking = False
 
     def on_died(self):
@@ -149,7 +150,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
             self.animation = 'attack'
             self.animation_speed = self.attack_speed
         # Touching wall
-        elif self.touching_wall:
+        elif self.touching_wall or self.last_touched_player:
             # Running against wall or player
             if self.is_grounded:
                 self.animation = 'push'
@@ -220,3 +221,4 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.attack_cooldown -= game.delta_time
         self.move([*terrain, player])
         self.animate(player)
+        self.last_touched_player = self.is_touching_player
