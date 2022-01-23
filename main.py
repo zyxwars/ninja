@@ -44,4 +44,8 @@ class Game:
 
 
 game_loop = Game()
-game_loop.run()
+try:
+    game_loop.run()
+except Exception as e:
+    print(e)
+    pg.quit()

@@ -11,6 +11,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [x] Enemy player alert
   - [x] Roam activated when searching for player or the patrol route is broken for some other reason
 - [ ] Load tiled object images using their name as the filename
+- [ ] Change enemy animation length in ms
 
 # Back burner:
 

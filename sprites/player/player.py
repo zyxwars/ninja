@@ -18,7 +18,7 @@ class Player(PhysicsEntity, Damageable):
         self.image = pg.Surface((64, 64)).convert()
         PhysicsEntity.__init__(
             self, self.image.get_rect(topleft=pos))
-        Damageable.__init__(self, 100)
+        Damageable.__init__(self, 1000)
 
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)
@@ -85,7 +85,7 @@ class Player(PhysicsEntity, Damageable):
     def update(self, terrain, enemies, collectables_group):
         self.debug()
         self.get_input(enemies, collectables_group)
-        self.move(terrain)
+        self.move([*terrain, *enemies])
         self.animate()
 
         # Play land sound logic

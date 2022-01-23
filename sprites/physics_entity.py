@@ -38,16 +38,16 @@ class PhysicsEntity(pg.sprite.Sprite):
 
         self.pos.y += y
 
-    def move(self, terrain):
+    def move(self, collidables):
         self.add_x(self.dir.x * self.speed * game.delta_time)
         self.rect.x = int(self.pos.x)
-        self.collide_horizontal(terrain)
+        self.collide_horizontal(collidables)
 
         # Jump force and gravity are directly added to the y dir
         self.apply_gravity()
         self.add_y(self.dir.y * game.delta_time)
         self.rect.y = int(self.pos.y)
-        self.collide_vertical(terrain)
+        self.collide_vertical(collidables)
 
         # If dir.x = 0 keep facing in the last direction
         if self.dir.x > 0:
@@ -55,22 +55,22 @@ class PhysicsEntity(pg.sprite.Sprite):
         elif self.dir.x < 0:
             self.facing_right = False
 
-    def collide_horizontal(self, tiles):
+    def collide_horizontal(self, collidables):
         self.touching_wall = False
         self.is_touching_right_wall = False
 
-        for tile in tiles:
-            if tile.rect.colliderect(self.rect):
+        for collidable in collidables:
+            if collidable.rect.colliderect(self.rect):
                 if self.dir.x > 0:
-                    self.rect.right = tile.rect.left
+                    self.rect.right = collidable.rect.left
                     self.touching_wall = 'right'
                 if self.dir.x < 0:
-                    self.rect.left = tile.rect.right
+                    self.rect.left = collidable.rect.right
                     self.touching_wall = 'left'
 
                 self.pos.x = self.rect.x
 
-    def collide_vertical(self, tiles):
+    def collide_vertical(self, collidables):
         self.is_grounded = False
 
         # Check collision 1 pixel below the actual position
@@ -81,15 +81,15 @@ class PhysicsEntity(pg.sprite.Sprite):
         temp_rect = self.rect.copy()
         temp_rect = temp_rect.inflate(0, 1)
 
-        for tile in tiles:
-            if tile.rect.colliderect(temp_rect):
+        for collidable in collidables:
+            if collidable.rect.colliderect(temp_rect):
                 # Falling
                 if self.dir.y > 0:
-                    self.rect.bottom = tile.rect.top
+                    self.rect.bottom = collidable.rect.top
                     self.is_grounded = True
                 # Jumping
                 if self.dir.y < 0:
-                    self.rect.top = tile.rect.bottom
+                    self.rect.top = collidable.rect.bottom
 
                 self.dir.y = 0
                 self.pos.y = self.rect.y

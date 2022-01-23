@@ -6,6 +6,7 @@ from sprites.damageable import Damageable
 
 import config
 from sprites.physics_entity import PhysicsEntity
+from sprites.player.player import Player
 import utils
 import game
 from utils import debug
@@ -36,7 +37,9 @@ class BaseEnemy(PhysicsEntity, Damageable):
         self.animation = 'idle'
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
+        self.attack_speed = 0.02
 
+        self.is_touching_player = False
         self.is_attacking = False
 
     def on_died(self):
@@ -46,10 +49,9 @@ class BaseEnemy(PhysicsEntity, Damageable):
 
     def on_damaged(self):
         print(self.hp)
-        self.add_x(5)
 
     def patrol(self):
-        if self.touching_wall and self.is_grounded:
+        if self.touching_wall and self.is_grounded and not self.is_touching_player:
             self.jump()
 
         if self.dir.x == 0:
@@ -65,7 +67,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
             return
 
     def follow(self, pos):
-        if self.touching_wall and self.is_grounded:
+        if self.touching_wall and self.is_grounded and not self.is_touching_player:
             self.jump()
 
         if self.rect.centerx > pos[0]:
@@ -76,7 +78,7 @@ class BaseEnemy(PhysicsEntity, Damageable):
             self.dir.x = 0
 
     def roam(self, change_chance=0.0005):
-        if self.touching_wall and self.is_grounded:
+        if self.touching_wall and self.is_grounded and not self.is_touching_player:
             # Sometimes turn and sometimes jump over obstacles
             if random.random() < 0.5:
                 self.jump()
@@ -140,13 +142,15 @@ class BaseEnemy(PhysicsEntity, Damageable):
 
     def animate(self, player):
         last_frame_animation = self.animation
+        self.animation_speed = config.ANIMATION_SPEED
 
         # Attacking
         if self.is_attacking:
             self.animation = 'attack'
+            self.animation_speed = self.attack_speed
         # Touching wall
         elif self.touching_wall:
-            # Running against wall
+            # Running against wall or player
             if self.is_grounded:
                 self.animation = 'push'
             # Wall sliding
@@ -176,7 +180,10 @@ class BaseEnemy(PhysicsEntity, Damageable):
         if self.animation_index >= len(self.animations[self.animation]):
             if self.animation == 'attack':
                 self.animation_index = 0
-                self.animation = 'idle'
+                if self.is_touching_player:
+                    self.animation = 'push'
+                else:
+                    self.animation = 'idle'
                 self.is_attacking = False
                 self.animation_speed = config.ANIMATION_SPEED
                 self.attack(player)
@@ -190,8 +197,26 @@ class BaseEnemy(PhysicsEntity, Damageable):
 
         self.animation_index += self.animation_speed * game.delta_time
 
-    def update(self, player, tiles):
+    def collide_horizontal(self, collidables):
+        self.touching_wall = False
+        self.is_touching_right_wall = False
+        self.is_touching_player = False
+
+        for collidable in collidables:
+            if collidable.rect.colliderect(self.rect):
+                if self.dir.x > 0:
+                    self.rect.right = collidable.rect.left
+                    self.touching_wall = 'right'
+                if self.dir.x < 0:
+                    self.rect.left = collidable.rect.right
+                    self.touching_wall = 'left'
+
+                if isinstance(collidable, Player):
+                    self.is_touching_player = True
+                self.pos.x = self.rect.x
+
+    def update(self, player, terrain):
         self.alert_timer -= game.delta_time
         self.attack_cooldown -= game.delta_time
-        self.move(tiles)
+        self.move([*terrain, player])
         self.animate(player)
