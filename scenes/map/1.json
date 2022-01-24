@@ -175,6 +175,17 @@
                  "width":0,
                  "x":1518,
                  "y":780
+                }, 
+                {
+                 "height":0,
+                 "id":129,
+                 "name":"wounded",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":498,
+                 "y":804
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -258,7 +269,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":129,
+ "nextobjectid":132,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

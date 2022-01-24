@@ -246,8 +246,6 @@ class Enemy(PhysicsEntity, Damageable):
         else:
             self.speed = self.run_speed * 0.5
 
-
-
         self.alert_timer -= game.delta_time
 
         self.move([*terrain, player])

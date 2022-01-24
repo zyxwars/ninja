@@ -113,6 +113,8 @@ class PlayableScene:
                             if entity['name'] == 'player':
                                 self.player = Player(pos)
                             # Enemies
+                            elif entity['name'] == 'wounded':
+                                self.enemies.add(enemies.Wounded(pos))
                             elif entity['name'] == 'prowler':
                                 self.enemies.add(enemies.Prowler(
                                     pos, (pos[0], pos[0] + entity['width'])))
