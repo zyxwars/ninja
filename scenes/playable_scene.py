@@ -119,6 +119,9 @@ class PlayableScene:
                             elif entity['name'] == 'patrol':
                                 self.enemies.add(enemies.Patrol(
                                     pos, (pos[0], pos[0] + entity['width'])))
+                            elif entity['name'] == 'heavy':
+                                self.enemies.add(enemies.Heavy(
+                                    pos, (pos[0], pos[0])))
                             # Collectables
                             elif entity['name'] == 'katana':
                                 self.collectables.add(

@@ -19,8 +19,8 @@ class Enemy(PhysicsEntity, Damageable):
         super().__init__(self.image.get_rect(topleft=pos))
 
         self.hp = 100
-        self.speed = config.SPEED * (random.randrange(3, 7) / 10)
-        self.base_speed = self.speed
+        self.speed = config.SPEED * (random.randrange(2000, 4000) / 10000)
+        self.run_speed = self.speed * 2
         self.patrol_area = patrol_area
         self.alert_timer_ms = 4000
         self.alert_timer = 0
@@ -242,18 +242,13 @@ class Enemy(PhysicsEntity, Damageable):
 
     def update(self, player, terrain):
         if self.alert_timer > self.alert_timer_ms / 2:
-            self.speed = min(self.base_speed * 1.5, config.SPEED - 0.1)
+            self.speed = self.run_speed
         else:
-            self.speed = self.base_speed
+            self.speed = self.run_speed * 0.5
+
+
 
         self.alert_timer -= game.delta_time
-
-        # enemies = []
-        # for enemy in self.groups()[0]:
-        #     if enemy is self:
-        #         continue
-
-        #     enemies.append(enemy)
 
         self.move([*terrain, player])
         self.animate(player)

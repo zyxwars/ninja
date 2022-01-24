@@ -4,6 +4,8 @@ import math
 
 import config
 from sprites.damageable import Damageable
+# Avoid ImportError
+import sprites.enemies.enemy as enemy
 from sprites.physics_entity import PhysicsEntity
 from sprites.weapons.punch import Punch
 from sprites.weapons.weapon import Weapon
@@ -139,10 +141,10 @@ class Player(PhysicsEntity, Damageable):
                 continue
 
             if attack_rect.colliderect(entity.rect):
-                if isinstance(entity, Damageable):
+                if isinstance(entity, enemy.Enemy):
                     hit_sound.play()
                     # Returns true if entity died
-                    if entity.damage(self.weapon.damage):
+                    if entity.damage(self.weapon.damage * 10 if (entity.facing_right and self.facing_right) or (not entity.facing_right and not self.facing_right) else self.weapon.damage):
                         self.hp = min(self.hp + 25, 100)
 
                     is_hit = True

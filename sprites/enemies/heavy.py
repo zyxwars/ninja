@@ -1,25 +1,28 @@
 import pygame as pg
+import random
 
 from utils import debug
 from .enemy import Enemy
 import utils
+import config
 
 
-class Patrol(Enemy):
-    """Semi-heavy class, usually patrol single route until alerted"""
+class Heavy(Enemy):
+    """Heavy, stands in place until alerted by other guards"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        sheet_parser = utils.SheetParser('assets/patrol_sheet.png', __file__)
-        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 3, (64, 64)),
-                           'attack': sheet_parser.load_images_row((0, 1), 4, (64, 64)),
+        sheet_parser = utils.SheetParser('assets/heavy_sheet.png', __file__)
+        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 7, (64, 64)),
+                           'attack': sheet_parser.load_images_row((0, 1), 1, (64, 64)),
                            'jump': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
                            'fall': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
                            'run': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
                            'push': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
                            'wallslide': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
-        self.hp = 100
+        self.hp = 200
+        self.speed = config.SPEED * (random.randrange(500, 2000) / 10000)
 
     def update(self, player, *args, **kwargs):
         self.spot_player(player)
@@ -36,6 +39,6 @@ class Patrol(Enemy):
                     if attack_rect.colliderect(player):
                         self.is_attacking = True
         else:
-            self.patrol()
+            self.follow((self.patrol_area[0], 0))
 
         super().update(player, *args, **kwargs)

@@ -3,10 +3,10 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Current:
 
 - [ ] Add enemy sounds
-- [ ] Change enemy speed when chasing player
+- [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events
 - [ ] Fix enemy attack range
-- [ ] Add gray hp to player on kill
+- [x] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
 - [ ] Use layers
 - [ ] Load tiled object images using their name as the filename
