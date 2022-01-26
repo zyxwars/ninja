@@ -153,39 +153,6 @@
                  "width":0,
                  "x":811,
                  "y":821
-                }, 
-                {
-                 "height":41.3333333333333,
-                 "id":119,
-                 "name":"patrol",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":180,
-                 "x":982.333333333333,
-                 "y":671.333333333333
-                }, 
-                {
-                 "height":0,
-                 "id":127,
-                 "name":"heavy",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":1518,
-                 "y":780
-                }, 
-                {
-                 "height":0,
-                 "id":129,
-                 "name":"wounded",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":498,
-                 "y":804
                 }],
          "opacity":1,
          "type":"objectgroup",

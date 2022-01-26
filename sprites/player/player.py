@@ -22,6 +22,9 @@ class Player(PhysicsEntity, Damageable):
             self, self.image.get_rect(topleft=pos))
         Damageable.__init__(self, 100)
 
+        self.state = 'idle'
+        self.last_state = self.state
+
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)
         attack_sheet_parse = utils.SheetParser(
@@ -36,13 +39,11 @@ class Player(PhysicsEntity, Damageable):
                            'run': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
                            'push': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
                            'wallslide': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
-        self.animation = 'idle'
+        self.animation = self.animations['idle']
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
 
         self.weapon = Punch()
-        # Attack speed is directly tied to the attack animation speed
-        self.is_attacking = False
         self.jumped_from_wall = False
 
         # Sounds
@@ -72,66 +73,12 @@ class Player(PhysicsEntity, Damageable):
     def on_damaged(self):
         print('ouch')
 
-    def debug(self):
-        debug.debug('rect', self.rect)
-        debug.debug('jumped_from_wall', self.jumped_from_wall)
-        debug.debug('touching_wall', self.touching_wall)
-        debug.debug('is_grounded', self.is_grounded)
-        debug.debug('dir', self.dir)
-        debug.debug('animation', self.animation)
-
-    def draw(self, screen, shift: pg.Vector2):
-        screen.blit(self.image, (self.rect.x +
-                    int(shift.x), self.rect.y + int(shift.y)))
-
-    def update(self, terrain, enemies, collectables_group):
-        self.debug()
-        self.get_input(enemies, collectables_group)
-        self.move([*terrain, *enemies])
-        self.animate()
-
-        # Play land sound logic
-        self.last_jumped += game.delta_time
-
-        if self.is_grounded != self.last_grounded:
-            if self.is_grounded and self.last_gravity > 1:
-                self.land_sound.play()
-        self.last_grounded = self.is_grounded
-        self.last_gravity = self.dir.y
-
-        self.equip_cooldown += game.delta_time
-
-        return self.rect.center
-
-    def get_input(self, enemies, collectables_group):
-        keys = pg.key.get_pressed()
-        mouse = pg.mouse.get_pressed()
-
-        if keys[pg.K_a]:
-            self.dir.x = -1
-        elif keys[pg.K_d]:
-            self.dir.x = 1
-        else:
-            self.dir.x = 0
-
-        if keys[pg.K_SPACE]:
-            self.jump()
-        if keys[pg.K_e]:
-            if self.equip_cooldown > 250:
-                self.collect(collectables_group)
-        if keys[pg.K_g]:
-            self.drop(collectables_group)
-
-        if mouse[0]:
-            self.attack(enemies, self.jump_sound,
-                        random.choice(self.punch_sounds))
-
     def attack(self, entities, attack_sound, hit_sound):
-        if self.is_attacking:
+        if self.state == 'attack':
             return
 
         is_hit = False
-        self.is_attacking = True
+        self.state = 'attack'
 
         attack_rect = self.rect.copy()
         attack_rect.x += 8 if self.facing_right else -8
@@ -151,64 +98,6 @@ class Player(PhysicsEntity, Damageable):
 
         if not is_hit:
             attack_sound.play()
-
-    def animate(self):
-        last_frame_animation = self.animation
-
-        # Attacking
-        if self.is_attacking:
-            self.animation = 'attack'
-            self.animation_speed = (
-                self.weapon.attack_length_ms / len(self.animations['attack'][self.weapon.name])) ** -1
-        # Touching wall
-        elif self.touching_wall:
-            # Running against wall
-            if self.is_grounded:
-                self.animation = 'push'
-            # Wall sliding
-            else:
-                self.animation = 'wallslide'
-                # Slow down gravity when player is wallsliding
-                self.dir.y = min(self.dir.y, 0.5)
-        # Running
-        elif self.is_grounded and self.dir.x != 0:
-            self.animation = 'run'
-        # Jumping
-        elif self.dir.y < 0:
-            self.animation = 'jump'
-        # Falling
-        elif (self.animation in ['jump', 'fall'] and self.dir.y > 0.5) or self.dir.y > 1:
-            self.animation = 'fall'
-        # Idle
-        elif self.dir == pg.Vector2(0, 0):
-            self.animation = 'idle'
-
-        # Restart animation  when animation state changes
-        # This is required since attack speed is tied to the animation,
-        # animation starting on index > 0 caused the attack cooldown to reset early
-        if last_frame_animation != self.animation:
-            self.animation_index = 0
-
-        if self.animation == 'attack':
-            # End attack animation after it played once
-            if self.animation_index >= len(self.animations['attack'][self.weapon.name]):
-                self.animation_index = 0
-                self.animation = 'idle'
-                self.is_attacking = False
-                self.animation_speed = config.ANIMATION_SPEED
-        else:
-            if self.animation_index >= len(self.animations[self.animation]):
-                self.animation_index = 0
-
-        if self.animation == 'attack':
-            self.image = pg.transform.flip(
-                self.animations['attack'][self.weapon.name][math.floor(self.animation_index)], not self.facing_right, False)
-        else:
-            # flip_x = !facing_right, flip image only when not facing right
-            self.image = pg.transform.flip(
-                self.animations[self.animation][math.floor(self.animation_index)], not self.facing_right, False)
-
-        self.animation_index += self.animation_speed * game.delta_time
 
     def collect(self, collectables_group):
         i = self.rect.collidelist(collectables_group.sprites())
@@ -250,3 +139,113 @@ class Player(PhysicsEntity, Damageable):
             self.last_jumped = 0
 
         super().jump()
+
+    def get_input(self, enemies, collectables_group):
+        keys = pg.key.get_pressed()
+        mouse = pg.mouse.get_pressed()
+
+        if keys[pg.K_a]:
+            self.dir.x = -1
+        elif keys[pg.K_d]:
+            self.dir.x = 1
+        else:
+            self.dir.x = 0
+
+        if keys[pg.K_SPACE]:
+            self.jump()
+        if keys[pg.K_e]:
+            if self.equip_cooldown > 250:
+                self.collect(collectables_group)
+        if keys[pg.K_g]:
+            self.drop(collectables_group)
+
+        if mouse[0]:
+            self.attack(enemies, self.jump_sound,
+                        random.choice(self.punch_sounds))
+
+    def update_state(self):
+        # Attacking
+        if self.state == 'attack':
+            pass
+        # Touching wall
+        elif self.touching_wall:
+            # Running against wall
+            if self.is_grounded:
+                self.state = 'push'
+            # Wall sliding
+            else:
+                self.state = 'wallslide'
+        # Running
+        elif self.is_grounded and self.dir.x != 0:
+            self.state = 'run'
+        # Jumping
+        elif self.dir.y < 0:
+            self.state = 'jump'
+        # Falling
+        elif (self.state in ['jump', 'fall'] and self.dir.y > 0.5) or self.dir.y > 1:
+            self.state = 'fall'
+        # Idle
+        elif self.dir == pg.Vector2(0, 0):
+            self.state = 'idle'
+
+    def react_state(self):
+        s = self.state
+
+        self.animation = self.animations[s]
+
+        if s == 'wallslide':
+            # Slow down gravity when player is wallsliding
+            self.dir.y = min(self.dir.y, 0.5)
+        elif s == 'attack':
+            self.animation_speed = (
+                self.weapon.attack_length_ms / len(self.animations['attack'][self.weapon.name])) ** -1
+            self.animation = self.animations['attack'][self.weapon.name]
+
+            if self.animation_index >= len(self.animation):
+                self.state = 'idle'
+                self.animation_speed = config.ANIMATION_SPEED
+
+    def animate(self):
+        # Restart animation  when animation state changes
+        # This is required since attack speed is tied to the animation, animation starting on index > 0 caused the attack cooldown to reset early
+        if self.last_state != self.state or self.animation_index >= len(self.animation):
+            self.animation_index = 0
+
+        # flip_x = !facing_right, flip image only when not facing right
+        self.image = pg.transform.flip(
+            self.animation[math.floor(self.animation_index)], not self.facing_right, False)
+
+        self.animation_index += self.animation_speed * game.delta_time
+
+    def update(self, terrain, enemies, collectables_group):
+        debug.debug('rect', self.rect)
+        debug.debug('jumped_from_wall', self.jumped_from_wall)
+        debug.debug('touching_wall', self.touching_wall)
+        debug.debug('is_grounded', self.is_grounded)
+        debug.debug('dir', self.dir)
+        debug.debug('state', self.state)
+
+        self.get_input(enemies, collectables_group)
+        self.move([*terrain, *enemies])
+        self.update_state()
+        self.react_state()
+        self.animate()
+
+        # Play land sound logic
+        self.last_jumped += game.delta_time
+
+        if self.is_grounded != self.last_grounded:
+            if self.is_grounded and self.last_gravity > 1:
+                self.land_sound.play()
+        self.last_grounded = self.is_grounded
+        self.last_gravity = self.dir.y
+
+        self.equip_cooldown += game.delta_time
+
+        self.last_state = self.state
+
+        return self.rect.center
+
+    def draw(self, screen, shift: pg.Vector2):
+        screen.blit(self.image, (self.rect.x +
+                    int(shift.x), self.rect.y + int(shift.y)))

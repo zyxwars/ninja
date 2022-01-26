@@ -8,6 +8,14 @@ class Damageable():
         self.hp = hp
 
     def damage(self, dmg_amount):
+        """Damage entity
+
+        Args:
+            dmg_amount (int): damage
+
+        Returns:
+            bool: is_killed
+        """
         self.hp -= dmg_amount
 
         if self.hp <= 0:
