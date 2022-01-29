@@ -1,142 +1,141 @@
-import random
-from re import I
 import pygame as pg
 import math
 
 import config
 from sprites.damageable import Damageable
-from sprites.physics_entity import PhysicsEntity
-from utils.statemachine import StateMachine, State
+from sprites.physics_entity import GravityState, PhysicsEntity
+from utils.statemachine import StateMachine
 from sprites.weapons.punch import Punch
-from sprites.weapons.weapon import Weapon
+from sprites.weapons.weapon import CollectableWeapon
 from utils import debug
 import game
 import utils
 
+# TODO: rework state methods to use _sm instead of expecting a prop to be passed to their update method
 
-class BaseState(State):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
 
-    def enter(self, player, terrain=None, enemies=None, collectables_group=None):
-        return self._enter(player, terrain, enemies, collectables_group)
+class MoveState(GravityState):
+    def __init__(self, name, player: 'Player'):
+        self.name = name
+        self._sm = player
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        pass
-
-    def update(self, player, terrain=None, enemies=None, collectables_group=None):
-        return self._update(player, terrain, enemies, collectables_group)
-
-    def _update(self, player, terrain, enemies, collectables_group):
+    def update(self):
+        mouse = pg.mouse.get_pressed()
         keys = pg.key.get_pressed()
 
         if keys[pg.K_a]:
-            player.dir.x = -1
+            self._sm.dir.x = -1
         elif keys[pg.K_d]:
-            player.dir.x = 1
+            self._sm.dir.x = 1
         else:
-            player.dir.x = 0
+            self._sm.dir.x = 0
 
-        player.move([*terrain, *enemies])
-        return None
+        if mouse[0]:
+            self._sm.set_state('attack')
+            return
 
-    def exit(self, player, terrain=None, enemies=None, collectables_group=None):
-        return self._exit(player, terrain, enemies, collectables_group)
-
-    def _exit(self, player, terrain, enemies, collectables_group):
-        pass
+        super().update()
 
 
-class IdleState(BaseState):
+class IdleState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('idle', *args, **kwargs)
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        player.animation = player.animations['idle']
-        player.dir.x = 0
+    def enter(self):
+        self._sm.animation = self._sm.animations['idle']
+        self._sm.dir.x = 0
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        super()._update(player, terrain, enemies, collectables_group)
+    def update(self):
+        super().update()
 
         keys = pg.key.get_pressed()
 
         if keys[pg.K_SPACE]:
-            return 'jump'
+            self._sm.set_state('jump')
+            return
         if keys[pg.K_a] or keys[pg.K_d]:
-            return 'run'
-        if player.dir.y > 1:
-            return 'fall'
+            self._sm.set_state('run')
+            return
+        if self._sm.dir.y > 1:
+            self._sm.set_state('fall')
+            return
 
 
-class RunState(BaseState):
+class RunState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('run', *args, **kwargs)
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        player.animation = player.animations['run']
+    def enter(self):
+        self._sm.animation = self._sm.animations['run']
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        super()._update(player, terrain, enemies, collectables_group)
+    def update(self):
+        super().update()
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
-            return 'jump'
+            self._sm.set_state('jump')
+            return
 
-        if player.dir.x == 0:
-            return 'idle'
-        if player.dir.y > 1:
-            return 'fall'
-        if player.touching_wall:
-            return 'push'
+        if self._sm.dir.x == 0:
+            self._sm.set_state('idle')
+            return
+        if self._sm.dir.y > 1:
+            self._sm.set_state('fall')
+            return
+        if self._sm.touching_wall:
+            self._sm.set_state('push')
+            return
 
 
-class PushState(BaseState):
+class PushState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('push', *args, **kwargs)
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        player.animation = player.animations['push']
+    def enter(self):
+        self._sm.animation = self._sm.animations['push']
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        super()._update(player, terrain, enemies, collectables_group)
+    def update(self):
+        super().update()
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
-            return 'jump'
-        if player.dir.y > 0:
-            return 'fall'
-        if not player.touching_wall:
-            return 'idle'
+            self._sm.set_state('jump')
+            return
+        if self._sm.dir.y > 0:
+            self._sm.set_state('fall')
+            return
+        if not self._sm.touching_wall:
+            self._sm.set_state('idle')
+            return
 
 
-class JumpState(BaseState):
+class JumpState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('jump', *args, **kwargs)
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))
         self.jump_sound.set_volume(0.5)
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        player.animation = player.animations['jump']
-        PhysicsEntity.jump(player)
+    def enter(self):
+        self._sm.animation = self._sm.animations['jump']
+        PhysicsEntity.jump(self._sm)
         self.jump_sound.play()
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        super()._update(player, terrain, enemies, collectables_group)
+    def update(self):
+        super().update()
 
-        # keys = pg.key.get_pressed()
-        # if keys[pg.K_SPACE]:
-        #     return 'jump'
+        if self._sm.dir.y >= 0 and self._sm.touching_wall:
+            self._sm.set_state('wallslide')
+            return
+        if self._sm.dir.y > 0.5:
+            self._sm.set_state('fall')
+            return
+        if self._sm.is_grounded:
+            self._sm.set_state('idle')
+            return
 
-        if player.dir.y >= 0 and player.touching_wall:
-            return 'wallslide'
-        if player.dir.y > 0.5:
-            return 'fall'
-        if player.is_grounded:
-            return 'idle'
 
-
-class FallState(BaseState):
+class FallState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('fall', *args, **kwargs)
         self.land_sound = pg.mixer.Sound(
@@ -145,74 +144,83 @@ class FallState(BaseState):
 
         self.last_y_speed = 0
 
-    def _enter(self, player, terrain, enemies, collectables_group):
+    def enter(self):
         self.last_y_speed = 0
-        player.animation = player.animations['fall']
+        self._sm.animation = self._sm.animations['fall']
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        super()._update(player, terrain, enemies, collectables_group)
+    def update(self):
+        super().update()
 
-        if player.touching_wall:
-            return 'wallslide'
-        if player.is_grounded:
-            return 'idle'
+        if self._sm.touching_wall:
+            self._sm.set_state('wallslide')
+            return
+        if self._sm.is_grounded:
+            self._sm.set_state('idle')
+            return
 
-        self.last_y_speed = player.dir.y
+        self.last_y_speed = self._sm.dir.y
 
-        return None
-
-    def _exit(self, player, terrain, enemies, collectables_group):
+    def exit(self):
         if self.last_y_speed > 1:
             self.land_sound.play()
 
 
-class WallslideState(BaseState):
+class WallslideState(MoveState):
     def __init__(self, *args, **kwargs):
         super().__init__('wallslide', *args, **kwargs)
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        player.animation = player.animations['wallslide']
+    def enter(self):
+        self._sm.animation = self._sm.animations['wallslide']
 
-    def _update(self, player, terrain, enemies, collectables_group):
-        player.dir.y = min(player.dir.y, 0.25)
+    def update(self):
+        self._sm.dir.y = min(self._sm.dir.y, 0.25)
 
-        super()._update(player, terrain, enemies, collectables_group)
+        super().update()
 
-        if not player.touching_wall or player.is_grounded:
-            return 'idle'
+        if not self._sm.touching_wall or self._sm.is_grounded:
+            self._sm.set_state('idle')
+            return
 
 
-class AttackState(BaseState):
-    def __init__(self, *args, **kwargs):
-        super().__init__('attack', *args, **kwargs)
-        self.original_animation_speed = 0
+# class AttackState(GravityState):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__('attack', *args, **kwargs)
+#         self.original_animation_speed = 0
 
-    def _enter(self, player, terrain, enemies, collectables_group):
-        attack_rect = player.rect.copy()
-        attack_rect.x += 8 if player.facing_right else -8
+#     def enter(self):
+#         attack_rect = self._sm.rect.copy()
+#         attack_rect.x += 8 if self._sm.facing_right else -8
 
-        for enemy in enemies:
-            if attack_rect.colliderect(enemy.rect):
-                if isinstance(enemy, enemy.Enemy):
-                    # Enemy.damage returns true if entity died
-                    if enemy.damage(player.weapon.damage * 10 if (enemy.facing_right and player.facing_right) or (not enemy.facing_right and not player.facing_right) else player.weapon.damage):
-                        # Heal player
-                        player.hp = min(player.hp + 25, 100)
+#         for enemy in enemies:
+#             if attack_rect.colliderect(enemy.rect):
+#                 if isinstance(enemy, enemy.Enemy):
+#                     # Enemy.damage returns true if entity died
+#                     if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
+#                         # Heal self._sm
+#                         self._sm.hp = min(self._sm.hp + 25, 100)
 
-        player.animation = player.animations['attack'][player.weapon.name]
-        self.original_animation_speed = player.animation_speed
-        player.animation_speed = player.animation_speed = (
-            player.weapon.attack_length_ms / len(player.animations['attack'][player.weapon.name])) ** -1
+#         self._sm.animation = self._sm.animations['attack'][self._sm.weapon.name]
+#         self.original_animation_speed = self._sm.animation_speed
+#         self._sm.animation_speed = self._sm.animation_speed = (
+#             self._sm.weapon.attack_length_ms / len(self._sm.animations['attack'][self._sm.weapon.name])) ** -1
 
-    def _exit(self, player, terrain, enemies, collectables_group):
-        player.animation_speed = self.original_animation_speed
+#     def update(self):
+#         self._sm.dir.x = 0
+#         self._sm.move([*terrain, *enemies])
+
+#         if self._sm.animation_index >= len(self._sm.animation):
+#             self._sm.set_state('idle')
+#             return
+
+#     def exit(self):
+#         self._sm.animation_speed = self.original_animation_speed
 
 
 class Player(PhysicsEntity, Damageable, StateMachine):
-    def __init__(self, pos):
+    def __init__(self, pos, collides_with: tuple[pg.sprite.Group, ...]):
         self.image = pg.Surface((64, 64)).convert()
         PhysicsEntity.__init__(
-            self, self.image.get_rect(topleft=pos))
+            self, self.image.get_rect(topleft=pos), collides_with)
         Damageable.__init__(self, 100)
 
         # Animation
@@ -247,12 +255,12 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.equip_cooldown = 250
 
         StateMachine.__init__(self)
-        self.add_state(IdleState())
-        self.add_state(RunState())
-        self.add_state(PushState())
-        self.add_state(JumpState())
-        self.add_state(FallState())
-        self.add_state(WallslideState())
+        self.add_state(IdleState(self))
+        self.add_state(RunState(self))
+        self.add_state(PushState(self))
+        self.add_state(JumpState(self))
+        self.add_state(FallState(self))
+        self.add_state(WallslideState(self))
         self.set_state('idle')
 
     def on_died(self):
@@ -282,7 +290,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
     #         self.weapon = Punch()
 
     def animate(self):
-        if self.animation_index >= len(self.animation) or self.last_animation != self.last_animation:
+        if self.animation_index >= len(self.animation) or self.last_animation != self.animation:
             self.animation_index = 0
 
         # flip_x = !facing_right, flip image only when not facing right
@@ -293,7 +301,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
 
         self.last_animation = self.animation
 
-    def update(self, terrain, enemies, collectables_group):
+    def update(self):
         debug.debug('rect', self.rect)
         debug.debug('jumped_from_wall', self.jumped_from_wall)
         debug.debug('touching_wall', self.touching_wall)
@@ -301,26 +309,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         debug.debug('dir', self.dir)
         debug.debug('state', self.current_state.name)
 
-        # self.get_input(enemies, collectables_group)
-        # self.move([*terrain, *enemies])
-        # self.update_state()
-        # self.react_state()
-        # self.animate()
-
-        # # Play land sound logic
-        # self.last_jumped += game.delta_time
-
-        # if self.is_grounded != self.last_grounded:
-        #     if self.is_grounded and self.last_gravity > 1:
-        #         self.land_sound.play()
-        # self.last_grounded = self.is_grounded
-        # self.last_gravity = self.dir.y
-
-        # self.equip_cooldown += game.delta_time
-
-        # self.last_state = self.state
-
-        self.update_state(self, terrain, enemies, collectables_group)
+        self.current_state.update()
         self.animate()
 
         return self.rect.center

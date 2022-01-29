@@ -5,7 +5,7 @@ import game
 
 
 class Collectable(PhysicsEntity):
-    def __init__(self, image, pos, * args, **kwargs):
+    def __init__(self, image, pos, *args, **kwargs):
         self.image = image
         super().__init__(self.image.get_rect(topleft=pos), *args, **kwargs)
 

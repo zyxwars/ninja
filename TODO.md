@@ -13,6 +13,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Back burner:
 
+- [ ] Animation transitions
 - [ ] Order sprites rendering with layers
 - [ ] Fix roaming enemies getting stuck when jumping
 - [ ] Add proper support for larger non tileable images, like trees

@@ -111,7 +111,8 @@ class PlayableScene:
 
                             # Player
                             if entity['name'] == 'player':
-                                self.player = Player(pos)
+                                self.player = Player(pos, collides_with=(
+                                    self.enemies, self.terrain))
                             # Enemies
                             elif entity['name'] == 'wounded':
                                 self.enemies.add(enemies.Wounded(pos))
@@ -127,7 +128,7 @@ class PlayableScene:
                             # Collectables
                             elif entity['name'] == 'katana':
                                 self.collectables.add(
-                                    weapons.Katana(pos))
+                                    weapons.Katana(pos, [self.terrain]))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -164,8 +165,7 @@ class PlayableScene:
         self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:
-            player_pos = self.player.update(
-                self.terrain.sprites(), self.enemies.sprites(), self.collectables)
+            player_pos = self.player.update()
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)

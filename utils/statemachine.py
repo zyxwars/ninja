@@ -1,4 +1,6 @@
 
+from typing import Optional
+
 
 class StateUndefined(Exception):
     def __init__(self, message, *args, **kwargs):
@@ -6,44 +8,35 @@ class StateUndefined(Exception):
 
 
 class State:
-    def __init__(self, name):
+    def __init__(self, name: str, sm: 'StateMachine'):
         self.name = name
+        self._sm = sm
 
-    def enter(self, sm_instance, *args, **kwargs):
+    def enter(self):
         pass
 
-    def update(self, sm_instance, *args, **kwargs):
-        return None
+    def update(self):
+        pass
 
-    def exit(self, sm_instance, *args, **kwargs):
+    def exit(self):
         pass
 
 
 class StateMachine:
     def __init__(self):
-        self.states = {}
-        self.current_state = None
+        self.states: dict[str, State] = {}
+        self.current_state: Optional[State] = None
 
     def add_state(self, state):
         self.states[state.name] = state
 
-    def set_state(self, state_name, *args, **kwargs):
-        if len(args) == 0:
-            args = [self]
-
+    def set_state(self, state_name):
         if self.current_state:
-            self.current_state.exit(*args, **kwargs)
+            self.current_state.exit()
 
         if not state_name in self.states:
             raise StateUndefined(state_name)
 
         self.current_state = self.states[state_name]
-        self.current_state.enter(*args, **kwargs)
 
-    def update_state(self, *args, **kwargs):
-        if not self.current_state:
-            return
-
-        new_state_name = self.current_state.update(*args, **kwargs)
-        if new_state_name:
-            self.set_state(new_state_name, *args, **kwargs)
+        self.current_state.enter()
