@@ -6,3 +6,4 @@ from .c_mod import c_mod
 from .outline import outline
 from .load_image import load_image
 from .flatten import flatten
+from .groups_to_sprites import groups_to_sprites

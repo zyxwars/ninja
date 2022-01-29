@@ -24,7 +24,7 @@ class Enemy(PhysicsEntity, Damageable):
         self.patrol_area = patrol_area
         self.alert_timer_ms = 4000
         self.alert_timer = 0
-        self.animation = 'idle'
+        self.animation = 'idling'
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
         self.attack_speed_ms = 80
@@ -39,8 +39,6 @@ class Enemy(PhysicsEntity, Damageable):
 
     def on_damaged(self):
         print(self.hp)
-
-   
 
     def update(self, player, terrain):
         self.move([*terrain, player])

@@ -10,7 +10,7 @@ class Wounded(Enemy):
         super().__init__(pos, (0, 0), *args, **kwargs)
         # Animation
         sheet_parser = utils.SheetParser('assets/wounded_sheet.png', __file__)
-        self.animations['idle'] = sheet_parser.load_images_row(
+        self.animations['idling'] = sheet_parser.load_images_row(
             (0, 0), 4, (64, 64))
         self.hp = 1
 

@@ -2,9 +2,8 @@ import pygame as pg
 
 import config
 import game
-from utils import debug
+from utils import debug, groups_to_sprites
 from utils.statemachine import State, StateMachine
-from utils import flatten
 
 
 class Colliding(State):
@@ -78,7 +77,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         self.touching_wall = False
         self.is_touching_right_wall = False
 
-        for collidable in flatten([group.sprites() for group in self.collidables]):
+        for collidable in groups_to_sprites(self.collidables):
             if collidable.rect.colliderect(self.rect):
                 if self.dir.x > 0:
                     self.rect.right = collidable.rect.left
@@ -100,7 +99,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         temp_rect = self.rect.copy()
         temp_rect = temp_rect.inflate(0, 1)
 
-        for collidable in flatten([group.sprites() for group in self.collidables]):
+        for collidable in groups_to_sprites(self.collidables):
             if collidable.rect.colliderect(temp_rect):
                 # Falling
                 if self.dir.y > 0:

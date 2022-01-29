@@ -14,13 +14,13 @@ class Heavy(Enemy):
         super().__init__(*args, **kwargs)
 
         sheet_parser = utils.SheetParser('assets/heavy_sheet.png', __file__)
-        self.animations = {'idle': sheet_parser.load_images_row((0, 0), 7, (64, 64)),
-                           'attack': sheet_parser.load_images_row((0, 1), 1, (64, 64)),
-                           'jump': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
-                           'fall': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
-                           'run': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
-                           'push': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
-                           'wallslide': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
+        self.animations = {'idling': sheet_parser.load_images_row((0, 0), 7, (64, 64)),
+                           'attacking': sheet_parser.load_images_row((0, 1), 1, (64, 64)),
+                           'jumping': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
+                           'falling': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
+                           'running': sheet_parser.load_images_row((0, 4), 2, (64, 64)),
+                           'pushing': sheet_parser.load_images_row((0, 5), 3, (64, 64)),
+                           'wallsliding': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
         self.hp = 200
         self.speed = config.SPEED * (random.randrange(500, 2000) / 10000)
 

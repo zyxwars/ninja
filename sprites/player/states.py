@@ -1,11 +1,14 @@
 import pygame as pg
+import random
 
+import config
 import utils
 from sprites.damageable import Damageable
 from sprites.physics_entity import PulledByGravity, PhysicsEntity
 from sprites.weapons.punch import Punch
 from sprites.weapons.weapon import CollectableWeapon
 from utils import debug
+from utils import groups_to_sprites
 from utils.statemachine import StateMachine
 from .player import Player
 
@@ -26,8 +29,12 @@ class Moving(PulledByGravity):
         else:
             self._sm.dir.x = 0
 
+        if keys[pg.K_e]:
+            self._sm.set_state('collecting')
+            return
+
         if mouse[0]:
-            self._sm.set_state('attack')
+            self._sm.set_state('attacking')
             return
 
         super().update()
@@ -35,10 +42,10 @@ class Moving(PulledByGravity):
 
 class Idling(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('idle', *args, **kwargs)
+        super().__init__('idling', *args, **kwargs)
 
     def enter(self):
-        self._sm.animation = self._sm.animations['idle']
+        self._sm.animation = self._sm.animations['idling']
         self._sm.dir.x = 0
 
     def update(self):
@@ -47,73 +54,73 @@ class Idling(Moving):
         keys = pg.key.get_pressed()
 
         if keys[pg.K_SPACE]:
-            self._sm.set_state('jump')
+            self._sm.set_state('jumping')
             return
         if keys[pg.K_a] or keys[pg.K_d]:
-            self._sm.set_state('run')
+            self._sm.set_state('running')
             return
         if self._sm.dir.y > 1:
-            self._sm.set_state('fall')
+            self._sm.set_state('falling')
             return
 
 
 class Running(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('run', *args, **kwargs)
+        super().__init__('running', *args, **kwargs)
 
     def enter(self):
-        self._sm.animation = self._sm.animations['run']
+        self._sm.animation = self._sm.animations['running']
 
     def update(self):
         super().update()
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
-            self._sm.set_state('jump')
+            self._sm.set_state('jumping')
             return
 
         if self._sm.dir.x == 0:
-            self._sm.set_state('idle')
+            self._sm.set_state('idling')
             return
         if self._sm.dir.y > 1:
-            self._sm.set_state('fall')
+            self._sm.set_state('falling')
             return
         if self._sm.touching_wall:
-            self._sm.set_state('push')
+            self._sm.set_state('pushing')
             return
 
 
 class Pushing(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('push', *args, **kwargs)
+        super().__init__('pushing', *args, **kwargs)
 
     def enter(self):
-        self._sm.animation = self._sm.animations['push']
+        self._sm.animation = self._sm.animations['pushing']
 
     def update(self):
         super().update()
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
-            self._sm.set_state('jump')
+            self._sm.set_state('jumping')
             return
         if self._sm.dir.y > 0:
-            self._sm.set_state('fall')
+            self._sm.set_state('falling')
             return
         if not self._sm.touching_wall:
-            self._sm.set_state('idle')
+            self._sm.set_state('idling')
             return
 
 
 class Jumping(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('jump', *args, **kwargs)
+        super().__init__('jumping', *args, **kwargs)
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))
         self.jump_sound.set_volume(0.5)
 
     def enter(self):
-        self._sm.animation = self._sm.animations['jump']
+        self._sm.animation = self._sm.animations['jumping']
         PhysicsEntity.jump(self._sm)
         self.jump_sound.play()
 
@@ -121,19 +128,19 @@ class Jumping(Moving):
         super().update()
 
         if self._sm.dir.y >= 0 and self._sm.touching_wall:
-            self._sm.set_state('wallslide')
+            self._sm.set_state('wallsliding')
             return
         if self._sm.dir.y > 0.5:
-            self._sm.set_state('fall')
+            self._sm.set_state('falling')
             return
         if self._sm.is_grounded:
-            self._sm.set_state('idle')
+            self._sm.set_state('idling')
             return
 
 
 class Falling(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('fall', *args, **kwargs)
+        super().__init__('falling', *args, **kwargs)
         self.land_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/land.wav'))
         self.land_sound.set_volume(0.1)
@@ -142,16 +149,16 @@ class Falling(Moving):
 
     def enter(self):
         self.last_y_speed = 0
-        self._sm.animation = self._sm.animations['fall']
+        self._sm.animation = self._sm.animations['falling']
 
     def update(self):
         super().update()
 
         if self._sm.touching_wall:
-            self._sm.set_state('wallslide')
+            self._sm.set_state('wallsliding')
             return
         if self._sm.is_grounded:
-            self._sm.set_state('idle')
+            self._sm.set_state('idling')
             return
 
         self.last_y_speed = self._sm.dir.y
@@ -163,10 +170,10 @@ class Falling(Moving):
 
 class Wallsliding(Moving):
     def __init__(self, *args, **kwargs):
-        super().__init__('wallslide', *args, **kwargs)
+        super().__init__('wallsliding', *args, **kwargs)
 
     def enter(self):
-        self._sm.animation = self._sm.animations['wallslide']
+        self._sm.animation = self._sm.animations['wallsliding']
 
     def update(self):
         self._sm.dir.y = min(self._sm.dir.y, 0.25)
@@ -174,39 +181,76 @@ class Wallsliding(Moving):
         super().update()
 
         if not self._sm.touching_wall or self._sm.is_grounded:
-            self._sm.set_state('idle')
+            self._sm.set_state('idling')
             return
 
 
-# class AttackState(GravityState):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__('attack', *args, **kwargs)
-#         self.original_animation_speed = 0
+class Collecting(Moving):
+    def __init__(self, *args, **kwargs):
+        super().__init__('collecting', *args, **kwargs)
 
-#     def enter(self):
-#         attack_rect = self._sm.rect.copy()
-#         attack_rect.x += 8 if self._sm.facing_right else -8
+    def enter(self):
+        collectables = self._sm.collectables.sprites()
 
-#         for enemy in enemies:
-#             if attack_rect.colliderect(enemy.rect):
-#                 if isinstance(enemy, enemy.Enemy):
-#                     # Enemy.damage returns true if entity died
-#                     if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
-#                         # Heal self._sm
-#                         self._sm.hp = min(self._sm.hp + 25, 100)
+        i = self._sm.rect.collidelist(collectables)
+        if i == -1:
+            self._sm.set_state('idling')
+            return
 
-#         self._sm.animation = self._sm.animations['attack'][self._sm.weapon.name]
-#         self.original_animation_speed = self._sm.animation_speed
-#         self._sm.animation_speed = self._sm.animation_speed = (
-#             self._sm.weapon.attack_length_ms / len(self._sm.animations['attack'][self._sm.weapon.name])) ** -1
+        collectable = collectables[i]
 
-#     def update(self):
-#         self._sm.dir.x = 0
-#         self._sm.move([*terrain, *enemies])
+        if isinstance(collectable, CollectableWeapon):
+            weapon = collectable.collect()
+            if weapon:
+                self._sm.weapon = weapon
+                self._sm.collect_cooldown = config.COLLECT_COOLDOWN_MS
+                self._sm.set_state('dropping')
+                return
 
-#         if self._sm.animation_index >= len(self._sm.animation):
-#             self._sm.set_state('idle')
-#             return
+        self._sm.set_state('idling')
 
-#     def exit(self):
-#         self._sm.animation_speed = self.original_animation_speed
+
+class Dropping(Moving):
+    def __init__(self, *args, **kwargs):
+        super().__init__('dropping', *args, **kwargs)
+
+    def enter(self):
+        if isinstance(self._sm.weapon, CollectableWeapon):
+            self._sm.collectables.add(self._sm.weapon.drop(
+                (self._sm.rect.centerx + random.randint(0, 64) * (-1 if not self._sm.facing_right else 1), self._sm.rect.centery - 64)))
+            self.weapon = Punch()
+
+        self._sm.set_state('idling')
+
+        # class AttackState(GravityState):
+        #     def __init__(self, *args, **kwargs):
+        #         super().__init__('attacking', *args, **kwargs)
+        #         self.original_animation_speed = 0
+
+        #     def enter(self):
+        #         attack_rect = self._sm.rect.copy()
+        #         attack_rect.x += 8 if self._sm.facing_right else -8
+
+        #         for enemy in enemies:
+        #             if attack_rect.colliderect(enemy.rect):
+        #                 if isinstance(enemy, enemy.Enemy):
+        #                     # Enemy.damage returns true if entity died
+        #                     if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
+        #                         # Heal self._sm
+        #                         self._sm.hp = min(self._sm.hp + 25, 100)
+
+        #         self._sm.animation = self._sm.animations['attacking'][self._sm.weapon.name]
+        #         self.original_animation_speed = self._sm.animation_speed
+        #         self._sm.animation_speed = self._sm.animation_speed = (
+        #             self._sm.weapon.attack_length_ms / len(self._sm.animations['attacking'][self._sm.weapon.name])) ** -1
+
+        #     def update(self):
+        #         self._sm.dir.x = 0
+        #         self._sm.move([*terrain, *enemies])
+
+        #         if self._sm.animation_index >= len(self._sm.animation):
+        #             self._sm.set_state('idling')
+        #             return
+
+        #     def exit(self):
+        #         self._sm.animation_speed = self.original_animation_speed

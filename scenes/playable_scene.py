@@ -111,8 +111,9 @@ class PlayableScene:
 
                             # Player
                             if entity['name'] == 'player':
-                                self.player = Player(pos, collides_with=(
-                                    self.enemies, self.terrain))
+                                self.player = Player(
+                                    pos, (self.enemies,
+                                          self.terrain), self.collectables)  # To create a tuple with only one item, you have add a comma after the item, unless Python will not recognize the variable as a tuple.
                             # Enemies
                             elif entity['name'] == 'wounded':
                                 self.enemies.add(enemies.Wounded(pos))
