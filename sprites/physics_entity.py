@@ -7,7 +7,7 @@ from utils.statemachine import State, StateMachine
 from utils import flatten
 
 
-class CollidingState(State):
+class Colliding(State):
     def __init__(self, name, physics_entity: 'PhysicsEntity', *args, **kwargs):
         self.name = name
         self._sm = physics_entity
@@ -28,9 +28,9 @@ class CollidingState(State):
             self._sm.facing_right = False
 
 
-class GravityState(CollidingState):
+class PulledByGravity(Colliding):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__('pulled_by_gravity', *args, **kwargs)
 
     def update(self):
         self._sm.apply_gravity()
