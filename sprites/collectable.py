@@ -1,6 +1,6 @@
 import pygame as pg
 
-from .physics_entity import PhysicsEntity
+from .physics_entity import PhysicsEntity, PulledByGravity
 import game
 
 
@@ -11,6 +11,9 @@ class Collectable(PhysicsEntity):
 
         self.collect_cooldown_ms = 500
         self.collect_cooldown_timer = 0
+
+        self.add_state(PulledByGravity(self))
+        self.set_state('pulled_by_gravity')
 
     def collect(self):
         if self.collect_cooldown_timer > 0:
@@ -25,6 +28,7 @@ class Collectable(PhysicsEntity):
         # Use self to add collectable back to collectable group to render it
         return self
 
-    def update(self, terrain):
-        self.move(terrain)
+    def update(self):
+        self.current_state.update()
+
         self.collect_cooldown_timer -= game.delta_time

@@ -55,8 +55,6 @@ class Player(PhysicsEntity, Damageable, StateMachine):
             sound.set_volume(0.5)
             self.punch_sounds.append(sound)
 
-        self.collect_cooldown = 0
-
         StateMachine.__init__(self)
         self.add_state(states.Idling(self))
         self.add_state(states.Running(self))
@@ -64,6 +62,8 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.add_state(states.Jumping(self))
         self.add_state(states.Falling(self))
         self.add_state(states.Wallsliding(self))
+        self.add_state(states.Collecting(self))
+        self.add_state(states.Dropping(self))
         self.set_state('idling')
 
     def on_died(self):
@@ -94,8 +94,6 @@ class Player(PhysicsEntity, Damageable, StateMachine):
 
         self.current_state.update()
         self.animate()
-
-        self.collect_cooldown -= game.delta_time
 
         return self.rect.center
 

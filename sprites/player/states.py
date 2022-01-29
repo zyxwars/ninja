@@ -2,6 +2,7 @@ import pygame as pg
 import random
 
 import config
+import game
 import utils
 from sprites.damageable import Damageable
 from sprites.physics_entity import PulledByGravity, PhysicsEntity
@@ -29,10 +30,6 @@ class Moving(PulledByGravity):
         else:
             self._sm.dir.x = 0
 
-        if keys[pg.K_e]:
-            self._sm.set_state('collecting')
-            return
-
         if mouse[0]:
             self._sm.set_state('attacking')
             return
@@ -50,6 +47,15 @@ class Idling(Moving):
 
     def update(self):
         super().update()
+
+        for e in game.events:
+            if e.type == pg.KEYDOWN:
+                if e.key == pg.K_e:
+                    self._sm.set_state('collecting')
+                    return
+                if e.key == pg.K_g:
+                    self._sm.set_state('dropping')
+                    return
 
         keys = pg.key.get_pressed()
 
@@ -73,6 +79,15 @@ class Running(Moving):
 
     def update(self):
         super().update()
+
+        for e in game.events:
+            if e.type == pg.KEYDOWN:
+                if e.key == pg.K_e:
+                    self._sm.set_state('collecting')
+                    return
+                if e.key == pg.K_g:
+                    self._sm.set_state('dropping')
+                    return
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
@@ -99,6 +114,15 @@ class Pushing(Moving):
 
     def update(self):
         super().update()
+
+        for e in game.events:
+            if e.type == pg.KEYDOWN:
+                if e.key == pg.K_e:
+                    self._sm.set_state('collecting')
+                    return
+                if e.key == pg.K_g:
+                    self._sm.set_state('dropping')
+                    return
 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
@@ -202,10 +226,12 @@ class Collecting(Moving):
         if isinstance(collectable, CollectableWeapon):
             weapon = collectable.collect()
             if weapon:
-                self._sm.weapon = weapon
-                self._sm.collect_cooldown = config.COLLECT_COOLDOWN_MS
-                self._sm.set_state('dropping')
-                return
+                # Drop old weapon
+                if isinstance(self._sm.weapon, CollectableWeapon):
+                    self._sm.collectables.add(self._sm.weapon.drop(
+                        (self._sm.rect.centerx + random.randint(0, 64) * (-1 if not self._sm.facing_right else 1), self._sm.rect.centery - 64)))
+
+            self._sm.weapon = weapon
 
         self._sm.set_state('idling')
 
@@ -218,7 +244,7 @@ class Dropping(Moving):
         if isinstance(self._sm.weapon, CollectableWeapon):
             self._sm.collectables.add(self._sm.weapon.drop(
                 (self._sm.rect.centerx + random.randint(0, 64) * (-1 if not self._sm.facing_right else 1), self._sm.rect.centery - 64)))
-            self.weapon = Punch()
+            self._sm.weapon = Punch()
 
         self._sm.set_state('idling')
 

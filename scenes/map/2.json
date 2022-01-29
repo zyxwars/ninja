@@ -29,6 +29,17 @@
                  "width":0,
                  "x":1242.42424242424,
                  "y":1142.42424242424
+                }, 
+                {
+                 "height":0,
+                 "id":3,
+                 "name":"katana",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1094,
+                 "y":1138
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -37,7 +48,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":3,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

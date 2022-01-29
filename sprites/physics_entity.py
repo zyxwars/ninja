@@ -43,6 +43,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
 
     def __init__(self, rect, collidables: tuple[pg.sprite.Group, ...], *args, **kwargs):
         super().__init__(*args, **kwargs)
+        StateMachine.__init__(self)
         self.collidables = collidables
         self.rect = rect
         self.pos = pg.Vector2(rect.x, rect.y)

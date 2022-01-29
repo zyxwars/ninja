@@ -129,7 +129,7 @@ class PlayableScene:
                             # Collectables
                             elif entity['name'] == 'katana':
                                 self.collectables.add(
-                                    weapons.Katana(pos, [self.terrain]))
+                                    weapons.Katana(pos, (self.terrain,)))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -171,7 +171,7 @@ class PlayableScene:
         else:
             player_pos = (0, 0)
         # collectables
-        self.collectables.update(self.terrain)
+        self.collectables.update()
         self.collectables.draw(self.player.rect, screen_surface, self.shift)
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
