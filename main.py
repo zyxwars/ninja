@@ -18,7 +18,7 @@ class Game:
 
     def run(self):
         while True:
-            # Call only once every framed
+            # Call only once every frame
             game.events = pg.event.get()
 
             for e in game.events:

@@ -26,11 +26,14 @@ class StateMachine:
     def __init__(self):
         self.states: dict[str, State] = {}
         self.current_state: Optional[State] = None
+        self.last_state: Optional[State] = None
 
     def add_state(self, state):
         self.states[state.name] = state
 
     def set_state(self, state_name):
+        self.last_state = self.current_state
+
         if self.current_state:
             self.current_state.exit()
 

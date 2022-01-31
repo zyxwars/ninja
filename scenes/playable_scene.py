@@ -113,19 +113,12 @@ class PlayableScene:
                             if entity['name'] == 'player':
                                 self.player = Player(
                                     pos, (self.enemies,
-                                          self.terrain), self.collectables)  # To create a tuple with only one item, you have add a comma after the item, unless Python will not recognize the variable as a tuple.
+                                          self.terrain), self.collectables, self.enemies)  # To create a tuple with only one item, you have add a comma after the item, unless Python will not recognize the variable as a tuple.
                             # Enemies
-                            elif entity['name'] == 'wounded':
-                                self.enemies.add(enemies.Wounded(pos))
-                            elif entity['name'] == 'prowler':
-                                self.enemies.add(enemies.Prowler(
-                                    pos, (pos[0], pos[0] + entity['width'])))
                             elif entity['name'] == 'patrol':
                                 self.enemies.add(enemies.Patrol(
-                                    pos, (pos[0], pos[0] + entity['width'])))
-                            elif entity['name'] == 'heavy':
-                                self.enemies.add(enemies.Heavy(
-                                    pos, (pos[0], pos[0])))
+                                    pos, (pos[0], pos[0] + entity['width']), (self.terrain,), self.player))
+
                             # Collectables
                             elif entity['name'] == 'katana':
                                 self.collectables.add(
@@ -162,7 +155,7 @@ class PlayableScene:
         self.terrain.draw(screen_surface, self.shift)
 
         # Enemies
-        self.enemies.update(self.player, self.terrain.sprites())
+        self.enemies.update()
         self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:

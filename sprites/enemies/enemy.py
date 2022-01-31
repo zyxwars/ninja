@@ -14,23 +14,20 @@ from utils import debug
 
 
 class Enemy(PhysicsEntity, Damageable):
-    def __init__(self, pos, patrol_area):
+    def __init__(self, pos, patrol_area, collidables, player, animations):
         self.image = pg.Surface((64, 64)).convert()
-        super().__init__(self.image.get_rect(topleft=pos))
+        super().__init__(self.image.get_rect(topleft=pos), collidables)
+        self.player = player
 
-        self.hp = 100
         self.speed = config.SPEED * (random.randrange(2000, 4000) / 10000)
-        self.run_speed = self.speed * 2
+
         self.patrol_area = patrol_area
-        self.alert_timer_ms = 4000
-        self.alert_timer = 0
-        self.animation = 'idling'
+
+        self.animations = animations
+        self.animation = self.animations['idling']
+        self.last_animation = self.animation
         self.animation_index = 0
         self.animation_speed = config.ANIMATION_SPEED
-        self.attack_speed_ms = 80
-        self.is_touching_player = False
-        self.last_touched_player = False
-        self.is_attacking = False
 
     def on_died(self):
         pg.mixer.Sound(
@@ -40,6 +37,14 @@ class Enemy(PhysicsEntity, Damageable):
     def on_damaged(self):
         print(self.hp)
 
-    def update(self, player, terrain):
-        self.move([*terrain, player])
-        self.animate()
+    def animate(self):
+        if self.animation_index >= len(self.animation) or self.last_animation != self.animation:
+            self.animation_index = 0
+
+        # flip_x = !facing_right, flip image only when not facing right
+        self.image = pg.transform.flip(self.animation[math.floor(
+            self.animation_index)], not self.facing_right, False)
+
+        self.animation_index += self.animation_speed * game.delta_time
+
+        self.last_animation = self.animation

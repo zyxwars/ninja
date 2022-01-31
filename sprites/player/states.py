@@ -214,6 +214,7 @@ class Collecting(Moving):
         super().__init__('collecting', *args, **kwargs)
 
     def enter(self):
+        print('collecting')
         collectables = self._sm.collectables.sprites()
 
         i = self._sm.rect.collidelist(collectables)
@@ -231,7 +232,7 @@ class Collecting(Moving):
                     self._sm.collectables.add(self._sm.weapon.drop(
                         (self._sm.rect.centerx + random.randint(0, 64) * (-1 if not self._sm.facing_right else 1), self._sm.rect.centery - 64)))
 
-            self._sm.weapon = weapon
+                self._sm.weapon = weapon
 
         self._sm.set_state('idling')
 
@@ -248,35 +249,40 @@ class Dropping(Moving):
 
         self._sm.set_state('idling')
 
-        # class AttackState(GravityState):
-        #     def __init__(self, *args, **kwargs):
-        #         super().__init__('attacking', *args, **kwargs)
-        #         self.original_animation_speed = 0
 
-        #     def enter(self):
-        #         attack_rect = self._sm.rect.copy()
-        #         attack_rect.x += 8 if self._sm.facing_right else -8
+class Attacking(PulledByGravity):
+    def __init__(self, player: Player, *args, **kwargs):
+        self.name = 'attacking'
+        self._sm = player
 
-        #         for enemy in enemies:
-        #             if attack_rect.colliderect(enemy.rect):
-        #                 if isinstance(enemy, enemy.Enemy):
-        #                     # Enemy.damage returns true if entity died
-        #                     if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
-        #                         # Heal self._sm
-        #                         self._sm.hp = min(self._sm.hp + 25, 100)
+        self.original_animation_speed = 0
 
-        #         self._sm.animation = self._sm.animations['attacking'][self._sm.weapon.name]
-        #         self.original_animation_speed = self._sm.animation_speed
-        #         self._sm.animation_speed = self._sm.animation_speed = (
-        #             self._sm.weapon.attack_length_ms / len(self._sm.animations['attacking'][self._sm.weapon.name])) ** -1
+    def enter(self):
+        attack_rect = self._sm.rect.copy()
+        attack_rect.x += 8 if self._sm.facing_right else -8
 
-        #     def update(self):
-        #         self._sm.dir.x = 0
-        #         self._sm.move([*terrain, *enemies])
+        for enemy in self._sm.enemies.sprites():
+            if attack_rect.colliderect(enemy.rect):
+                # Enemy.damage returns true if entity died
+                if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
+                    # Heal self._sm
+                    self._sm.hp = min(self._sm.hp + 25, 100)
 
-        #         if self._sm.animation_index >= len(self._sm.animation):
-        #             self._sm.set_state('idling')
-        #             return
+        self._sm.animation = self._sm.animations['attacking'][self._sm.weapon.name]
+        self.original_animation_speed = self._sm.animation_speed
+        self._sm.animation_speed = self._sm.animation_speed = (
+            self._sm.weapon.attack_length_ms / len(self._sm.animations['attacking'][self._sm.weapon.name])) ** -1
 
-        #     def exit(self):
-        #         self._sm.animation_speed = self.original_animation_speed
+        self._sm.weapon.play_sound()
+
+    def update(self):
+        super().update()
+
+        self._sm.dir.x = 0
+
+        if self._sm.animation_index >= len(self._sm.animation):
+            self._sm.set_state('idling')
+            return
+
+    def exit(self):
+        self._sm.animation_speed = self.original_animation_speed

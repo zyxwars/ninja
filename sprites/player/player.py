@@ -14,7 +14,7 @@ import utils
 
 
 class Player(PhysicsEntity, Damageable, StateMachine):
-    def __init__(self, pos, collidables: tuple[pg.sprite.Group, ...], collectables: CollectableGroup):
+    def __init__(self, pos, collidables: tuple[pg.sprite.Group, ...], collectables: CollectableGroup, enemies: pg.sprite.Group):
         # Avoid circular import
         from . import states
 
@@ -23,6 +23,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
             self, self.image.get_rect(topleft=pos), collidables)
         Damageable.__init__(self, 100)
         self.collectables = collectables
+        self.enemies = enemies
 
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)
@@ -33,7 +34,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
                            # Attacks reflect the weapon class name not the "ing" state
                            {'punch': attack_sheet_parse.load_images_row((0, 0), 4, (64, 64)),
                             'kick': attack_sheet_parse.load_images_row((0, 1), 7, (64, 64)),
-                            'katana': attack_sheet_parse.load_images_row((0, 2), 6, (64, 64))
+                            'katana': attack_sheet_parse.load_images_row((0, 2), 5, (64, 64))
                             },
                            'jumping': sheet_parser.load_images_row((0, 2), 1, (64, 64)),
                            'falling': sheet_parser.load_images_row((0, 3), 1, (64, 64)),
@@ -48,13 +49,6 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.weapon: Weapon = Punch()
         self.jumped_from_wall = False
 
-        self.punch_sounds = []
-        for sound_name in range(1, 38):
-            sound = pg.mixer.Sound(
-                utils.get_path(__file__, f'assets/hits/hit{sound_name:02d}.mp3.flac'))
-            sound.set_volume(0.5)
-            self.punch_sounds.append(sound)
-
         StateMachine.__init__(self)
         self.add_state(states.Idling(self))
         self.add_state(states.Running(self))
@@ -64,6 +58,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.add_state(states.Wallsliding(self))
         self.add_state(states.Collecting(self))
         self.add_state(states.Dropping(self))
+        self.add_state(states.Attacking(self))
         self.set_state('idling')
 
     def on_died(self):

@@ -2,6 +2,9 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
+- [ ] Rework enemy to state machine
+- [x] Add attacking back
+
 - [ ] Add enemy sounds
 - [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events
