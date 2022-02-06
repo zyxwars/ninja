@@ -117,7 +117,7 @@ class PlayableScene:
                             # Enemies
                             elif entity['name'] == 'patrol':
                                 self.enemies.add(enemies.Patrol(
-                                    pos, (pos[0], pos[0] + entity['width']), (self.terrain,), self.player))
+                                    pos, (pos[0], pos[0] + entity['width'] - 64), (self.terrain, self.player), self.player))
 
                             # Collectables
                             elif entity['name'] == 'katana':

@@ -1,3 +1,4 @@
+from typing import Tuple
 import pygame as pg
 import random
 import math
@@ -14,12 +15,15 @@ from utils import debug
 
 
 class Enemy(PhysicsEntity, Damageable):
-    def __init__(self, pos, patrol_area, collidables, player, animations):
+    def __init__(self, pos, patrol_area: Tuple, collidables, player, animations):
         self.image = pg.Surface((64, 64)).convert()
         super().__init__(self.image.get_rect(topleft=pos), collidables)
         self.player = player
 
         self.speed = config.SPEED * (random.randrange(2000, 4000) / 10000)
+        self.attack_length = 500
+        self.alert_time = 4000
+        self.alert_timer = 0
 
         self.patrol_area = patrol_area
 
@@ -48,3 +52,8 @@ class Enemy(PhysicsEntity, Damageable):
         self.animation_index += self.animation_speed * game.delta_time
 
         self.last_animation = self.animation
+
+    def update(self):
+        self.current_state.update()
+        self.animate()
+        self.alert_timer -= game.delta_time

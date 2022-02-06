@@ -2,13 +2,13 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Rework enemy to state machine
+- [x] Rework enemy to state machine
 - [x] Add attacking back
-
+- [ ] Fix enemy attack range
 - [ ] Add enemy sounds
+
 - [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events
-- [ ] Fix enemy attack range
 - [x] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
 - [ ] Use layers
@@ -63,6 +63,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 ### Concepts
 
+- [ ] Ragdolls
 - [ ] VS mode
   - tag mode
   - duel mode

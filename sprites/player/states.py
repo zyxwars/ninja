@@ -214,7 +214,6 @@ class Collecting(Moving):
         super().__init__('collecting', *args, **kwargs)
 
     def enter(self):
-        print('collecting')
         collectables = self._sm.collectables.sprites()
 
         i = self._sm.rect.collidelist(collectables)

@@ -61,6 +61,9 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.add_state(states.Attacking(self))
         self.set_state('idling')
 
+    def sprites(self):
+        return [self]
+
     def on_died(self):
         pass
 

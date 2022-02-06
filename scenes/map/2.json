@@ -42,14 +42,14 @@
                  "y":1138
                 }, 
                 {
-                 "height":0,
+                 "height":36,
                  "id":5,
                  "name":"patrol",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":1982,
+                 "width":775,
+                 "x":1321,
                  "y":1126
                 }, 
                 {
@@ -81,7 +81,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":8,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
