@@ -14,7 +14,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.is_debug = False
 
-        self.scene = PlayableScene('./scenes/map/2.json')
+        self.scene = PlayableScene('./scenes/map/3.json')
 
     def run(self):
         while True:

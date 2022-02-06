@@ -277,7 +277,13 @@ class Attacking(PulledByGravity):
     def update(self):
         super().update()
 
-        self._sm.dir.x = 0
+        keys = pg.key.get_pressed()
+        if keys[pg.K_a]:
+            self._sm.dir.x = -1
+        elif keys[pg.K_d]:
+            self._sm.dir.x = 1
+        else:
+            self._sm.dir.x = 0
 
         if self._sm.animation_index >= len(self._sm.animation):
             self._sm.set_state('idling')

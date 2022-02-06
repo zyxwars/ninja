@@ -1,7 +1,8 @@
 import random
+
+
 from sprites.enemies.enemy import Enemy
 from sprites.physics_entity import PulledByGravity
-
 from ..physics_entity import PhysicsEntity, PulledByGravity
 
 
@@ -24,7 +25,9 @@ class Patrolling(EnemyState):
         if self._sm.alert_timer > 0:
             return self._sm.set_state('chasing')
 
-        vision_rect = self._sm.rect.inflate(64 + 32, 64 + 16)
+        vision_rect = self._sm.rect.inflate(32, 16)
+        vision_rect.x = vision_rect.x + (32 * self._sm.dir.x)
+
         if vision_rect.colliderect(self._sm.player):
             self._sm.alert_timer = self._sm.alert_time
             return self._sm.set_state('chasing')
