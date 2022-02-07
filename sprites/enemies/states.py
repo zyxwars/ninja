@@ -25,13 +25,6 @@ class Patrolling(EnemyState):
         if self._sm.alert_timer > 0:
             return self._sm.set_state('chasing')
 
-        vision_rect = self._sm.rect.inflate(32, 16)
-        vision_rect.x = vision_rect.x + (32 * self._sm.dir.x)
-
-        if vision_rect.colliderect(self._sm.player):
-            self._sm.alert_timer = self._sm.alert_time
-            return self._sm.set_state('chasing')
-
         if self._sm.touching_wall:
             return self._sm.set_state('jumping')
 

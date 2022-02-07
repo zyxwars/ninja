@@ -6,8 +6,8 @@ import utils
 from . import states
 
 
-class Patrol(Enemy):
-    """Semi-heavy class, usually patrols single route until alerted"""
+class Guard(Enemy):
+    """Stands in place, until enemy is spotted"""
 
     def __init__(self, pos, patrol_area, collidables, player):
 

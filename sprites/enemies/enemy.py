@@ -24,7 +24,6 @@ class Enemy(PhysicsEntity, Damageable):
         self.attack_length = 500
         self.alert_time = 4000
         self.alert_timer = 0
-
         self.patrol_area = patrol_area
 
         self.animations = animations
@@ -40,6 +39,10 @@ class Enemy(PhysicsEntity, Damageable):
 
     def on_damaged(self):
         print(self.hp)
+
+    def alert(self):
+        self.alert_timer = self.alert_time
+        print('spotted')
 
     def animate(self):
         if self.animation_index >= len(self.animation) or self.last_animation != self.animation:

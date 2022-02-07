@@ -20,6 +20,12 @@ class Moving(PulledByGravity):
         self._sm = player
 
     def update(self):
+        alert_rect = self._sm.rect.inflate(*self._sm.alert_area)
+        for enemy in self._sm.enemies.sprites():
+            if alert_rect.colliderect(enemy.rect):
+                if enemy.facing_right != self._sm.facing_right:
+                    enemy.alert()
+
         mouse = pg.mouse.get_pressed()
         keys = pg.key.get_pressed()
 
@@ -30,7 +36,7 @@ class Moving(PulledByGravity):
         else:
             self._sm.dir.x = 0
 
-        if mouse[0]:
+        if mouse[0] and not self._sm.current_state.name == 'attacking':
             self._sm.set_state('attacking')
             return
 
@@ -249,7 +255,7 @@ class Dropping(Moving):
         self._sm.set_state('idling')
 
 
-class Attacking(PulledByGravity):
+class Attacking(Moving):
     def __init__(self, player: Player, *args, **kwargs):
         self.name = 'attacking'
         self._sm = player
@@ -276,14 +282,6 @@ class Attacking(PulledByGravity):
 
     def update(self):
         super().update()
-
-        keys = pg.key.get_pressed()
-        if keys[pg.K_a]:
-            self._sm.dir.x = -1
-        elif keys[pg.K_d]:
-            self._sm.dir.x = 1
-        else:
-            self._sm.dir.x = 0
 
         if self._sm.animation_index >= len(self._sm.animation):
             self._sm.set_state('idling')

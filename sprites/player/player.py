@@ -24,6 +24,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         Damageable.__init__(self, 100)
         self.collectables = collectables
         self.enemies = enemies
+        self.alert_area = config.ALERT_AREA
 
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)
@@ -62,6 +63,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.set_state('idling')
 
     def sprites(self):
+        """When player is passed as sprite group use this to get the actual instance as a list with single element"""
         return [self]
 
     def on_died(self):
