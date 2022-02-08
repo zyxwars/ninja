@@ -67,7 +67,7 @@ class Idling(Moving):
 
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_SPACE] and not self._sm.is_roofed:
+        if keys[pg.K_SPACE]:
             self._sm.set_state('jumping')
             return
         if keys[pg.K_a] or keys[pg.K_d]:

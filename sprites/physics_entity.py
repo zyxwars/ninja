@@ -109,7 +109,6 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
                 # Jumping
                 if self.dir.y < 0:
                     self.rect.top = collidable.rect.bottom
-                    self.is_roofed = True
 
                 self.dir.y = 0
                 self.pos.y = self.rect.y

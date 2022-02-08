@@ -91,7 +91,6 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         debug.debug('is_grounded', self.is_grounded)
         debug.debug('dir', self.dir)
         debug.debug('state', self.current_state.name)
-        debug.debug('is_roofed', self.is_roofed)
 
         self.current_state.update()
         self.animate()
