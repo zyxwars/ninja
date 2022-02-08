@@ -279,11 +279,19 @@ class Attacking(Moving):
     def enter(self):
         attack_rect = self._sm.rect.copy()
         attack_rect.x += 8 if self._sm.facing_right else -8
+        attack_rect.height += 16
+        debug.debug_rect(attack_rect, 'green')
 
         for enemy in self._sm.enemies.sprites():
             if attack_rect.colliderect(enemy.rect):
+                # Jump attack
+                if enemy.rect.y - 32 > self._sm.rect.y:
+                    damage = self._sm.weapon.damage * 10
+                else:
+                    damage = self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (
+                        not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage
                 # Enemy.damage returns true if entity died
-                if enemy.damage(self._sm.weapon.damage * 10 if (enemy.facing_right and self._sm.facing_right) or (not enemy.facing_right and not self._sm.facing_right) else self._sm.weapon.damage):
+                if enemy.damage(damage):
                     # Heal self._sm
                     self._sm.hp = min(self._sm.hp + 25, 100)
 
