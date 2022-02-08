@@ -137,6 +137,8 @@ class PlayableScene:
                             self.load_trigger(trigger)
 
     def update(self, screen_surface):
+        debug.debug('shift', self.shift)
+
         # Static image background
         screen_surface.fill('black')
 

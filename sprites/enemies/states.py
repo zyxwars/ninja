@@ -25,7 +25,7 @@ class Patrolling(EnemyState):
         if self._sm.alert_timer > 0:
             return self._sm.set_state('chasing')
 
-        if self._sm.touching_wall:
+        if self._sm.touching_wall and self._sm.is_grounded:
             return self._sm.set_state('jumping')
 
         if self._sm.dir.x == 0:
@@ -50,12 +50,16 @@ class Chasing(EnemyState):
     def update(self):
         super().update()
 
+        if self._sm.alert_timer < 0:
+            return self._sm.set_state('patrolling')
+
         if self._sm.touching_wall:
             inf_rect = self._sm.rect.inflate(70, 64)
             if inf_rect.colliderect(self._sm.player):
                 return self._sm.set_state('attacking')
 
-            return self._sm.set_state('jumping')
+            if self._sm.is_grounded:
+                return self._sm.set_state('jumping')
 
         if self._sm.rect.x > self._sm.player.rect.x:
             self._sm.dir.x = -1

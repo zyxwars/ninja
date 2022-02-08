@@ -98,7 +98,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         # Lowering the rect causes head collision to be confused with horizontal collision
         # Inflating the rect instead of moving it seems to work for now
         temp_rect = self.rect.copy()
-        temp_rect = temp_rect.inflate(0, 1)
+        temp_rect.height += 1
 
         for collidable in groups_to_sprites(self.collidables):
             if collidable.rect.colliderect(temp_rect):
@@ -109,6 +109,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
                 # Jumping
                 if self.dir.y < 0:
                     self.rect.top = collidable.rect.bottom
+                    self.is_roofed = True
 
                 self.dir.y = 0
                 self.pos.y = self.rect.y

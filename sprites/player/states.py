@@ -1,3 +1,4 @@
+import time
 import pygame as pg
 import random
 
@@ -21,6 +22,7 @@ class Moving(PulledByGravity):
 
     def update(self):
         alert_rect = self._sm.rect.inflate(*self._sm.alert_area)
+        debug.debug_rect(alert_rect, 'red')
         for enemy in self._sm.enemies.sprites():
             if alert_rect.colliderect(enemy.rect):
                 if enemy.facing_right != self._sm.facing_right:
@@ -65,7 +67,7 @@ class Idling(Moving):
 
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] and not self._sm.is_roofed:
             self._sm.set_state('jumping')
             return
         if keys[pg.K_a] or keys[pg.K_d]:
@@ -148,11 +150,15 @@ class Jumping(Moving):
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))
         self.jump_sound.set_volume(0.5)
+        self.last_jumped = time.time()
 
     def enter(self):
         self._sm.animation = self._sm.animations['jumping']
         PhysicsEntity.jump(self._sm)
-        self.jump_sound.play()
+
+        if time.time() - self.last_jumped > 0.5:
+            self.jump_sound.play()
+            self.last_jumped = time.time()
 
     def update(self):
         super().update()
