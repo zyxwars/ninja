@@ -7,7 +7,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [x] Fix enemy spawns
 - [ ] Fix enemy attack range
 - [ ] Add enemy sounds
-- [ ] Change alert rect size, wall collisions
+- [x] Change alert rect size, wall collisions
 
 - [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events

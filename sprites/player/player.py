@@ -14,7 +14,7 @@ import utils
 
 
 class Player(PhysicsEntity, Damageable, StateMachine):
-    def __init__(self, pos, collidables: tuple[pg.sprite.Group, ...], collectables: CollectableGroup, enemies: pg.sprite.Group):
+    def __init__(self, pos, collidables: tuple[pg.sprite.Group, ...], collectables: CollectableGroup, enemies: pg.sprite.Group, terrain: pg.sprite.Group):
         # Avoid circular import
         from . import states
 
@@ -22,6 +22,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         PhysicsEntity.__init__(
             self, self.image.get_rect(topleft=pos), collidables)
         Damageable.__init__(self, 100)
+        self.terrain = terrain
         self.collectables = collectables
         self.enemies = enemies
         self.alert_area = config.ALERT_AREA

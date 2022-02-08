@@ -25,8 +25,15 @@ class Moving(PulledByGravity):
         debug.debug_rect(alert_rect, 'red')
         for enemy in self._sm.enemies.sprites():
             if alert_rect.colliderect(enemy.rect):
-                if enemy.facing_right != self._sm.facing_right:
-                    enemy.alert()
+                direct_rect = pg.rect.Rect(
+                    enemy.rect.x if enemy.rect.x < self._sm.rect.x else self._sm.rect.x, enemy.rect.y, abs(enemy.rect.x - self._sm.rect.x), 10)
+                debug.debug_rect(direct_rect, 'yellow')
+                for tile in self._sm.terrain.sprites():
+                    if tile.rect.colliderect(direct_rect):
+                        break
+                else:
+                    if enemy.facing_right != self._sm.facing_right:
+                        enemy.alert()
 
         mouse = pg.mouse.get_pressed()
         keys = pg.key.get_pressed()
