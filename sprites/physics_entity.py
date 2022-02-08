@@ -108,7 +108,9 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
                     self.is_grounded = True
                 # Jumping
                 if self.dir.y < 0:
-                    self.rect.top = collidable.rect.bottom
+                    # This fixes weird jumping bug, which would push player back to ground
+                    if collidable.rect.colliderect(self.rect):
+                        self.rect.top = collidable.rect.bottom
 
                 self.dir.y = 0
                 self.pos.y = self.rect.y

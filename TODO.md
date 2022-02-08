@@ -13,7 +13,6 @@ Add convert or convert_alpha to every image for massive performance improvement
 - [ ] Use custom pygame events
 - [x] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
-- [ ] Use layers
 - [ ] Load tiled object images using their name as the filename
 
 # Back burner:
@@ -32,11 +31,10 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Bugs:
 
 - [ ] Smooth out scrolling jitter over small distance
-- [ ] Weird collision still sometimes happens
+- [x] Weird collision still sometimes happens
+  - This had something to do with rect.height += 1 being applied even for jump collision and not just fall collision
 - [x] Scrolling camera causes weird speed up effect after running for some time
 - [x] Rounding error when value is less than a pixel due to delta_time
-- [ ] Fix crosshair accuracy
-- [ ] Fix projectile indicator offset
 
 # Roadmap:
 
