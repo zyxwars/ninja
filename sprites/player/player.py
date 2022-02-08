@@ -89,6 +89,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         debug.debug('jumped_from_wall', self.jumped_from_wall)
         debug.debug('touching_wall', self.touching_wall)
         debug.debug('is_grounded', self.is_grounded)
+        debug.debug('is_roofed', self.is_roofed)
         debug.debug('dir', self.dir)
         debug.debug('state', self.current_state.name)
 

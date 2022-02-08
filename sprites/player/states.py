@@ -67,7 +67,7 @@ class Idling(Moving):
 
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] and not self._sm.is_roofed:
             self._sm.set_state('jumping')
             return
         if keys[pg.K_a] or keys[pg.K_d]:
@@ -98,7 +98,7 @@ class Running(Moving):
                     return
 
         keys = pg.key.get_pressed()
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] and not self._sm.is_roofed:
             self._sm.set_state('jumping')
             return
 
@@ -150,6 +150,7 @@ class Jumping(Moving):
         self.jump_sound = pg.mixer.Sound(
             utils.get_path(__file__, 'assets/jump.wav'))
         self.jump_sound.set_volume(0.5)
+
         self.last_jumped = time.time()
 
     def enter(self):

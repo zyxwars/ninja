@@ -53,6 +53,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         self.jump_force = config.JUMP_FORCE
         self.gravity = config.GRAVITY
         self.is_grounded = False
+        self.is_roofed = False
         self.touching_wall = False
         self.facing_right = True
 
@@ -91,6 +92,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
 
     def collide_vertical(self):
         self.is_grounded = False
+        self.is_roofed = False
 
         # Check collision 1 pixel below the actual position
         # This prevents collision not being detected when apply_gravity() moves less than 1 pixel every frame
@@ -99,8 +101,13 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         # Inflating the rect instead of moving it seems to work for now
         temp_rect = self.rect.copy()
         temp_rect.height += 1
+        roofed_rect = self.rect.copy()
+        roofed_rect.y -= 32
 
         for collidable in groups_to_sprites(self.collidables):
+            if collidable.rect.colliderect(roofed_rect):
+                self.is_roofed = True
+
             if collidable.rect.colliderect(temp_rect):
                 # Falling
                 if self.dir.y > 0:

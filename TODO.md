@@ -4,7 +4,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 - [x] Rework enemy to state machine
 - [x] Add attacking back
-- [ ] Fix enemy spawns
+- [x] Fix enemy spawns
 - [ ] Fix enemy attack range
 - [ ] Add enemy sounds
 - [ ] Change alert rect size, wall collisions
