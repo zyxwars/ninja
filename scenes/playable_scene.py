@@ -93,8 +93,9 @@ class PlayableScene:
                         y = i // w * config.TILE_SIZE
 
                         # tile - 1 >> The first tile has value of 1, but the sheet parser starts with x, y = 0, 0
+                        # TODO: load the number of columns(20) from tileset.json
                         tile = Tile((x, y),
-                                    sheet_parser.load_image(((tile - 1) % 10, (tile - 1) // 10)))
+                                    sheet_parser.load_image(((tile - 1) % 20, (tile - 1) // 20)))
 
                         if 'fg_' in layer['name']:
                             self.foreground.add(tile)
