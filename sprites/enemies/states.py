@@ -52,6 +52,10 @@ class Idling(EnemyState):
         self._sm.animation = self._sm.animations['idling']
 
     def update(self):
+        # Enemy got alerted again
+        if self._sm.alert_timer > self._sm.last_alert_timer:
+            return self._sm.set_state('chasing')
+
         if self._sm.alert_timer < 0:
             self._sm.set_state('patrolling')
 
@@ -69,6 +73,9 @@ class Searching(EnemyState):
 
     def update(self):
         super().update()
+
+        if self._sm.alert_timer > self._sm.last_alert_timer:
+            return self._sm.set_state('chasing')
 
         if self._sm.alert_timer < 1000:
             return self._sm.set_state('idling')
@@ -96,8 +103,8 @@ class Chasing(EnemyState):
             return self._sm.set_state('idling')
 
         if self._sm.touching_wall:
-            inf_rect = self._sm.rect.inflate(70, 64)
-            if inf_rect.colliderect(self._sm.player):
+            attack_rect = self._sm.rect.inflate(64, 0)
+            if attack_rect.colliderect(self._sm.player):
                 return self._sm.set_state('attacking')
 
             if self._sm.is_grounded:
@@ -171,4 +178,8 @@ class Attacking(EnemyState):
             return
 
     def exit(self):
+        attack_rect = self._sm.rect.inflate(32, 0)
+        if attack_rect.colliderect(self._sm.player):
+            self._sm.player.damage(self._sm.damage_amount)
+
         self._sm.animation_speed = self.original_animation_speed

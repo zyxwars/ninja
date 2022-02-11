@@ -71,7 +71,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         pass
 
     def on_damaged(self):
-        print('ouch')
+        pass
 
     def animate(self):
         if self.animation_index >= len(self.animation) or self.last_animation != self.animation:

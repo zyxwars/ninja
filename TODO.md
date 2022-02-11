@@ -2,14 +2,15 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Fix enemy attack range
 - [ ] Add enemy sounds
+- [x] Fix enemy attack range
 - [x] Make enemy search after last seen player pos was seen
 - [x] Rework enemy to state machine
 - [x] Add attacking back
 - [x] Fix enemy spawns
 - [x] Change alert rect size, wall collisions
 
+- [ ] Add jump possible check
 - [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events
 - [x] Add gray hp to player on kill
@@ -31,6 +32,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Bugs:
 
+- [ ] Enemy jumping against wall
 - [ ] Smooth out scrolling jitter over small distance
 - [x] Weird collision still sometimes happens
   - This had something to do with rect.height += 1 being applied even for jump collision and not just fall collision

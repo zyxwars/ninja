@@ -24,9 +24,11 @@ class Enemy(PhysicsEntity, Damageable):
         self.attack_length = 500
         self.alert_time = 5000
         self.alert_timer = 0
+        self.last_alert_timer = self.alert_timer
         self.patrol_area = patrol_area
         self.player_spotted_pos = [0, 0]
         self.last_dir = self.dir
+        self.damage_amount = 25
 
         self.animations = animations
         self.animation = self.animations['idling']
@@ -45,7 +47,6 @@ class Enemy(PhysicsEntity, Damageable):
     def alert(self, pos: Tuple):
         self.alert_timer = self.alert_time
         self.player_spotted_pos = pos
-        self.set_state('chasing')
 
     def animate(self):
         if self.animation_index >= len(self.animation) or self.last_animation != self.animation:
@@ -62,4 +63,6 @@ class Enemy(PhysicsEntity, Damageable):
     def update(self):
         self.current_state.update()
         self.animate()
+        self.last_alert_timer = self.alert_timer
         self.alert_timer -= game.delta_time
+        print(self.current_state)

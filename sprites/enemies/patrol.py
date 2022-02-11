@@ -24,6 +24,7 @@ class Patrol(Enemy):
         super().__init__(pos, patrol_area, collidables, player, animations)
         self.hp = 100
         self.attack_length = 250
+        self.damage_amount = 25
 
         self.add_state(states.Patrolling(self))
         self.add_state(states.Attacking(self))
