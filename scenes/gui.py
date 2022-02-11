@@ -7,6 +7,8 @@ from utils.load_image import load_image
 class Gui:
     def __init__(self):
         self.life_essence = load_image('assets/hp.png', __file__)
+        self.flag = load_image('assets/flag.png', __file__)
+        self.font = pg.font.Font(None, 24)
 
     def draw_equipped_weapon(self, weapon, surface):
         surface.blit(weapon, (0, 0))
@@ -30,3 +32,13 @@ class Gui:
 
         surface.blit(self.life_essence, self.life_essence.get_rect(
             center=((config.SCREEN_WIDTH - 16, 20))))
+
+    def draw_flags_collected(self, flags_collected, surface):
+        text = self.font.render(
+            f'Flags collected: {flags_collected}', True, 'black')
+        rect = text.get_rect(
+            center=(config.SCREEN_WIDTH - 96, 64))
+
+        surface.blit(text, rect)
+        surface.blit(self.flag, self.flag.get_rect(
+            center=((config.SCREEN_WIDTH - 16, 64))))

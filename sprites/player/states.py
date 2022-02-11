@@ -4,6 +4,7 @@ import random
 
 import config
 import game
+from sprites.flag import Flag
 import utils
 from sprites.damageable import Damageable
 from sprites.physics_entity import PulledByGravity, PhysicsEntity
@@ -234,6 +235,9 @@ class Wallsliding(Moving):
 class Collecting(Moving):
     def __init__(self, *args, **kwargs):
         super().__init__('collecting', *args, **kwargs)
+        self.flag_sound = pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/success.mp3'))
+        self.flag_sound.set_volume(0.7)
 
     def enter(self):
         collectables = self._sm.collectables.sprites()
@@ -254,6 +258,11 @@ class Collecting(Moving):
                         (self._sm.rect.centerx + random.randint(0, 64) * (-1 if not self._sm.facing_right else 1), self._sm.rect.centery - 64)))
 
                 self._sm.weapon = weapon
+        else:
+            if isinstance(collectable, Flag):
+                self.flag_sound.play()
+                collectable.collect()
+                self._sm.flags_collected += 1
 
         self._sm.set_state('idling')
 

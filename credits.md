@@ -8,6 +8,7 @@ https://opengameart.org/content/asian-duet music
 https://opengameart.org/content/samurai-nights music
 https://opengameart.org/content/37-hitspunches punch sound effects
 https://opengameart.org/content/swishes-sound-pack swing sound effects
+https://opengameart.org/content/japanese-modern-loop success sound effect
 
 ### Images
 

@@ -5,6 +5,7 @@ import math
 from scenes.gui import Gui
 
 from sprites.enemies.enemy import Enemy
+from sprites.flag import Flag
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.groups.shiftable_group import ShiftableGroup
 from sprites.player.player import Player
@@ -125,6 +126,10 @@ class PlayableScene:
                                 self.collectables.add(
                                     weapons.Katana(pos, (self.terrain,)))
 
+                            elif entity['name'] == 'flag':
+                                self.collectables.add(
+                                    Flag(pos, (self.terrain,)))
+
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
                             'assets/trees.png', __file__)
@@ -182,6 +187,8 @@ class PlayableScene:
         # Gui
         self.gui.draw_equipped_weapon(self.player.weapon.image, screen_surface)
         self.gui.draw_life_essence(self.player.hp, screen_surface)
+        self.gui.draw_flags_collected(
+            self.player.flags_collected, screen_surface)
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -

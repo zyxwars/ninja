@@ -54,6 +54,8 @@ class Player(PhysicsEntity, Damageable, StateMachine):
             utils.get_path(__file__, 'assets/damage.mp3'))
         self.damage_sound.set_volume(0.5)
 
+        self.flags_collected = 0
+
         StateMachine.__init__(self)
         self.add_state(states.Idling(self))
         self.add_state(states.Running(self))

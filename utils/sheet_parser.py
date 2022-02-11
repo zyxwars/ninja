@@ -4,8 +4,8 @@ from .load_image import load_image
 
 
 class SheetParser:
-    def __init__(self, relative_path, script_path=None):
-        self.sheet = load_image(relative_path, script_path)
+    def __init__(self, relative_path, file_path=None):
+        self.sheet = load_image(relative_path, file_path)
 
     # Pos comprises of (column, row)
 
