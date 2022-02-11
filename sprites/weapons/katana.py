@@ -15,5 +15,5 @@ class Katana(CollectableWeapon):
         s.append(sound)
     sounds = s
 
-    def __init__(self, pos, *args, **kwargs):
+    def __init__(self, pos=None, *args, **kwargs):
         super().__init__(100, 250, 'katana', pos=pos, *args, **kwargs)

@@ -2,7 +2,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Add enemy sounds
+- [x] Add enemy sounds
 - [x] Fix enemy attack range
 - [x] Make enemy search after last seen player pos was seen
 - [x] Rework enemy to state machine

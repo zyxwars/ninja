@@ -23,6 +23,8 @@ class Moving(PulledByGravity):
     def update(self):
         alert_rect = self._sm.rect.inflate(*self._sm.alert_area)
         debug.debug_rect(alert_rect, 'red')
+        debug.debug_rect(self._sm.rect, 'blue')
+
         for enemy in self._sm.enemies.sprites():
             if alert_rect.colliderect(enemy.rect):
                 direct_rect = pg.rect.Rect(

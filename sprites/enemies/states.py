@@ -4,6 +4,7 @@ import game
 from sprites.enemies.enemy import Enemy
 from sprites.physics_entity import PulledByGravity
 from ..physics_entity import PhysicsEntity, PulledByGravity
+from utils import debug
 
 
 class EnemyState(PulledByGravity):
@@ -98,21 +99,24 @@ class Chasing(EnemyState):
 
     def update(self):
         super().update()
+        attack_rect = self._sm.rect.inflate(64, 0)
+        debug.debug_rect(attack_rect, 'green')
 
         if self._sm.alert_timer < 1000:
             return self._sm.set_state('idling')
+        if self._sm.alert_timer < 3000:
+            return self._sm.set_state('searching')
 
         if self._sm.touching_wall:
-            attack_rect = self._sm.rect.inflate(64, 0)
             if attack_rect.colliderect(self._sm.player):
                 return self._sm.set_state('attacking')
 
             if self._sm.is_grounded:
                 return self._sm.set_state('jumping')
 
-        if self._sm.rect.x > self._sm.player_spotted_pos[0]:
+        if self._sm.rect.x > self._sm.player.rect.x:
             self._sm.dir.x = -1
-        elif self._sm.rect.x < self._sm.player_spotted_pos[0]:
+        elif self._sm.rect.x < self._sm.player.rect.x:
             self._sm.dir.x = 1
         else:
             self._sm.last_dir = self._sm.dir
@@ -169,6 +173,7 @@ class Attacking(EnemyState):
         self.original_animation_speed = self._sm.animation_speed
         self._sm.animation_speed = self._sm.animation_speed = (
             self._sm.attack_length / len(self._sm.animations['attacking'])) ** -1
+        self._sm.weapon.play_sound()
 
     def update(self):
         super().update()
@@ -178,7 +183,7 @@ class Attacking(EnemyState):
             return
 
     def exit(self):
-        attack_rect = self._sm.rect.inflate(32, 0)
+        attack_rect = self._sm.rect.inflate(64, 0)
         if attack_rect.colliderect(self._sm.player):
             self._sm.player.damage(self._sm.damage_amount)
 

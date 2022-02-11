@@ -50,6 +50,9 @@ class Player(PhysicsEntity, Damageable, StateMachine):
 
         self.weapon: Weapon = Punch()
         self.jumped_from_wall = False
+        self.damage_sound = pg.mixer.Sound(
+            utils.get_path(__file__, 'assets/damage.mp3'))
+        self.damage_sound.set_volume(0.5)
 
         StateMachine.__init__(self)
         self.add_state(states.Idling(self))
@@ -71,7 +74,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         pass
 
     def on_damaged(self):
-        pass
+        self.damage_sound.play()
 
     def animate(self):
         if self.animation_index >= len(self.animation) or self.last_animation != self.animation:

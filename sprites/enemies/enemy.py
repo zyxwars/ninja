@@ -9,6 +9,8 @@ from sprites.damageable import Damageable
 import config
 from sprites.physics_entity import PhysicsEntity
 from sprites.player.player import Player
+from sprites.weapons.punch import Punch
+from sprites.weapons.weapon import Weapon
 import utils
 import game
 from utils import debug
@@ -29,6 +31,7 @@ class Enemy(PhysicsEntity, Damageable):
         self.player_spotted_pos = [0, 0]
         self.last_dir = self.dir
         self.damage_amount = 25
+        self.weapon: Weapon = Punch()
 
         self.animations = animations
         self.animation = self.animations['idling']
@@ -65,4 +68,3 @@ class Enemy(PhysicsEntity, Damageable):
         self.animate()
         self.last_alert_timer = self.alert_timer
         self.alert_timer -= game.delta_time
-        print(self.current_state)

@@ -4,6 +4,7 @@ from utils import debug
 from .enemy import Enemy
 import utils
 from . import states
+from sprites.weapons.katana import Katana
 
 
 class Patrol(Enemy):
@@ -25,6 +26,7 @@ class Patrol(Enemy):
         self.hp = 100
         self.attack_length = 250
         self.damage_amount = 25
+        self.weapon = Katana()
 
         self.add_state(states.Patrolling(self))
         self.add_state(states.Attacking(self))

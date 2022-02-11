@@ -28,6 +28,7 @@ class Weapon:
 
 
 class CollectableWeapon(Weapon, Collectable):
-    def __init__(self, damage, attack_length_ms, name, *args, pos=(0, 0), **kwargs):
+    def __init__(self, damage, attack_length_ms, name, *args, pos, **kwargs):
         Weapon.__init__(self, damage, attack_length_ms, name)
-        Collectable.__init__(self, self.image, pos, *args, **kwargs)
+        if pos:
+            Collectable.__init__(self, self.image, pos, *args, **kwargs)
