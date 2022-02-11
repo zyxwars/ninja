@@ -14,11 +14,11 @@ class Game:
         self.clock = pg.time.Clock()
         self.is_debug = False
 
-        self.scene = PlayableScene('./scenes/map/1.json')
+        self.scene = PlayableScene('./scenes/map/test.json')
 
     def run(self):
         while True:
-            # Call only once every framed
+            # Call only once every frame
             game.events = pg.event.get()
 
             for e in game.events:

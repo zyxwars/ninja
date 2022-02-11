@@ -5,6 +5,7 @@ import math
 from scenes.gui import Gui
 
 from sprites.enemies.enemy import Enemy
+from sprites.flag import Flag
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.groups.shiftable_group import ShiftableGroup
 from sprites.player.player import Player
@@ -93,8 +94,9 @@ class PlayableScene:
                         y = i // w * config.TILE_SIZE
 
                         # tile - 1 >> The first tile has value of 1, but the sheet parser starts with x, y = 0, 0
+                        # TODO: load the number of columns(20) from tileset.json
                         tile = Tile((x, y),
-                                    sheet_parser.load_image(((tile - 1) % 10, (tile - 1) // 10)))
+                                    sheet_parser.load_image(((tile - 1) % 20, (tile - 1) // 20)))
 
                         if 'fg_' in layer['name']:
                             self.foreground.add(tile)
@@ -111,23 +113,22 @@ class PlayableScene:
 
                             # Player
                             if entity['name'] == 'player':
-                                self.player = Player(pos)
+                                self.player = Player(
+                                    pos, (self.enemies,
+                                          self.terrain), self.collectables, self.enemies, self.terrain)  # To create a tuple with only one item, you have add a comma after the item, unless Python will not recognize the variable as a tuple.
                             # Enemies
-                            elif entity['name'] == 'wounded':
-                                self.enemies.add(enemies.Wounded(pos))
-                            elif entity['name'] == 'prowler':
-                                self.enemies.add(enemies.Prowler(
-                                    pos, (pos[0], pos[0] + entity['width'])))
                             elif entity['name'] == 'patrol':
                                 self.enemies.add(enemies.Patrol(
-                                    pos, (pos[0], pos[0] + entity['width'])))
-                            elif entity['name'] == 'heavy':
-                                self.enemies.add(enemies.Heavy(
-                                    pos, (pos[0], pos[0])))
+                                    pos, (pos[0], pos[0] + entity['width'] - 64), (self.terrain, self.player), self.player))
+
                             # Collectables
                             elif entity['name'] == 'katana':
                                 self.collectables.add(
-                                    weapons.Katana(pos))
+                                    weapons.Katana(pos, (self.terrain,)))
+
+                            elif entity['name'] == 'flag':
+                                self.collectables.add(
+                                    Flag(pos, (self.terrain,)))
 
                     elif 'trees' in layer['name']:
                         tree_sheet_parser = SheetParser(
@@ -142,6 +143,8 @@ class PlayableScene:
                             self.load_trigger(trigger)
 
     def update(self, screen_surface):
+        debug.debug('shift', self.shift)
+
         # Static image background
         screen_surface.fill('black')
 
@@ -160,17 +163,16 @@ class PlayableScene:
         self.terrain.draw(screen_surface, self.shift)
 
         # Enemies
-        self.enemies.update(self.player, self.terrain.sprites())
+        self.enemies.update()
         self.enemies.draw(screen_surface, self.shift)
         # Player
         if self.player:
-            player_pos = self.player.update(
-                self.terrain.sprites(), self.enemies.sprites(), self.collectables)
+            player_pos = self.player.update()
             self.player.draw(screen_surface, self.shift)
         else:
             player_pos = (0, 0)
         # collectables
-        self.collectables.update(self.terrain)
+        self.collectables.update()
         self.collectables.draw(self.player.rect, screen_surface, self.shift)
         # Foreground
         self.foreground.draw(screen_surface, self.shift)
@@ -185,6 +187,8 @@ class PlayableScene:
         # Gui
         self.gui.draw_equipped_weapon(self.player.weapon.image, screen_surface)
         self.gui.draw_life_essence(self.player.hp, screen_surface)
+        self.gui.draw_flags_collected(
+            self.player.flags_collected, screen_surface)
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -

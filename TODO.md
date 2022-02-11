@@ -2,17 +2,16 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Add enemy sounds
+- [ ] Add jump possible check
 - [x] Change enemy speed when chasing player
 - [ ] Use custom pygame events
-- [ ] Fix enemy attack range
 - [x] Add gray hp to player on kill
 - [ ] Clean up prop passing inside playable_scene
-- [ ] Use layers
 - [ ] Load tiled object images using their name as the filename
 
 # Back burner:
 
+- [ ] Animation transitions
 - [ ] Order sprites rendering with layers
 - [ ] Fix roaming enemies getting stuck when jumping
 - [ ] Add proper support for larger non tileable images, like trees
@@ -25,12 +24,12 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Bugs:
 
+- [ ] Enemy jumping against wall
 - [ ] Smooth out scrolling jitter over small distance
-- [ ] Weird collision still sometimes happens
+- [x] Weird collision still sometimes happens
+  - This had something to do with rect.height += 1 being applied even for jump collision and not just fall collision
 - [x] Scrolling camera causes weird speed up effect after running for some time
 - [x] Rounding error when value is less than a pixel due to delta_time
-- [ ] Fix crosshair accuracy
-- [ ] Fix projectile indicator offset
 
 # Roadmap:
 
@@ -59,6 +58,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 ### Concepts
 
+- [ ] Ragdolls
 - [ ] VS mode
   - tag mode
   - duel mode
