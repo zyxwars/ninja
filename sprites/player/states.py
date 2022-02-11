@@ -32,8 +32,8 @@ class Moving(PulledByGravity):
                     if tile.rect.colliderect(direct_rect):
                         break
                 else:
-                    if enemy.facing_right != self._sm.facing_right:
-                        enemy.alert()
+                    if (enemy.rect.x < self._sm.rect.x and enemy.facing_right) or (enemy.rect.x > self._sm.rect.x and not enemy.facing_right):
+                        enemy.alert(self._sm.rect.center)
 
         mouse = pg.mouse.get_pressed()
         keys = pg.key.get_pressed()

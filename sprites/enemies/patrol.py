@@ -30,4 +30,6 @@ class Patrol(Enemy):
         self.add_state(states.Jumping(self))
         self.add_state(states.Falling(self))
         self.add_state(states.Chasing(self))
+        self.add_state(states.Searching(self))
+        self.add_state(states.Idling(self))
         self.set_state('patrolling')

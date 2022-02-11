@@ -22,9 +22,11 @@ class Enemy(PhysicsEntity, Damageable):
 
         self.speed = config.SPEED * (random.randrange(2000, 4000) / 10000)
         self.attack_length = 500
-        self.alert_time = 4000
+        self.alert_time = 5000
         self.alert_timer = 0
         self.patrol_area = patrol_area
+        self.player_spotted_pos = [0, 0]
+        self.last_dir = self.dir
 
         self.animations = animations
         self.animation = self.animations['idling']
@@ -40,8 +42,10 @@ class Enemy(PhysicsEntity, Damageable):
     def on_damaged(self):
         print(self.hp)
 
-    def alert(self):
+    def alert(self, pos: Tuple):
         self.alert_timer = self.alert_time
+        self.player_spotted_pos = pos
+        self.set_state('chasing')
 
     def animate(self):
         if self.animation_index >= len(self.animation) or self.last_animation != self.animation:

@@ -1,6 +1,6 @@
 import random
 
-
+import game
 from sprites.enemies.enemy import Enemy
 from sprites.physics_entity import PulledByGravity
 from ..physics_entity import PhysicsEntity, PulledByGravity
@@ -10,6 +10,12 @@ class EnemyState(PulledByGravity):
     def __init__(self, name, enemy: Enemy):
         self.name = name
         self._sm = enemy
+
+    def set_patrol_or_chase(self):
+        if self._sm.alert_timer > 0:
+            return self._sm.set_state('chasing')
+
+        return self._sm.set_state('patrolling')
 
 
 class Patrolling(EnemyState):
@@ -37,6 +43,42 @@ class Patrolling(EnemyState):
             self._sm.dir.x = 1
 
 
+class Idling(EnemyState):
+    def __init__(self, *args, **kwargs):
+        super().__init__('idling', *args, **kwargs)
+
+    def enter(self):
+        self._sm.dir.x = 0
+        self._sm.animation = self._sm.animations['idling']
+
+    def update(self):
+        if self._sm.alert_timer < 0:
+            self._sm.set_state('patrolling')
+
+
+class Searching(EnemyState):
+    def __init__(self, *args, **kwargs):
+        super().__init__('searching', *args, **kwargs)
+        self.original_speed = 0
+
+    def enter(self):
+        self._sm.animation = self._sm.animations['running']
+        self._sm.dir.x = self._sm.last_dir.x
+        self.original_speed = self._sm.speed
+        self._sm.speed *= 2
+
+    def update(self):
+        super().update()
+
+        if self._sm.alert_timer < 1000:
+            return self._sm.set_state('idling')
+
+        self._sm.alert_timer -= game.delta_time * 5
+
+    def exit(self):
+        self._sm.speed = self.original_speed
+
+
 class Chasing(EnemyState):
     def __init__(self, *args, **kwargs):
         super().__init__("chasing", *args, **kwargs)
@@ -50,8 +92,8 @@ class Chasing(EnemyState):
     def update(self):
         super().update()
 
-        if self._sm.alert_timer < 0:
-            return self._sm.set_state('patrolling')
+        if self._sm.alert_timer < 1000:
+            return self._sm.set_state('idling')
 
         if self._sm.touching_wall:
             inf_rect = self._sm.rect.inflate(70, 64)
@@ -61,12 +103,13 @@ class Chasing(EnemyState):
             if self._sm.is_grounded:
                 return self._sm.set_state('jumping')
 
-        if self._sm.rect.x > self._sm.player.rect.x:
+        if self._sm.rect.x > self._sm.player_spotted_pos[0]:
             self._sm.dir.x = -1
-        elif self._sm.rect.x < self._sm.player.rect.x:
+        elif self._sm.rect.x < self._sm.player_spotted_pos[0]:
             self._sm.dir.x = 1
         else:
-            self._sm.dir.x = 0
+            self._sm.last_dir = self._sm.dir
+            return self._sm.set_state('searching')
 
     def exit(self):
         self._sm.speed = self.original_speed
@@ -87,7 +130,7 @@ class Jumping(EnemyState):
             self._sm.set_state('falling')
             return
         if self._sm.is_grounded:
-            self._sm.set_state('patrolling')
+            self.set_patrol_or_chase()
             return
 
 
@@ -102,7 +145,7 @@ class Falling(EnemyState):
         super().update()
 
         if self._sm.is_grounded:
-            self._sm.set_state('patrolling')
+            self.set_patrol_or_chase()
             return
 
     def exit(self):
@@ -124,7 +167,7 @@ class Attacking(EnemyState):
         super().update()
 
         if self._sm.animation_index >= len(self._sm.animation):
-            self._sm.set_state('patrolling')
+            self.set_patrol_or_chase()
             return
 
     def exit(self):

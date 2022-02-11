@@ -2,11 +2,12 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
+- [ ] Fix enemy attack range
+- [ ] Add enemy sounds
+- [x] Make enemy search after last seen player pos was seen
 - [x] Rework enemy to state machine
 - [x] Add attacking back
 - [x] Fix enemy spawns
-- [ ] Fix enemy attack range
-- [ ] Add enemy sounds
 - [x] Change alert rect size, wall collisions
 
 - [x] Change enemy speed when chasing player
