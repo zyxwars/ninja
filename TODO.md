@@ -2,65 +2,62 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Add jump possible check
-- [x] Change enemy speed when chasing player
-- [ ] Use custom pygame events
-- [x] Add gray hp to player on kill
-- [ ] Clean up prop passing inside playable_scene
-- [ ] Load tiled object images using their name as the filename
+- [ ] Add menu screen
+- [ ] Change between levels, triggers
+- [ ] Add checkpoints
 
 # Back burner:
 
+- [ ] Use custom pygame events
+- [ ] Clean up prop passing inside playable_scene
+- [ ] Load tiled object images using their name as the filename
 - [ ] Animation transitions
 - [ ] Order sprites rendering with layers
-- [ ] Fix roaming enemies getting stuck when jumping
 - [ ] Add proper support for larger non tileable images, like trees
-- [x] Block camera movement over 0, 0
-- [x] Add image background, parallax
 - [ ] Minimize the number of places where assets are loaded in
 - [ ] Minimize number of surfaces, especially transparency
 - [ ] Add jump buffer back
-- [ ] Background scrolling doesn't work over 0, 0
+- [ ] Smooth out scrolling jitter over small distance
 
 # Bugs:
 
+- [ ] Background scrolling doesn't work over 0, 0
+- [ ] Fix roaming enemies getting stuck when jumping
 - [ ] Enemy jumping against wall
-- [ ] Smooth out scrolling jitter over small distance
-- [x] Weird collision still sometimes happens
-  - This had something to do with rect.height += 1 being applied even for jump collision and not just fall collision
-- [x] Scrolling camera causes weird speed up effect after running for some time
-- [x] Rounding error when value is less than a pixel due to delta_time
 
 # Roadmap:
+
+### - [x] v0.2
 
 - [x] Textures
   - Texture importing workflow
 - [x] Sound effects
 - [x] Move to Tiled
-- [ ] Enemies
+- [x] Enemies
 
-### v0.2 ^
+### v0.3
 
 - [ ] Level loading
 - [ ] Saving game state
 - [ ] Menu screen
+
+### v0.4
+
 - [ ] Particles
 - [ ] Dynamic sound track
   - Change based on in-game tension (number of enemies, player health, player kill streak)
 
-### v0.3 ^
+### v1
 
 - [ ] Dialog system, bubbles, gibberish sound effects
 - [ ] Boost orbs
 - [ ] Resolution scaling
 
-### v1 ^
-
 ### Concepts
 
 - [ ] Ragdolls
 - [ ] VS mode
-  - tag mode
-  - duel mode
+  - tag
+  - duel
   - co-op
 - [ ] Browser, Mobile port
