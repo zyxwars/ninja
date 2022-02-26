@@ -27,7 +27,7 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Roadmap:
 
-### - [x] v0.2
+### v0.2 ✔
 
 - [x] Textures
   - Texture importing workflow
