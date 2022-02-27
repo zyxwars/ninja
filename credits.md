@@ -13,5 +13,5 @@ https://opengameart.org/content/japanese-modern-loop success sound effect
 ### Images
 
 Made for https://evilartbunny.itch.io/spirit-of-the-wind
-https://opengameart.org/content/asian-mountain-trees trees
-https://opengameart.org/content/asian-mountain-forest-bg background
+    https://opengameart.org/content/asian-mountain-trees trees
+    https://opengameart.org/content/asian-mountain-forest-bg background

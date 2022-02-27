@@ -2,7 +2,7 @@ from typing import Tuple
 import pygame as pg
 import json
 import math
-from scenes.gui import Gui
+from scenes.playable_gui import PlayableGui
 
 from sprites.enemies.enemy import Enemy
 from sprites.flag import Flag
@@ -45,7 +45,9 @@ class Image():
 
 
 class PlayableScene:
-    def __init__(self, map_path):
+    def __init__(self, change_level, map_path):
+        self.change_level = change_level
+
         self.bg_img = make_scrollable(pg.image.load(
             get_path(__file__, 'assets/bg.png')).convert())
 
@@ -61,7 +63,7 @@ class PlayableScene:
         self.triggers = []
         self.fg_objects = []
 
-        self.gui = Gui()
+        self.gui = PlayableGui()
 
         self.camera_pos = pg.Vector2(
             config.SCREEN_CENTER[0], config.SCREEN_HEIGHT * 0.6)

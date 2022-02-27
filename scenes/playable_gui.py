@@ -4,7 +4,7 @@ import config
 from utils.load_image import load_image
 
 
-class Gui:
+class PlayableGui:
     def __init__(self):
         self.life_essence = load_image('assets/hp.png', __file__)
         self.flag = load_image('assets/flag.png', __file__)

@@ -2,14 +2,14 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 # Current:
 
-- [ ] Add menu screen
+- [x] Add menu screen
 - [ ] Change between levels, triggers
 - [ ] Add checkpoints
 
 # Back burner:
 
 - [ ] Use custom pygame events
-- [ ] Clean up prop passing inside playable_scene
+- [ ] Clean up prop passing ilnside playable_scene
 - [ ] Load tiled object images using their name as the filename
 - [ ] Animation transitions
 - [ ] Order sprites rendering with layers

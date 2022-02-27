@@ -4,6 +4,7 @@ from utils import debug
 import config
 import game
 from scenes.playable_scene import PlayableScene
+from scenes.menus import Menu
 
 
 class Game:
@@ -14,7 +15,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.is_debug = False
 
-        self.scene = PlayableScene('./scenes/map/test.json')
+        self.scene = Menu(self.change_scene)
 
     def run(self):
         while True:
@@ -39,7 +40,7 @@ class Game:
             pg.display.update()
             game.delta_time = self.clock.tick(300)
 
-    def change_level(self, new_level):
+    def change_scene(self, new_level):
         self.scene = new_level
 
 

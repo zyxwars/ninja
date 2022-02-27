@@ -2,7 +2,7 @@ from typing import Tuple
 import pygame as pg
 
 
-class ShiftableGroup(pg.sprite.Group):
+class   ShiftableGroup(pg.sprite.Group):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
