@@ -3,8 +3,10 @@ Add convert or convert_alpha to every image for massive performance improvement
 # Current:
 
 - [x] Add menu screen
-- [ ] Change between levels, triggers
+- [x] Change between levels, triggers
 - [ ] Add checkpoints
+- [ ] Add settings
+- [ ] Add credits
 
 # Back burner:
 

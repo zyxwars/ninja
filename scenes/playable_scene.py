@@ -9,7 +9,7 @@ from sprites.flag import Flag
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.groups.shiftable_group import ShiftableGroup
 from sprites.player.player import Player
-import config
+
 import game
 from utils import debug, get_path, SheetParser, c_mod
 from sprites.tile import Tile
@@ -27,8 +27,8 @@ def make_scrollable(surface: pg.surface.Surface, scale_by_x=True):
     w = new_surface.get_width()
     h = new_surface.get_height()
 
-    w_scale = math.ceil(config.SCREEN_WIDTH / (w / 2))
-    h_scale = math.ceil(config.SCREEN_HEIGHT / h)
+    w_scale = math.ceil(game.SCREEN_WIDTH / (w / 2))
+    h_scale = math.ceil(game.SCREEN_HEIGHT / h)
 
     scale = w_scale
     if not scale_by_x:
@@ -47,13 +47,14 @@ class Image():
 class PlayableScene:
     def __init__(self, change_level, map_path):
         self.change_level = change_level
+        self.map_path = map_path
 
         self.bg_img = make_scrollable(pg.image.load(
             get_path(__file__, 'assets/bg.png')).convert())
 
         self.parallax = []
         self.background = ShiftableGroup()
-        # Collidable with player
+        # Collides with player
         self.terrain = ShiftableGroup()
         self.enemies = ShiftableGroup()
         self.player = None
@@ -66,7 +67,7 @@ class PlayableScene:
         self.gui = PlayableGui()
 
         self.camera_pos = pg.Vector2(
-            config.SCREEN_CENTER[0], config.SCREEN_HEIGHT * 0.6)
+            game.SCREEN_CENTER[0], game.SCREEN_HEIGHT * 0.6)
         self.shift = pg.Vector2(0, 0)
         self.last_player_pos = (0, 0)
 
@@ -75,9 +76,10 @@ class PlayableScene:
     def load_trigger(self, trigger):
         """Override this to add extra trigger types, or change trigger behavior"""
 
+        # TODO: make the next level loading prettier
         if trigger['name'] == 'finish':
             self.triggers.append(
-                Trigger(lambda: print('finish level'), trigger['x'], trigger['y'], trigger['width'], trigger['height']))
+                Trigger(lambda: self.change_level(PlayableScene(self.change_level, game.LEVEL_MAP[list(game.LEVEL_MAP.values()).index(self.map_path) + 1])), trigger['x'], trigger['y'], trigger['width'], trigger['height']))
 
     def load_map(self, map_path):
         with open(map_path, encoding='utf-8') as f:
@@ -92,10 +94,10 @@ class PlayableScene:
                         if tile == 0:
                             continue
 
-                        x = i % w * config.TILE_SIZE
-                        y = i // w * config.TILE_SIZE
+                        x = i % w * game.TILE_SIZE
+                        y = i // w * game.TILE_SIZE
 
-                        # tile - 1 >> The first tile has value of 1, but the sheet parser starts with x, y = 0, 0
+                        # "tile - 1" >> The first tile has value of 1, but the sheet parser starts with x, y = 0, 0
                         # TODO: load the number of columns(20) from tileset.json
                         tile = Tile((x, y),
                                     sheet_parser.load_image(((tile - 1) % 20, (tile - 1) // 20)))
@@ -132,14 +134,6 @@ class PlayableScene:
                                 self.collectables.add(
                                     Flag(pos, (self.terrain,)))
 
-                    elif 'trees' in layer['name']:
-                        tree_sheet_parser = SheetParser(
-                            'assets/trees.png', __file__)
-                        for img in layer['objects']:
-                            tree_layer = self.parallax if 'parallax' in layer['name'] else self.fg_objects
-                            tree_layer.append(Image(tree_sheet_parser.load_image(
-                                ((int(img['name'].split('_')[-1]) - 1), 0), (330, 600)), img['x'], img['y']))
-
                     elif layer['name'] == 'triggers':
                         for trigger in layer['objects']:
                             self.load_trigger(trigger)
@@ -152,7 +146,7 @@ class PlayableScene:
 
         # Clamp background vertically between zero and its height, while also having parallax effect
         screen_surface.blit(
-            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), min(0, max(self.shift[1] * 0.9, -self.bg_img.get_height() + config.SCREEN_HEIGHT))))
+            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), min(0, max(self.shift[1] * 0.9, -self.bg_img.get_height() + game.SCREEN_HEIGHT))))
 
         # Parallax background
         for img in self.parallax:
@@ -194,9 +188,9 @@ class PlayableScene:
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -
-                           (player_pos[0] + self.shift[0])) / config.CAMERA_X_SPEED) * game.delta_time
+                           (player_pos[0] + self.shift[0])) / game.CAMERA_X_SPEED) * game.delta_time
         self.shift[1] += ((self.camera_pos.y -
-                           (player_pos[1] + self.shift[1])) / config.CAMERA_Y_SPEED) * game.delta_time
+                           (player_pos[1] + self.shift[1])) / game.CAMERA_Y_SPEED) * game.delta_time
         self.shift[0] = min(self.shift[0], 0)
         # The background doesn't scroll vertically so allow scrolling to negatives
         # self.shift[1] = min(self.shift[1], 0)

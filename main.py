@@ -1,7 +1,7 @@
 import pygame as pg
 
 from utils import debug
-import config
+
 import game
 from scenes.playable_scene import PlayableScene
 from scenes.menus import Menu
@@ -11,7 +11,7 @@ class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(
-            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+            (game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
         self.is_debug = False
 

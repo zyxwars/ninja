@@ -6,7 +6,7 @@ from sprites import enemies
 
 from sprites.damageable import Damageable
 
-import config
+
 from sprites.physics_entity import PhysicsEntity
 from sprites.player.player import Player
 from sprites.weapons.punch import Punch
@@ -22,7 +22,7 @@ class Enemy(PhysicsEntity, Damageable):
         super().__init__(self.image.get_rect(topleft=pos), collidables)
         self.player = player
 
-        self.speed = config.SPEED * (random.randrange(2000, 4000) / 10000)
+        self.speed = game.SPEED * (random.randrange(2000, 4000) / 10000)
         self.attack_length = 500
         self.alert_time = 5000
         self.alert_timer = 0
@@ -37,7 +37,7 @@ class Enemy(PhysicsEntity, Damageable):
         self.animation = self.animations['idling']
         self.last_animation = self.animation
         self.animation_index = 0
-        self.animation_speed = config.ANIMATION_SPEED
+        self.animation_speed = game.ANIMATION_SPEED
 
     def on_died(self):
         pg.mixer.Sound(

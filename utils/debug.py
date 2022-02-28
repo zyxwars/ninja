@@ -1,8 +1,6 @@
 from typing import Any, Callable
 import pygame as pg
 
-import config
-
 
 class Debug():
     def __init__(self):

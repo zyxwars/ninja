@@ -1,5 +1,8 @@
 import pygame as pg
 
+import game
+
+
 class Button:
     def __init__(self, size, pos, text='', on_click=lambda: None, fg='white', bg='black', font_size=24):
         self.font = pg.font.Font(None, font_size)
@@ -13,12 +16,13 @@ class Button:
 
     def draw(self, screen):
         mouse = pg.mouse.get_pos()
-        mouse_pressed = pg.mouse.get_pressed()
 
         color = self.image.get_at((0, 0))
         if self.rect.collidepoint(*mouse):
-            if mouse_pressed[0]:
-                return self.on_click()
+            for e in game.events:
+                if e.type == pg.MOUSEBUTTONUP:
+                    if e.button == 1:
+                        return self.on_click()
 
             self.image.fill(
                 (color[0] + self.light_up_by, color[1] + self.light_up_by, color[2] + self.light_up_by))

@@ -1,6 +1,6 @@
 import pygame as pg
 
-import config
+
 import game
 from utils import debug, groups_to_sprites
 from utils.statemachine import State, StateMachine
@@ -49,9 +49,9 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
         self.pos = pg.Vector2(rect.x, rect.y)
 
         self.dir = pg.Vector2(0, 0)
-        self.speed = config.SPEED
-        self.jump_force = config.JUMP_FORCE
-        self.gravity = config.GRAVITY
+        self.speed = game.SPEED
+        self.jump_force = game.JUMP_FORCE
+        self.gravity = game.GRAVITY
         self.is_grounded = False
         self.is_roofed = False
         self.touching_wall = False
@@ -64,14 +64,14 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
     def add_x(self, x):
         # If delta time is large enough it is possible for add pos to be bigger than the tile
         # making the player phase through it
-        if abs(abs(self.pos.x) - abs(self.pos.x + x)) >= config.TILE_SIZE:
-            x = (config.TILE_SIZE - 1) * (x/abs(x))
+        if abs(abs(self.pos.x) - abs(self.pos.x + x)) >= game.TILE_SIZE:
+            x = (game.TILE_SIZE - 1) * (x/abs(x))
 
         self.pos.x += x
 
     def add_y(self, y):
-        if abs(abs(self.pos.y) - abs(self.pos.y + y)) >= config.TILE_SIZE:
-            y = (config.TILE_SIZE - 1) * (y/abs(y))
+        if abs(abs(self.pos.y) - abs(self.pos.y + y)) >= game.TILE_SIZE:
+            y = (game.TILE_SIZE - 1) * (y/abs(y))
 
         self.pos.y += y
 

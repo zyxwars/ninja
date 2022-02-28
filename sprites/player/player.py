@@ -1,7 +1,7 @@
 import pygame as pg
 import math
 
-import config
+
 from sprites.damageable import Damageable
 from sprites.groups.collectable_group import CollectableGroup
 from sprites.physics_entity import PulledByGravity, PhysicsEntity
@@ -25,7 +25,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.terrain = terrain
         self.collectables = collectables
         self.enemies = enemies
-        self.alert_area = config.ALERT_AREA
+        self.alert_area = game.ALERT_AREA
 
         # Animation
         sheet_parser = utils.SheetParser('assets/player_sheet.png', __file__)
@@ -45,7 +45,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
                            'wallsliding': sheet_parser.load_images_row((0, 6), 1, (64, 64))}
         self.animation = self.animations['idling']
         self.animation_index = 0
-        self.animation_speed = config.ANIMATION_SPEED
+        self.animation_speed = game.ANIMATION_SPEED
         self.last_animation = self.animation
 
         self.weapon: Weapon = Punch()

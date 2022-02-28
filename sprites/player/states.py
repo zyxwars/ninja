@@ -2,7 +2,7 @@ import time
 import pygame as pg
 import random
 
-import config
+
 import game
 from sprites.flag import Flag
 import utils
