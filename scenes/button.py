@@ -19,7 +19,7 @@ class Button:
 
         color = self.image.get_at((0, 0))
         if self.rect.collidepoint(*mouse):
-            for e in game.events:
+            for e in game.loop.events:
                 if e.type == pg.MOUSEBUTTONUP:
                     if e.button == 1:
                         return self.on_click()

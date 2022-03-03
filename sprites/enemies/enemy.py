@@ -59,7 +59,7 @@ class Enemy(PhysicsEntity, Damageable):
         self.image = pg.transform.flip(self.animation[math.floor(
             self.animation_index)], not self.facing_right, False)
 
-        self.animation_index += self.animation_speed * game.delta_time
+        self.animation_index += self.animation_speed * game.loop.delta_time
 
         self.last_animation = self.animation
 
@@ -67,4 +67,4 @@ class Enemy(PhysicsEntity, Damageable):
         self.current_state.update()
         self.animate()
         self.last_alert_timer = self.alert_timer
-        self.alert_timer -= game.delta_time
+        self.alert_timer -= game.loop.delta_time

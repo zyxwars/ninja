@@ -45,8 +45,7 @@ class Image():
 
 
 class PlayableScene:
-    def __init__(self, change_level, map_path):
-        self.change_level = change_level
+    def __init__(self, map_path):
         self.map_path = map_path
 
         self.bg_img = make_scrollable(pg.image.load(
@@ -73,13 +72,20 @@ class PlayableScene:
 
         self.load_map(map_path)
 
+        game.loop.save_state({'level': list(
+            game.LEVEL_MAP.values()).index(self.map_path)})
+
+    def finish_level(self):
+        new_level = PlayableScene(game.LEVEL_MAP[list(
+            game.LEVEL_MAP.values()).index(self.map_path) + 1])
+        game.loop.change_scene(new_level)
+
     def load_trigger(self, trigger):
         """Override this to add extra trigger types, or change trigger behavior"""
 
-        # TODO: make the next level loading prettier
         if trigger['name'] == 'finish':
             self.triggers.append(
-                Trigger(lambda: self.change_level(PlayableScene(self.change_level, game.LEVEL_MAP[list(game.LEVEL_MAP.values()).index(self.map_path) + 1])), trigger['x'], trigger['y'], trigger['width'], trigger['height']))
+                Trigger(self.finish_level, trigger['x'], trigger['y'], trigger['width'], trigger['height']))
 
     def load_map(self, map_path):
         with open(map_path, encoding='utf-8') as f:
@@ -188,9 +194,9 @@ class PlayableScene:
 
         # Shift
         self.shift[0] += ((self.camera_pos.x -
-                           (player_pos[0] + self.shift[0])) / game.CAMERA_X_SPEED) * game.delta_time
+                           (player_pos[0] + self.shift[0])) / game.CAMERA_X_SPEED) * game.loop.delta_time
         self.shift[1] += ((self.camera_pos.y -
-                           (player_pos[1] + self.shift[1])) / game.CAMERA_Y_SPEED) * game.delta_time
+                           (player_pos[1] + self.shift[1])) / game.CAMERA_Y_SPEED) * game.loop.delta_time
         self.shift[0] = min(self.shift[0], 0)
         # The background doesn't scroll vertically so allow scrolling to negatives
         # self.shift[1] = min(self.shift[1], 0)

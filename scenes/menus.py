@@ -8,9 +8,7 @@ import game
 
 
 class Base:
-    def __init__(self, change_level):
-        self.change_level = change_level
-
+    def __init__(self):
         self.elements = []
 
         self.bg = load_image('assets/bg.png', __file__)
@@ -37,14 +35,13 @@ class Menu(Base):
             (200, 64), (game.SCREEN_CENTER[0], game.SCREEN_CENTER[1] + 80 + 72), 'Credits', self.credits, font_size=30))
 
     def start(self):
-        self.change_level(PlayableScene(
-            self.change_level, game.LEVEL_MAP[1]))
+        game.loop.change_scene(PlayableScene(game.LEVEL_MAP[0]))
 
     def settings(self):
-        self.change_level(Settings(self.change_level))
+        game.loop.change_scene(Settings())
 
     def credits(self):
-        self.change_level(Credits(self.change_level))
+        game.loop.change_scene(Credits())
 
 
 class Settings(Base):
@@ -55,7 +52,7 @@ class Settings(Base):
             (240, 80), (game.SCREEN_CENTER[0], game.SCREEN_CENTER[1]), 'Menu', self.menu,  font_size=40))
 
     def menu(self):
-        self.change_level(Menu(self.change_level))
+        game.loop.change_scene(Menu())
 
 
 class Credits(Base):
@@ -66,4 +63,4 @@ class Credits(Base):
             (240, 80), (game.SCREEN_CENTER[0], game.SCREEN_CENTER[1]), 'Menu', self.menu,  font_size=40))
 
     def menu(self):
-        self.change_level(Menu(self.change_level))
+        game.loop.change_scene(Menu())

@@ -4,7 +4,8 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 - [x] Add menu screen
 - [x] Change between levels, triggers
-- [ ] Add checkpoints
+- [x] Add checkpoints - this will need to be rethought as the architecture doesn't allow for it
+- [x] Save game state
 - [ ] Add settings
 - [ ] Add credits
 
@@ -39,9 +40,9 @@ Add convert or convert_alpha to every image for massive performance improvement
 
 ### v0.3
 
-- [ ] Level loading
-- [ ] Saving game state
-- [ ] Menu screen
+- [x] Level loading
+- [x] Saving game state
+- [x] Menu screen
 
 ### v0.4
 

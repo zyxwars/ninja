@@ -31,4 +31,4 @@ class Collectable(PhysicsEntity):
     def update(self):
         self.current_state.update()
 
-        self.collect_cooldown_timer -= game.delta_time
+        self.collect_cooldown_timer -= game.loop.delta_time

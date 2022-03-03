@@ -38,5 +38,5 @@ class CollectableGroup(ShiftableGroup):
 
         super().draw(screen, shift, invisible=[item])
 
-        self.raise_by += game.delta_time
+        self.raise_by += game.loop.delta_time
         self.last_item = item

@@ -12,11 +12,11 @@ class Colliding(State):
         self._sm = physics_entity
 
     def update(self):
-        self._sm.add_x(self._sm.dir.x * self._sm.speed * game.delta_time)
+        self._sm.add_x(self._sm.dir.x * self._sm.speed * game.loop.delta_time)
         self._sm.rect.x = int(self._sm.pos.x)
         self._sm.collide_horizontal()
 
-        self._sm.add_y(self._sm.dir.y * game.delta_time)
+        self._sm.add_y(self._sm.dir.y * game.loop.delta_time)
         self._sm.rect.y = int(self._sm.pos.y)
         self._sm.collide_vertical()
 
@@ -125,7 +125,7 @@ class PhysicsEntity(pg.sprite.Sprite, StateMachine):
     def apply_gravity(self):
         # Limit max gravity momentum, "terminal velocity"
         if self.dir.y < 1.5:
-            self.dir.y += self.gravity * game.delta_time
+            self.dir.y += self.gravity * game.loop.delta_time
 
     def jump(self):
         # Jump force is a positive number, so to jump we need its opposite

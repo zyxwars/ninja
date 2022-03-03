@@ -81,7 +81,7 @@ class Searching(EnemyState):
         if self._sm.alert_timer < 1000:
             return self._sm.set_state('idling')
 
-        self._sm.alert_timer -= game.delta_time * 5
+        self._sm.alert_timer -= game.loop.delta_time * 5
 
     def exit(self):
         self._sm.speed = self.original_speed

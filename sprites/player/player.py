@@ -86,7 +86,7 @@ class Player(PhysicsEntity, Damageable, StateMachine):
         self.image = pg.transform.flip(self.animation[math.floor(
             self.animation_index)], not self.facing_right, False)
 
-        self.animation_index += self.animation_speed * game.delta_time
+        self.animation_index += self.animation_speed * game.loop.delta_time
 
         self.last_animation = self.animation
 

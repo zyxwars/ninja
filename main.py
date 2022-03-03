@@ -1,3 +1,4 @@
+import json
 import pygame as pg
 
 from utils import debug
@@ -14,15 +15,17 @@ class Game:
             (game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
         self.is_debug = False
+        self.delta_time = 0
+        self.events = []
 
-        self.scene = Menu(self.change_scene)
+        self.scene = Menu()
 
     def run(self):
         while True:
             # Call only once every frame
-            game.events = pg.event.get()
+            self.events = pg.event.get()
 
-            for e in game.events:
+            for e in self.events:
                 if e.type == pg.QUIT:
                     pg.quit()
                 if e.type == pg.KEYDOWN:
@@ -32,20 +35,33 @@ class Game:
             if self.scene:
                 self.scene.update(self.screen)
 
-            debug.debug('delta_time', game.delta_time)
+            debug.debug('delta_time', self.delta_time)
             debug.debug('fps', self.clock.get_fps())
             if self.is_debug:
                 debug.draw(self.screen)
 
             pg.display.update()
-            game.delta_time = self.clock.tick(300)
+            self.delta_time = self.clock.tick(300)
 
     def change_scene(self, new_level):
         self.scene = new_level
 
+    def save_state(self, new_state):
+        try:
+            with open('state.json', 'r') as f:
+                data = json.load(f)
+        except Exception as e:
+            data = {}
 
-game_loop = Game()
+        data.update(new_state)
+
+        with open('state.json', 'w') as f:
+            json.dump(data, f)
+
+
+game.loop = Game()
+
 try:
-    game_loop.run()
+    game.loop.run()
 finally:
     pg.quit()

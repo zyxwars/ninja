@@ -66,7 +66,7 @@ class Idling(Moving):
     def update(self):
         super().update()
 
-        for e in game.events:
+        for e in game.loop.events:
             if e.type == pg.KEYDOWN:
                 if e.key == pg.K_e:
                     self._sm.set_state('collecting')
@@ -98,7 +98,7 @@ class Running(Moving):
     def update(self):
         super().update()
 
-        for e in game.events:
+        for e in game.loop.events:
             if e.type == pg.KEYDOWN:
                 if e.key == pg.K_e:
                     self._sm.set_state('collecting')
@@ -133,7 +133,7 @@ class Pushing(Moving):
     def update(self):
         super().update()
 
-        for e in game.events:
+        for e in game.loop.events:
             if e.type == pg.KEYDOWN:
                 if e.key == pg.K_e:
                     self._sm.set_state('collecting')

@@ -1,5 +1,10 @@
 # Only import with "import game" to make the module pattern "singleton" work properly
 
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from main import Game
+
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_CENTER = (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT/2))
@@ -25,5 +30,4 @@ LEVEL_MAP = {
 }
 
 
-delta_time = 0
-events = []
+loop: Optional['Game'] = None
