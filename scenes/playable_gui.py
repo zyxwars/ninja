@@ -23,23 +23,23 @@ class PlayableGui:
         hp_bar.fill('white')
 
         surface.blit(bg_bar, bg_bar.get_rect(
-            midleft=(game.SCREEN_WIDTH - 132, 20)))
+            midleft=(game.RENDER_SCREEN_WIDTH - 132, 20)))
 
         surface.blit(regen_bar, regen_bar.get_rect(
-            midleft=(game.SCREEN_WIDTH - 132 + (100 - min(hp + 25, 100)), 20)))
+            midleft=(game.RENDER_SCREEN_WIDTH - 132 + (100 - min(hp + 25, 100)), 20)))
 
         surface.blit(hp_bar, hp_bar.get_rect(
-            midleft=(game.SCREEN_WIDTH - 132 + (100 - hp), 20)))
+            midleft=(game.RENDER_SCREEN_WIDTH - 132 + (100 - hp), 20)))
 
         surface.blit(self.life_essence, self.life_essence.get_rect(
-            center=((game.SCREEN_WIDTH - 16, 20))))
+            center=((game.RENDER_SCREEN_WIDTH - 16, 20))))
 
     def draw_flags_collected(self, flags_collected, surface):
         text = self.font.render(
             f'Flags collected: {flags_collected}', True, 'black')
         rect = text.get_rect(
-            center=(game.SCREEN_WIDTH - 96, 64))
+            center=(game.RENDER_SCREEN_WIDTH - 96, 64))
 
         surface.blit(text, rect)
         surface.blit(self.flag, self.flag.get_rect(
-            center=((game.SCREEN_WIDTH - 16, 64))))
+            center=((game.RENDER_SCREEN_WIDTH - 16, 64))))

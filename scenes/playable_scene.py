@@ -27,8 +27,8 @@ def make_scrollable(surface: pg.surface.Surface, scale_by_x=True):
     w = new_surface.get_width()
     h = new_surface.get_height()
 
-    w_scale = math.ceil(game.SCREEN_WIDTH / (w / 2))
-    h_scale = math.ceil(game.SCREEN_HEIGHT / h)
+    w_scale = math.ceil(game.RENDER_SCREEN_WIDTH / (w / 2))
+    h_scale = math.ceil(game.RENDER_SCREEN_HEIGHT / h)
 
     scale = w_scale
     if not scale_by_x:
@@ -66,14 +66,13 @@ class PlayableScene:
         self.gui = PlayableGui()
 
         self.camera_pos = pg.Vector2(
-            game.SCREEN_CENTER[0], game.SCREEN_HEIGHT * 0.6)
+            game.RENDER_SCREEN_CENTER[0], game.RENDER_SCREEN_HEIGHT * 0.6)
         self.shift = pg.Vector2(0, 0)
         self.last_player_pos = (0, 0)
 
         self.load_map(map_path)
 
-        game.loop.save_state({'level': list(
-            game.LEVEL_MAP.values()).index(self.map_path)})
+        game.loop.set_level(list(game.LEVEL_MAP.values()).index(self.map_path))
 
     def finish_level(self):
         new_level = PlayableScene(game.LEVEL_MAP[list(
@@ -152,7 +151,7 @@ class PlayableScene:
 
         # Clamp background vertically between zero and its height, while also having parallax effect
         screen_surface.blit(
-            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), min(0, max(self.shift[1] * 0.9, -self.bg_img.get_height() + game.SCREEN_HEIGHT))))
+            self.bg_img, (c_mod((self.shift[0] * 0.1), self.bg_img.get_width() / 2), min(0, max(self.shift[1] * 0.9, -self.bg_img.get_height() + game.RENDER_SCREEN_HEIGHT))))
 
         # Parallax background
         for img in self.parallax:

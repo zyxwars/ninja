@@ -1,4 +1,5 @@
 import json
+from textwrap import indent
 import pygame as pg
 
 from utils import debug
@@ -12,13 +13,21 @@ class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(
-            (game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
+            (game.RENDER_SCREEN_WIDTH, game.RENDER_SCREEN_HEIGHT))
         self.clock = pg.time.Clock()
         self.is_debug = False
         self.delta_time = 0
         self.events = []
 
         self.scene = Menu()
+
+        self.state = {
+            "progression": {
+                "level": 0
+            },
+            "settings": {
+            }
+        }
 
     def run(self):
         while True:
@@ -46,17 +55,22 @@ class Game:
     def change_scene(self, new_level):
         self.scene = new_level
 
-    def save_state(self, new_state):
+    def set_state(self, new_state):
+        # Read old state
         try:
             with open('state.json', 'r') as f:
-                data = json.load(f)
-        except Exception as e:
-            data = {}
+                saved_state = json.load(f)
+        except FileNotFoundError:
+            saved_state = self.state
 
-        data.update(new_state)
+        self.state.update(saved_state)
+        self.state.update(new_state)
 
         with open('state.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(self.state, f, indent=4)
+
+    def set_level(self, new_level: int):
+        self.set_state({'progression': {'level': new_level}})
 
 
 game.loop = Game()
